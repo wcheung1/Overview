@@ -259,6 +259,7 @@
 
     <button class="icon-btn" id="searchToggle" title="搜尋 (Ctrl/⌘+F)">🔍</button>
     <button class="btn ghost" id="layoutBtn" title="切換單排 / 雙排">▤ 單排</button>
+    <button class="btn ghost" id="previewBtn" title="扮訪客預覽（唔使登出）" style="display:none">👁 訪客預覽</button>
     <button class="btn ghost admin-only" id="pagesBtn" title="子頁面總覽">🗂 頁面</button>
 
     <button class="btn admin-only" id="addCatBtn">＋ 分類</button>
@@ -381,7 +382,7 @@ const firebaseConfig = {
 };
 
 const ADMIN_EMAILS = [
-  "w.cheung815@gmail.com"   // ← 改成你嘅管理員 Gmail，可以放多個
+  "your-admin@gmail.com"   // ← 改成你嘅管理員 Gmail，可以放多個
 ];
 
 /* ---------- 子頁面（sub-board）支援 ----------
@@ -455,10 +456,15 @@ function seed(){
 
 let state = seed();
 let isAdmin = false;
+let previewMode = false;           // 管理員「扮訪客預覽」：唔登出都可以試 click 卡片
 let currentUser = null;
 let searchQuery = "";
 let editing = false;               // 有 contenteditable 打緊字時 = true
 const sortables = [];
+
+/* canEdit()：真正可唔可以編輯 = 係管理員而且唔喺預覽模式。
+   所有「編輯 UI / 行為」都用呢個；後端寫入權限就仍然睇 isAdmin。 */
+function canEdit(){ return isAdmin && !previewMode; }
 
 /* layout 係「本機瀏覽偏好」，存 localStorage，唔寫入共用資料 */
 let layout = safeGet("overview_layout") || "single";
@@ -601,7 +607,7 @@ function render(){
   document.title = state.title || "Overview";
 
   // 版面 class
-  document.body.classList.toggle("admin", isAdmin);
+  document.body.classList.toggle("admin", canEdit());
   applyLayout();
 
   destroySortables();
@@ -625,11 +631,11 @@ function render(){
   if(!anyShown){
     const d=document.createElement("div");
     d.className="empty";
-    d.textContent = q ? "搵唔到相符嘅卡片。" : (isAdmin ? "仲未有分類，撳右上角「＋ 分類」開始。" : "暫時未有內容。");
+    d.textContent = q ? "搵唔到相符嘅卡片。" : (canEdit() ? "仲未有分類，撳右上角「＋ 分類」開始。" : "暫時未有內容。");
     board.appendChild(d);
   }
 
-  if(isAdmin && !q) initSortables();
+  if(canEdit() && !q) initSortables();
 }
 
 function buildCategory(cat, visibleCards, q){
@@ -798,7 +804,7 @@ board.addEventListener("click", e=>{
   const role=e.target.closest("[data-role]")?.dataset.role;
 
   // 訪客撳卡片 → 開啟網址
-  if(cardEl && !isAdmin){
+  if(cardEl && !canEdit()){
     const card=findCard(cardEl.dataset.id);
     if(card && card.url){ openCardUrl(card.url); }
     return;
@@ -810,25 +816,25 @@ board.addEventListener("click", e=>{
     const next = !effectiveCollapsed(cat);
     collapseMemory[cat.id] = next;          // 每部瀏覽器記住（登出後都記得）
     saveCollapseMemory();
-    if(isAdmin){ cat.collapsed = next; save(); }  // admin 順便更新畀新訪客嘅預設
+    if(canEdit()){ cat.collapsed = next; save(); }  // admin 順便更新畀新訪客嘅預設
     render();
   }
-  else if(role==="add-card" && isAdmin){
+  else if(role==="add-card" && canEdit()){
     const cat=findCat(catEl.dataset.id);
     cat.cards.push({id:uid(), title:"新卡片", description:"描述…", url:""});
     render(); save();
   }
-  else if(role==="card-del" && isAdmin){
+  else if(role==="card-del" && canEdit()){
     openCardDeleteModal(catEl.dataset.id, cardEl.dataset.id);   // 彈確認框
   }
-  else if(role==="card-subpage" && isAdmin){
+  else if(role==="card-subpage" && canEdit()){
     makeSubpage(cardEl.dataset.id);
   }
-  else if(role==="card-open" && isAdmin){
+  else if(role==="card-open" && canEdit()){
     const card=findCard(cardEl.dataset.id);
     if(card && card.url) openCardUrl(card.url);
   }
-  else if(role==="cat-del" && isAdmin){
+  else if(role==="cat-del" && canEdit()){
     openDeleteModal(catEl.dataset.id);
   }
 });
@@ -854,7 +860,7 @@ function makeSubpage(cardId){
 
 // 雙擊 → 進入編輯
 board.addEventListener("dblclick", e=>{
-  if(!isAdmin) return;
+  if(!canEdit()) return;
   const t=e.target.closest('[data-role="card-title"],[data-role="card-desc"],[data-role="cat-name"]');
   if(!t) return;
   makeEditable(t);
@@ -862,7 +868,7 @@ board.addEventListener("dblclick", e=>{
 
 // 顏色即時更新（分類 + 其下所有卡片）
 board.addEventListener("input", e=>{
-  if(e.target.dataset.role==="cat-color" && isAdmin){
+  if(e.target.dataset.role==="cat-color" && canEdit()){
     const catEl=e.target.closest(".cat");
     const cat=findCat(catEl.dataset.id);
     cat.color=e.target.value;
@@ -870,15 +876,15 @@ board.addEventListener("input", e=>{
   }
 });
 board.addEventListener("change", e=>{
-  if(e.target.dataset.role==="cat-color" && isAdmin){ save(); }        // 放開色板 → 儲存
-  if(e.target.dataset.role==="card-url" && isAdmin){                    // URL 改完
+  if(e.target.dataset.role==="cat-color" && canEdit()){ save(); }        // 放開色板 → 儲存
+  if(e.target.dataset.role==="card-url" && canEdit()){                    // URL 改完
     const card=findCard(e.target.closest(".card").dataset.id);
     if(card){ card.url=e.target.value.trim(); save(); }
   }
 });
 // URL 點去空白處（blur）都存
 board.addEventListener("focusout", e=>{
-  if(e.target.dataset.role==="card-url" && isAdmin){
+  if(e.target.dataset.role==="card-url" && canEdit()){
     const card=findCard(e.target.closest(".card").dataset.id);
     if(card){ card.url=e.target.value.trim(); save(); }
   }
@@ -919,7 +925,7 @@ function makeEditable(el){
 
 /* 標題編輯（雙擊） */
 headingEl.addEventListener("dblclick", ()=>{
-  if(!isAdmin) return;
+  if(!canEdit()) return;
   editing=true;
   headingEl.setAttribute("contenteditable","true");
   headingEl.focus();
@@ -946,7 +952,7 @@ function findCard(id){
 
 /* ---------- 新增分類 ---------- */
 document.getElementById("addCatBtn").addEventListener("click", ()=>{
-  if(!isAdmin) return;
+  if(!canEdit()) return;
   // 加喺「未分類」之前
   const cat={id:uid(), name:"新分類", color:randomPastel(), collapsed:false, cards:[]};
   const uncatIdx=state.categories.findIndex(c=>c.isUncat);
@@ -1098,8 +1104,8 @@ const HELP_ADMIN = `
   <ul><li><b>匯出</b>成 JSON 存落電腦；<b>匯入</b>可覆蓋或合併。</li></ul>
 `;
 function openHelp(){
-  document.getElementById("helpTitle").textContent = isAdmin ? "使用說明（管理員）" : "使用說明（訪客）";
-  document.getElementById("helpBody").innerHTML = isAdmin ? HELP_ADMIN : HELP_GUEST;
+  document.getElementById("helpTitle").textContent = canEdit() ? "使用說明（管理員）" : "使用說明（訪客）";
+  document.getElementById("helpBody").innerHTML = canEdit() ? HELP_ADMIN : HELP_GUEST;
   forceDoubleChk.checked = forceDoubleMobile;
   helpModal.classList.add("on");
 }
@@ -1224,12 +1230,29 @@ const logoutBtn=document.getElementById("logoutBtn");
 const whoEl=document.getElementById("who");
 const modeNote=document.getElementById("modeNote");
 
+const previewBtn=document.getElementById("previewBtn");
+function updatePreviewBtn(){
+  previewBtn.style.display = isAdmin ? "inline-flex" : "none";
+  previewBtn.textContent = previewMode ? "✏️ 返回編輯" : "👁 訪客預覽";
+  previewBtn.classList.toggle("primary", previewMode);
+}
+previewBtn.addEventListener("click", ()=>{
+  if(!isAdmin) return;
+  previewMode = !previewMode;
+  updatePreviewBtn();
+  render();
+  toast(previewMode ? "訪客預覽中，撳卡片會開網址" : "已返回編輯模式");
+});
+
 function paintAuthUI(){
+  if(!isAdmin) previewMode=false;
+  updatePreviewBtn();
   if(currentUser){
     loginBtn.style.display="none";
     logoutBtn.style.display="inline-flex";
+    const tag = !isAdmin ? " · 訪客" : (previewMode ? " · 管理員（預覽中）" : " · 管理員");
     whoEl.innerHTML = (currentUser.photo?`<img src="${currentUser.photo}" alt="">`:"") +
-      `<span class="email">${currentUser.email||""}${isAdmin?" · 管理員":" · 訪客"}</span>`;
+      `<span class="email">${currentUser.email||""}${tag}</span>`;
   }else{
     loginBtn.style.display="inline-flex";
     logoutBtn.style.display="none";
