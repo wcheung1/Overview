@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Overview</title>
+
+<!-- SortableJS：處理卡片同分類嘅 drag-and-drop（支援分類之間互拖） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --panel:#ffffff;
+    --ink:#1f2430;
+    --ink-soft:#5b6472;
+    --line:#e6e8ee;
+    --accent:#3b5bdb;
+    --accent-ink:#ffffff;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+    --font: "Segoe UI", system-ui, -apple-system, "PingFang HK", "Microsoft JhengHei", sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  button{font-family:inherit}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(246,247,249,.85);
+    backdrop-filter:saturate(160%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1180px; margin:0 auto; padding:12px 20px;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:10px; min-width:0;}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);flex:none}
+  #heading{
+    font-size:20px; font-weight:800; letter-spacing:-.01em;
+    padding:2px 6px; border-radius:8px; outline:none; min-width:40px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:52vw;
+  }
+  #heading[contenteditable="true"]{
+    background:#fff; box-shadow:inset 0 0 0 2px var(--accent); cursor:text;
+    white-space:normal; overflow:visible; text-overflow:clip; max-width:none;
+  }
+  .spacer{flex:1 1 auto}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:6px;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink);
+    padding:8px 12px; border-radius:10px; font-size:13px; font-weight:600;
+    cursor:pointer; white-space:nowrap;
+  }
+  .btn:hover{border-color:#cfd4de}
+  .btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+  .btn.ghost{background:transparent}
+  .btn:disabled{opacity:.5; cursor:not-allowed}
+  .icon-btn{
+    border:1px solid transparent;background:transparent;cursor:pointer;
+    width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
+    color:var(--ink-soft); font-size:15px; flex:none;
+  }
+  .icon-btn:hover{background:#eef0f4;color:var(--ink)}
+
+  .search-wrap{position:relative; flex:1 1 240px; max-width:360px; display:none}
+  .search-wrap.on{display:block}
+  #search{
+    width:100%; padding:8px 12px 8px 34px; border-radius:10px;
+    border:1px solid var(--line); background:#fff; font-size:14px; outline:none;
+  }
+  #search:focus{border-color:var(--accent)}
+  .search-ic{position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--ink-soft)}
+
+  .who{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+  .who img{width:24px;height:24px;border-radius:50%}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1180px; margin:0 auto; padding:22px 20px 80px}
+  #board.double{ column-count:2; column-gap:20px; }
+  #board.single{ column-count:1; }
+  @media (max-width:767px){ #board{ column-count:1 !important; } }
+
+  .cat{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); margin:0 0 18px; overflow:hidden;
+    break-inside:avoid; -webkit-column-break-inside:avoid; page-break-inside:avoid;
+  }
+  .cat-head{
+    display:flex; align-items:center; gap:10px; padding:12px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .cat-color{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(0,0,0,.08)}
+  .cat-name{
+    font-weight:700; font-size:15px; padding:2px 6px; border-radius:7px; outline:none; min-width:20px;
+  }
+  .cat-name[contenteditable="true"]{background:#fff;box-shadow:inset 0 0 0 2px var(--accent)}
+  .cat-count{font-size:12px;color:var(--ink-soft)}
+  .cat-tools{margin-left:auto;display:flex;align-items:center;gap:2px}
+  .drag-handle{cursor:grab;color:var(--ink-soft)}
+  .drag-handle:active{cursor:grabbing}
+  .chev{transition:transform .18s ease}
+  .cat.collapsed .chev{transform:rotate(-90deg)}
+  .cat.collapsed .cards{display:none}
+  input[type="color"].swatch{
+    -webkit-appearance:none;appearance:none;border:none;background:none;
+    width:26px;height:26px;padding:0;border-radius:6px;cursor:pointer;overflow:hidden;
+  }
+  input[type="color"].swatch::-webkit-color-swatch-wrapper{padding:0}
+  input[type="color"].swatch::-webkit-color-swatch{border:1px solid rgba(0,0,0,.12);border-radius:6px}
+
+  .cards{padding:12px; display:flex; flex-direction:column; gap:10px; min-height:8px}
+
+  .card{
+    border-radius:11px; padding:12px 14px; border:1px solid rgba(0,0,0,.06);
+    position:relative; cursor:pointer; transition:transform .06s ease, box-shadow .12s ease;
+  }
+  .card:hover{box-shadow:0 4px 14px rgba(16,24,40,.10)}
+  .card:active{transform:translateY(1px)}
+  .card .c-titlerow{display:flex; align-items:center}
+  .card .c-title{font-weight:700; font-size:14.5px; padding:1px 3px; border-radius:6px; outline:none}
+  .card .c-desc{font-size:13px; color:#3d4453; padding:1px 3px; border-radius:6px; outline:none; white-space:pre-wrap; word-break:break-word}
+  .card [contenteditable="true"]{background:#fff;box-shadow:inset 0 0 0 2px var(--accent);cursor:text}
+  .card .c-url{
+    display:none; margin-top:8px; width:100%; font-size:12px; color:var(--ink-soft);
+    padding:6px 8px; border:1px dashed rgba(0,0,0,.18); border-radius:8px; background:rgba(255,255,255,.55); outline:none;
+  }
+  .admin .card .c-url{display:block}
+  .card .c-del{
+    display:none; position:absolute; top:8px; right:8px;
+    width:24px;height:24px;border-radius:7px;border:none;background:rgba(255,255,255,.75);
+    color:#b42318;cursor:pointer;align-items:center;justify-content:center;font-size:13px;
+  }
+  .admin .card:hover .c-del{display:inline-flex}
+  .card .c-handle{display:none}
+  .admin .card .c-handle{
+    display:inline-flex; position:absolute; top:8px; right:38px; color:var(--ink-soft);
+    cursor:grab; font-size:13px;
+  }
+  .card-hint{font-size:11px;color:var(--ink-soft);margin-top:6px;display:none}
+  .admin .card-hint{display:block}
+  .c-badge{
+    display:inline-block; font-size:10px; font-weight:700; letter-spacing:.02em;
+    background:rgba(0,0,0,.16); color:#fff; padding:1px 6px; border-radius:999px;
+    margin-right:6px; vertical-align:middle;
+  }
+  .c-actions{display:none; gap:6px; margin-top:8px}
+  .admin .c-actions{display:flex}
+  .c-actions .mini{
+    font-size:12px; font-weight:600; cursor:pointer;
+    border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.7);
+    color:var(--ink); padding:5px 9px; border-radius:8px;
+  }
+  .c-actions .mini:hover{background:#fff}
+
+  .cat-foot{padding:0 12px 12px; display:none}
+  .admin .cat-foot{display:block}
+  .add-card{
+    width:100%; border:1px dashed var(--line); background:transparent; color:var(--ink-soft);
+    padding:9px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .add-card:hover{border-color:var(--accent);color:var(--accent)}
+
+  .sortable-ghost{opacity:.4}
+  .sortable-chosen{box-shadow:0 8px 24px rgba(16,24,40,.16)}
+
+  .empty{
+    text-align:center; color:var(--ink-soft); padding:60px 20px;
+    border:1px dashed var(--line); border-radius:var(--radius); background:var(--panel);
+  }
+
+  /* admin-only elements hidden for guests */
+  .admin-only{display:none}
+  .admin .admin-only{display:inline-flex}
+
+  /* ---------- Toast ---------- */
+  #toast{
+    position:fixed; right:18px; bottom:18px; z-index:60;
+    background:#101828; color:#fff; padding:10px 14px; border-radius:10px;
+    font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,.2);
+    opacity:0; transform:translateY(8px); transition:opacity .2s, transform .2s; pointer-events:none;
+  }
+  #toast.show{opacity:1; transform:translateY(0)}
+
+  /* ---------- Modal ---------- */
+  .modal-back{
+    position:fixed; inset:0; background:rgba(16,24,40,.45); z-index:70;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-back.on{display:flex}
+  .modal{
+    background:#fff; border-radius:16px; max-width:440px; width:100%;
+    padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.3);
+  }
+  .modal h3{margin:0 0 8px; font-size:17px}
+  .modal p{margin:0 0 18px; color:var(--ink-soft); font-size:14px}
+  .modal-actions{display:flex; flex-direction:column; gap:8px}
+  .modal-actions .btn{justify-content:center}
+
+  .mode-note{font-size:12px;color:#8a5a00;background:#fff7e6;border:1px solid #ffe1a8;
+    padding:6px 10px;border-radius:8px;display:none}
+  .mode-note.on{display:inline-block}
+
+  @media (max-width:767px){
+    #heading{max-width:44vw}
+    .who .email{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <button class="icon-btn" id="backBtn" title="返回主頁" style="display:none">←</button>
+      <span class="dot"></span>
+      <div id="heading" title="編輯模式下雙擊可改標題">Overview</div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="search-wrap" id="searchWrap">
+      <span class="search-ic">🔍</span>
+      <input id="search" type="text" placeholder="搜尋卡片…（Ctrl / ⌘ + F）" autocomplete="off" />
+    </div>
+
+    <button class="icon-btn" id="searchToggle" title="搜尋 (Ctrl/⌘+F)">🔍</button>
+    <button class="btn ghost" id="layoutBtn" title="切換單排 / 雙排">▤ 單排</button>
+
+    <button class="btn admin-only" id="addCatBtn">＋ 分類</button>
+    <button class="btn ghost admin-only" id="exportBtn">匯出</button>
+    <button class="btn ghost admin-only" id="importBtn">匯入</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none" />
+
+    <span class="mode-note" id="modeNote">本機示範模式</span>
+
+    <span class="who" id="who"></span>
+    <button class="btn primary" id="loginBtn">Google 登入</button>
+    <button class="btn ghost" id="logoutBtn" style="display:none">登出</button>
+  </div>
+</div>
+
+<main>
+  <div id="board" class="single"></div>
+</main>
+
+<div id="toast">已儲存</div>
+
+<!-- 刪除分類 modal -->
+<div class="modal-back" id="delModal">
+  <div class="modal">
+    <h3>刪除分類「<span id="delCatName"></span>」</h3>
+    <p>入面嘅卡片點處理？</p>
+    <div class="modal-actions">
+      <button class="btn" id="delKeepCards">保留卡片 → 移去「未分類」</button>
+      <button class="btn" id="delAllCards" style="color:#b42318;border-color:#f3c1bb">連卡片一齊刪除</button>
+      <button class="btn ghost" id="delCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 刪除卡片 modal -->
+<div class="modal-back" id="cardDelModal">
+  <div class="modal">
+    <h3>刪除卡片</h3>
+    <p>確定刪除「<span id="cardDelName"></span>」？呢個動作冇得復原。</p>
+    <div class="modal-actions">
+      <button class="btn" id="cardDelConfirm" style="color:#b42318;border-color:#f3c1bb">確定刪除</button>
+      <button class="btn ghost" id="cardDelCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 匯入 modal -->
+<div class="modal-back" id="importModal">
+  <div class="modal">
+    <h3>匯入 JSON</h3>
+    <p>要點樣處理匯入嘅內容？</p>
+    <div class="modal-actions">
+      <button class="btn" id="importReplace">覆蓋（清空後匯入）</button>
+      <button class="btn" id="importMerge">合併（新增分類同卡片）</button>
+      <button class="btn ghost" id="importCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+/* ============================================================
+   1) Firebase 設定
+   ------------------------------------------------------------
+   把下面 firebaseConfig 換成你自己 Firebase 專案嘅設定。
+   API Key 可以直接放喺呢度（見文字說明），保護靠 Security Rules。
+   ADMIN_EMAILS 填你嘅管理員 Gmail（同 Firestore rules 保持一致）。
+
+   如果未填設定（仍係 "PASTE_..."），網頁會自動用「本機示範模式」，
+   資料存喺瀏覽器 localStorage，方便你即刻試玩全部功能。
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCjqenwszZuCI19BaHOQErPoHeHSdsdvpA",
+  authDomain: "overview-01.firebaseapp.com",
+  projectId: "overview-01",
+  storageBucket: "overview-01.firebasestorage.app",
+  messagingSenderId: "281677712893",
+  appId: "1:281677712893:web:f261731d80a8d35a091d94"
+};
+
+const ADMIN_EMAILS = [
+  "w.cheung815@gmail.com"   // ← 改成你嘅管理員 Gmail，可以放多個
+];
+
+/* ---------- 子頁面（sub-board）支援 ----------
+   同一個 index.html，靠網址 ?board=xxx 分辨唔同「板」。
+   ?board 冇填 = 主頁(root)；有填 = 一個獨立子頁面，
+   佢一樣有分類 / 卡片 / 拖曳 / 搜尋等全部功能，資料存喺 overview/<xxx>。 */
+const boardId = (new URLSearchParams(location.search).get("board") || "board")
+                  .replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40) || "board";
+const isSubBoard = boardId !== "board";
+const DOC_PATH = { col: "overview", id: boardId };
+const LS_KEY = "overview_data_" + boardId;   // 本機模式：每塊板各自儲存
+
+/* ---------- 判斷模式 ---------- */
+const LOCAL_MODE = firebaseConfig.apiKey.startsWith("PASTE_");
+
+/* ---------- Firebase 動態載入（只喺有設定時） ---------- */
+let fb = null;
+if(!LOCAL_MODE){
+  const appMod  = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const authMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const dbMod   = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  const app  = appMod.initializeApp(firebaseConfig);
+  const auth = authMod.getAuth(app);
+  const db   = dbMod.getFirestore(app);
+  fb = { authMod, dbMod, auth, db,
+         ref: dbMod.doc(db, DOC_PATH.col, DOC_PATH.id) };
+}
+
+/* ============================================================
+   2) 狀態 / 資料
+   ============================================================ */
+const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
+
+function randomPastel(){
+  const h = Math.floor(Math.random()*360);
+  const s = 62 + Math.floor(Math.random()*10);   // 62-71%
+  const l = 88 + Math.floor(Math.random()*4);    // 88-91%  → 淺色系
+  return hslToHex(h,s,l);
+}
+function hslToHex(h,s,l){
+  s/=100; l/=100;
+  const k=n=>(n+h/30)%12, a=s*Math.min(l,1-l);
+  const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
+  const t=x=>Math.round(255*x).toString(16).padStart(2,"0");
+  return "#"+t(f(0))+t(f(8))+t(f(4));
+}
+function darken(hex, amt=0.45){
+  const n=parseInt(hex.slice(1),16);
+  let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  r=Math.round(r*(1-amt)); g=Math.round(g*(1-amt)); b=Math.round(b*(1-amt));
+  return "#"+[r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+
+function seed(){
+  const c1=randomPastel(), c2=randomPastel();
+  return {
+    title:"Overview",
+    categories:[
+      { id:uid(), name:"常用工具", color:c1, collapsed:false, cards:[
+        { id:uid(), title:"Gmail", description:"電郵收發", url:"https://mail.google.com" },
+        { id:uid(), title:"Google Drive", description:"雲端檔案", url:"https://drive.google.com" },
+      ]},
+      { id:uid(), name:"工作", color:c2, collapsed:false, cards:[
+        { id:uid(), title:"GitHub", description:"程式碼倉庫", url:"https://github.com" },
+      ]},
+    ]
+  };
+}
+
+let state = seed();
+let isAdmin = false;
+let currentUser = null;
+let searchQuery = "";
+let editing = false;               // 有 contenteditable 打緊字時 = true
+const sortables = [];
+
+/* layout 係「本機瀏覽偏好」，存 localStorage，唔寫入共用資料 */
+let layout = safeGet("overview_layout") || "single";
+
+function safeGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+function safeSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+
+/* ============================================================
+   3) 讀 / 寫 後端
+   ============================================================ */
+async function loadData(){
+  if(LOCAL_MODE){
+    const raw = safeGet(LS_KEY);
+    if(raw){ try{ state = JSON.parse(raw) }catch(e){} }
+    else if(isSubBoard){ state = emptyBoard(); }   // 新子頁面：由空白開始
+    return;
+  }
+  try{
+    const snap = await fb.dbMod.getDoc(fb.ref);
+    if(snap.exists()){ state = snap.data(); }
+    else if(isSubBoard){ state = emptyBoard(); await saveData(true); }
+    else { await saveData(true); } // 主頁第一次：寫入種子
+  }catch(e){ console.warn("load fail", e); }
+}
+function emptyBoard(){ return { title:"新頁面", categories:[] }; }
+
+let isDragging = false;      // 拖曳中 → 唔好被實時更新打斷
+let pendingRemote = null;    // 編輯 / 拖曳期間收到嘅遠端更新，遲啲先套用
+
+let saveTimer=null;
+function save(){
+  pendingRemote = null;      // 我自己改嘢，最新版以我為準
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>saveData(false), 250);
+}
+async function saveData(silent){
+  if(LOCAL_MODE){
+    safeSet(LS_KEY, JSON.stringify(state));
+    if(!silent) toast("已儲存（本機）");
+    return;
+  }
+  if(!isAdmin) return;       // 訪客唔會 save 共用資料
+  try{
+    await fb.dbMod.setDoc(fb.ref, state);
+    if(!silent) toast("已儲存");
+  }catch(e){
+    console.warn("save fail", e);
+    toast("儲存失敗，請檢查權限");
+  }
+}
+
+/* 實時同步：其他人（或你另一部裝置）改咗嘢，即刻反映。
+   編輯 / 拖曳期間會暫存，完成後先套用，避免打斷你。 */
+function startRealtime(){
+  if(LOCAL_MODE) return;
+  fb.dbMod.onSnapshot(fb.ref, snap=>{
+    if(!snap.exists()) return;
+    if(snap.metadata.hasPendingWrites) return;      // 忽略自己嘅寫入回音
+    const incoming = snap.data();
+    if(JSON.stringify(incoming) === JSON.stringify(state)) return;
+    if(editing || isDragging){ pendingRemote = incoming; return; }
+    state = incoming; render();
+  }, err=> console.warn("realtime", err));
+}
+function applyPendingRemote(){
+  if(pendingRemote){ state = pendingRemote; pendingRemote = null; render(); }
+}
+
+/* ============================================================
+   4) 畫面渲染
+   ============================================================ */
+const board = document.getElementById("board");
+const headingEl = document.getElementById("heading");
+
+function orderedCategories(){
+  // 「未分類」永遠排最底
+  const arr = state.categories.slice();
+  arr.sort((a,b)=>{
+    const au=a.isUncat?1:0, bu=b.isUncat?1:0;
+    return au-bu;
+  });
+  return arr;
+}
+
+function matches(card, q){
+  if(!q) return true;
+  const s=(card.title+" "+card.description+" "+(card.url||"")).toLowerCase();
+  return s.includes(q);
+}
+
+function render(){
+  // 標題
+  headingEl.textContent = state.title || "Overview";
+  document.title = state.title || "Overview";
+
+  // 版面 class
+  document.body.classList.toggle("admin", isAdmin);
+  applyLayout();
+
+  destroySortables();
+  board.innerHTML = "";
+
+  const q = searchQuery.trim().toLowerCase();
+  const cats = orderedCategories();
+
+  // 搜尋時：只顯示有配對卡片嘅分類，並強制展開
+  let anyShown = false;
+
+  cats.forEach(cat=>{
+    const visibleCards = cat.cards.filter(c=>matches(c,q));
+    if(q && visibleCards.length===0) return; // 搜尋時隱藏無配對分類
+    if(cat.isUncat && cat.cards.length===0 && !q) return; // 空「未分類」唔顯示
+
+    anyShown = true;
+    board.appendChild(buildCategory(cat, visibleCards, q));
+  });
+
+  if(!anyShown){
+    const d=document.createElement("div");
+    d.className="empty";
+    d.textContent = q ? "搵唔到相符嘅卡片。" : (isAdmin ? "仲未有分類，撳右上角「＋ 分類」開始。" : "暫時未有內容。");
+    board.appendChild(d);
+  }
+
+  if(isAdmin && !q) initSortables();
+}
+
+function buildCategory(cat, visibleCards, q){
+  const collapsed = q ? false : !!cat.collapsed;
+  const wrap=document.createElement("section");
+  wrap.className="cat"+(collapsed?" collapsed":"");
+  wrap.dataset.id=cat.id;
+
+  const textInk = darken(cat.color, 0.55);
+
+  wrap.innerHTML = `
+    <div class="cat-head" style="background:${cat.color}">
+      <span class="icon-btn drag-handle cat-handle admin-only" title="拖曳排序分類">⋮⋮</span>
+      <span class="cat-color" style="background:${cat.color}"></span>
+      <span class="cat-name" style="color:${textInk}" data-role="cat-name">${escapeHtml(cat.name)}</span>
+      <span class="cat-count" style="color:${textInk}">${cat.cards.length}</span>
+      <span class="cat-tools">
+        <input type="color" class="swatch admin-only" value="${toHexInput(cat.color)}" title="更改分類顏色" data-role="cat-color" />
+        ${cat.isUncat ? "" : `<button class="icon-btn admin-only" title="刪除分類" data-role="cat-del">🗑</button>`}
+        <button class="icon-btn" title="展開 / 收起" data-role="collapse"><span class="chev">▾</span></button>
+      </span>
+    </div>
+    <div class="cards" data-cat="${cat.id}"></div>
+    <div class="cat-foot"><button class="add-card" data-role="add-card">＋ 新增卡片</button></div>
+  `;
+
+  const cardsEl = wrap.querySelector(".cards");
+  visibleCards.forEach(card=>{
+    cardsEl.appendChild(buildCard(card, cat));
+  });
+
+  return wrap;
+}
+
+function buildCard(card, cat){
+  const el=document.createElement("div");
+  el.className="card";
+  el.dataset.id=card.id;
+  el.style.background=cat.color;
+
+  const internal = isInternalLink(card.url);
+  el.innerHTML = `
+    <span class="icon-btn c-handle admin-only" title="拖曳移動 / 換分類">⋮⋮</span>
+    <button class="c-del admin-only" title="刪除卡片" data-role="card-del">✕</button>
+    <div class="c-titlerow">
+      ${internal ? `<span class="c-badge">子頁面</span>` : ""}
+      <span class="c-title" data-role="card-title">${escapeHtml(card.title||"")}</span>
+    </div>
+    <div class="c-desc" data-role="card-desc">${escapeHtml(card.description||"")}</div>
+    <input class="c-url admin-only" type="text" placeholder="貼上網址 https://… 或 pages/xxx.html" value="${escapeAttr(card.url||"")}" data-role="card-url" />
+    <div class="c-actions admin-only">
+      <button class="mini" data-role="card-subpage" title="建立一個具備卡片功能嘅子頁面，並自動連結到呢張卡片">🗂 建立子頁面</button>
+      ${card.url ? `<button class="mini" data-role="card-open">${internal ? "進入 →" : "開啟 ↗"}</button>` : ""}
+    </div>
+    <div class="card-hint">雙擊可改內容 · 訪客撳卡片會開啟網址</div>
+  `;
+  return el;
+}
+
+function isInternalLink(url){ return !!url && url.startsWith("?board="); }
+function escapeHtml(s){return (s||"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function escapeAttr(s){return (s||"").replace(/"/g,"&quot;")}
+function toHexInput(c){ return /^#([0-9a-f]{6})$/i.test(c)? c : "#dddddd"; }
+
+/* ============================================================
+   5) 版面 / 搜尋 / Toast
+   ============================================================ */
+const layoutBtn=document.getElementById("layoutBtn");
+function isMobile(){ return window.innerWidth < 768; }
+function applyLayout(){
+  const mobile=isMobile();
+  const eff = mobile ? "single" : layout;
+  board.classList.toggle("double", eff==="double");
+  board.classList.toggle("single", eff==="single");
+  layoutBtn.style.display = mobile ? "none" : "inline-flex";
+  layoutBtn.textContent = layout==="double" ? "▥▥ 雙排" : "▤ 單排";
+}
+layoutBtn.addEventListener("click", ()=>{
+  layout = layout==="double" ? "single" : "double";
+  safeSet("overview_layout", layout);
+  applyLayout();
+});
+window.addEventListener("resize", applyLayout);
+
+let toastTimer=null;
+function toast(msg="已儲存"){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"),1500);
+}
+
+/* 搜尋 UI */
+const searchWrap=document.getElementById("searchWrap");
+const searchInput=document.getElementById("search");
+const searchToggle=document.getElementById("searchToggle");
+function openSearch(){ searchWrap.classList.add("on"); searchInput.focus(); searchInput.select(); }
+function closeSearch(){ searchWrap.classList.remove("on"); searchQuery=""; searchInput.value=""; render(); }
+searchToggle.addEventListener("click", ()=> searchWrap.classList.contains("on")?closeSearch():openSearch());
+searchInput.addEventListener("input", ()=>{ searchQuery=searchInput.value; render(); });
+searchInput.addEventListener("keydown", e=>{ if(e.key==="Escape") closeSearch(); });
+
+// 攔截原生 Ctrl/⌘+F，改用自製搜尋
+window.addEventListener("keydown", e=>{
+  if((e.ctrlKey||e.metaKey) && (e.key==="f"||e.key==="F")){
+    e.preventDefault();
+    openSearch();
+  }
+});
+
+/* ============================================================
+   6) Drag and drop（SortableJS）
+   ============================================================ */
+function destroySortables(){ while(sortables.length){ try{sortables.pop().destroy()}catch(e){} } }
+function initSortables(){
+  // 分類排序（拖 head 上下，卡片跟住整塊移動）
+  sortables.push(new Sortable(board,{
+    animation:150, handle:".cat-handle", draggable:".cat",
+    ghostClass:"sortable-ghost", chosenClass:"sortable-chosen",
+    onStart:()=>{ isDragging=true; },
+    onEnd:()=>{ isDragging=false; syncOrderFromDOM(); save(); applyPendingRemote(); }
+  }));
+  // 卡片排序 / 跨分類拖曳
+  board.querySelectorAll(".cards").forEach(el=>{
+    sortables.push(new Sortable(el,{
+      group:"cards", animation:150, handle:".c-handle", draggable:".card",
+      ghostClass:"sortable-ghost", chosenClass:"sortable-chosen",
+      onStart:()=>{ isDragging=true; },
+      onEnd:()=>{ isDragging=false; syncOrderFromDOM(); render(); save(); } // render 令卡片顏色跟返新分類
+    }));
+  });
+}
+
+// 由 DOM 現時次序，重建 state
+function syncOrderFromDOM(){
+  const cardById={};
+  state.categories.forEach(c=>c.cards.forEach(cd=>cardById[cd.id]=cd));
+  const catById={};
+  state.categories.forEach(c=>catById[c.id]=c);
+
+  const newCats=[];
+  board.querySelectorAll(".cat").forEach(catEl=>{
+    const cat=catById[catEl.dataset.id];
+    if(!cat) return;
+    const newCards=[];
+    catEl.querySelectorAll(".card").forEach(cardEl=>{
+      const cd=cardById[cardEl.dataset.id];
+      if(cd) newCards.push(cd);
+    });
+    cat.cards=newCards;
+    newCats.push(cat);
+  });
+  // 保留冇喺 DOM 出現嘅分類（例如搜尋隱藏咗嘅，通常唔會 drag，穩陣起見補返）
+  state.categories.forEach(c=>{ if(!newCats.includes(c)) newCats.push(c); });
+  state.categories=newCats;
+}
+
+/* ============================================================
+   7) 事件（用委派處理全部互動）
+   ============================================================ */
+board.addEventListener("click", e=>{
+  const catEl=e.target.closest(".cat");
+  const cardEl=e.target.closest(".card");
+  const role=e.target.closest("[data-role]")?.dataset.role;
+
+  // 訪客撳卡片 → 開啟網址
+  if(cardEl && !isAdmin){
+    const card=findCard(cardEl.dataset.id);
+    if(card && card.url){ openCardUrl(card.url); }
+    return;
+  }
+
+  if(!role) return;
+  if(role==="collapse"){
+    const cat=findCat(catEl.dataset.id);
+    cat.collapsed=!cat.collapsed;
+    if(isAdmin) save();     // admin 先會存收合狀態；訪客只係本次瀏覽變化
+    render();
+  }
+  else if(role==="add-card" && isAdmin){
+    const cat=findCat(catEl.dataset.id);
+    cat.cards.push({id:uid(), title:"新卡片", description:"描述…", url:""});
+    render(); save();
+  }
+  else if(role==="card-del" && isAdmin){
+    openCardDeleteModal(catEl.dataset.id, cardEl.dataset.id);   // 彈確認框
+  }
+  else if(role==="card-subpage" && isAdmin){
+    makeSubpage(cardEl.dataset.id);
+  }
+  else if(role==="card-open" && isAdmin){
+    const card=findCard(cardEl.dataset.id);
+    if(card && card.url) openCardUrl(card.url);
+  }
+  else if(role==="cat-del" && isAdmin){
+    openDeleteModal(catEl.dataset.id);
+  }
+});
+
+function openCardUrl(url){
+  if(isInternalLink(url)){ location.href = "index.html" + url; }  // 子頁面：同頁跳轉
+  else{ window.open(url, "_blank", "noopener"); }                 // 外部：新分頁
+}
+function makeSubpage(cardId){
+  const card=findCard(cardId); if(!card) return;
+  if(card.url && !confirm("呢張卡片已經有網址，確定覆蓋成新子頁面？")) return;
+  card.url = "?board=" + uid();     // 產生一個新板 id
+  render(); save();
+  toast("已建立子頁面，撳「進入 →」開始編輯");
+}
+
+// 雙擊 → 進入編輯
+board.addEventListener("dblclick", e=>{
+  if(!isAdmin) return;
+  const t=e.target.closest('[data-role="card-title"],[data-role="card-desc"],[data-role="cat-name"]');
+  if(!t) return;
+  makeEditable(t);
+});
+
+// 顏色即時更新（分類 + 其下所有卡片）
+board.addEventListener("input", e=>{
+  if(e.target.dataset.role==="cat-color" && isAdmin){
+    const catEl=e.target.closest(".cat");
+    const cat=findCat(catEl.dataset.id);
+    cat.color=e.target.value;
+    render();
+  }
+});
+board.addEventListener("change", e=>{
+  if(e.target.dataset.role==="cat-color" && isAdmin){ save(); }        // 放開色板 → 儲存
+  if(e.target.dataset.role==="card-url" && isAdmin){                    // URL 改完
+    const card=findCard(e.target.closest(".card").dataset.id);
+    if(card){ card.url=e.target.value.trim(); save(); }
+  }
+});
+// URL 點去空白處（blur）都存
+board.addEventListener("focusout", e=>{
+  if(e.target.dataset.role==="card-url" && isAdmin){
+    const card=findCard(e.target.closest(".card").dataset.id);
+    if(card){ card.url=e.target.value.trim(); save(); }
+  }
+});
+
+function makeEditable(el){
+  editing=true;
+  el.setAttribute("contenteditable","true");
+  el.focus();
+  // 游標放到最後
+  const r=document.createRange(); r.selectNodeContents(el); r.collapse(false);
+  const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+
+  const commit=()=>{
+    el.removeAttribute("contenteditable");
+    el.removeEventListener("blur", commit);
+    el.removeEventListener("keydown", onKey);
+    editing=false;
+    const val=el.textContent.trim();
+    const role=el.dataset.role;
+    if(role==="card-title" || role==="card-desc"){
+      const card=findCard(el.closest(".card").dataset.id);
+      if(card){ if(role==="card-title") card.title=val; else card.description=val; }
+    } else if(role==="cat-name"){
+      const cat=findCat(el.closest(".cat").dataset.id);
+      if(cat) cat.name=val;
+    }
+    save();
+    render();
+  };
+  const onKey=(ev)=>{
+    if(ev.key==="Enter" && el.dataset.role!=="card-desc"){ ev.preventDefault(); el.blur(); }
+    if(ev.key==="Escape"){ el.blur(); }
+  };
+  el.addEventListener("blur", commit);
+  el.addEventListener("keydown", onKey);
+}
+
+/* 標題編輯（雙擊） */
+headingEl.addEventListener("dblclick", ()=>{
+  if(!isAdmin) return;
+  editing=true;
+  headingEl.setAttribute("contenteditable","true");
+  headingEl.focus();
+  const r=document.createRange(); r.selectNodeContents(headingEl); r.collapse(false);
+  const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  const commit=()=>{
+    headingEl.removeAttribute("contenteditable");
+    headingEl.removeEventListener("blur",commit);
+    editing=false;
+    state.title=headingEl.textContent.trim()||"Overview";
+    document.title=state.title;
+    save();
+  };
+  headingEl.addEventListener("blur", commit);
+  headingEl.addEventListener("keydown", ev=>{ if(ev.key==="Enter"||ev.key==="Escape"){ev.preventDefault(); headingEl.blur();} });
+});
+
+function findCat(id){ return state.categories.find(c=>c.id===id); }
+function findCard(id){
+  for(const c of state.categories){ const f=c.cards.find(x=>x.id===id); if(f) return f; }
+  return null;
+}
+
+/* ---------- 新增分類 ---------- */
+document.getElementById("addCatBtn").addEventListener("click", ()=>{
+  if(!isAdmin) return;
+  // 加喺「未分類」之前
+  const cat={id:uid(), name:"新分類", color:randomPastel(), collapsed:false, cards:[]};
+  const uncatIdx=state.categories.findIndex(c=>c.isUncat);
+  if(uncatIdx===-1) state.categories.push(cat);
+  else state.categories.splice(uncatIdx,0,cat);
+  render(); save();
+});
+
+/* ============================================================
+   刪除卡片 modal（確認先刪，防止手殘）
+   ============================================================ */
+let cardDelTarget=null;
+const cardDelModal=document.getElementById("cardDelModal");
+function openCardDeleteModal(catId, cardId){
+  const card=findCard(cardId); if(!card) return;
+  cardDelTarget={catId, cardId};
+  document.getElementById("cardDelName").textContent = card.title || "（未命名卡片）";
+  cardDelModal.classList.add("on");
+}
+function closeCardDel(){ cardDelModal.classList.remove("on"); cardDelTarget=null; }
+document.getElementById("cardDelCancel").addEventListener("click", closeCardDel);
+cardDelModal.addEventListener("click", e=>{ if(e.target===cardDelModal) closeCardDel(); });
+document.getElementById("cardDelConfirm").addEventListener("click", ()=>{
+  if(cardDelTarget){
+    const cat=findCat(cardDelTarget.catId);
+    if(cat) cat.cards=cat.cards.filter(c=>c.id!==cardDelTarget.cardId);
+    render(); save();
+  }
+  closeCardDel();
+});
+
+/* ============================================================
+   8) 刪除分類 modal
+   ============================================================ */
+let delTargetId=null;
+const delModal=document.getElementById("delModal");
+function openDeleteModal(id){
+  const cat=findCat(id); if(!cat || cat.isUncat) return;
+  delTargetId=id;
+  document.getElementById("delCatName").textContent=cat.name;
+  delModal.classList.add("on");
+}
+function closeDelModal(){ delModal.classList.remove("on"); delTargetId=null; }
+document.getElementById("delCancel").addEventListener("click", closeDelModal);
+delModal.addEventListener("click", e=>{ if(e.target===delModal) closeDelModal(); });
+
+document.getElementById("delAllCards").addEventListener("click", ()=>{
+  state.categories=state.categories.filter(c=>c.id!==delTargetId);
+  closeDelModal(); render(); save();
+});
+document.getElementById("delKeepCards").addEventListener("click", ()=>{
+  const cat=findCat(delTargetId);
+  const orphans=cat.cards.slice();
+  state.categories=state.categories.filter(c=>c.id!==delTargetId);
+  moveToUncategorized(orphans);
+  closeDelModal(); render(); save();
+});
+function moveToUncategorized(cards){
+  let uncat=state.categories.find(c=>c.isUncat);
+  if(!uncat){
+    uncat={id:uid(), name:"未分類", color:randomPastel(), collapsed:false, isUncat:true, cards:[]};
+    state.categories.push(uncat);
+  }
+  uncat.cards.push(...cards);
+}
+
+/* ============================================================
+   9) 匯出 / 匯入 JSON
+   ============================================================ */
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=(state.title||"overview").replace(/\s+/g,"_")+".json";
+  a.click(); URL.revokeObjectURL(a.href);
+});
+
+const importModal=document.getElementById("importModal");
+const importFile=document.getElementById("importFile");
+let pendingImport=null;
+document.getElementById("importBtn").addEventListener("click", ()=> importFile.click());
+importFile.addEventListener("change", ()=>{
+  const f=importFile.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!data.categories) throw new Error("格式不符");
+      pendingImport=data;
+      importModal.classList.add("on");
+    }catch(e){ toast("JSON 格式錯誤"); }
+    importFile.value="";
+  };
+  reader.readAsText(f);
+});
+function closeImport(){ importModal.classList.remove("on"); pendingImport=null; }
+document.getElementById("importCancel").addEventListener("click", closeImport);
+importModal.addEventListener("click", e=>{ if(e.target===importModal) closeImport(); });
+
+document.getElementById("importReplace").addEventListener("click", ()=>{
+  if(pendingImport){ state=pendingImport; render(); save(); toast("已覆蓋匯入"); }
+  closeImport();
+});
+document.getElementById("importMerge").addEventListener("click", ()=>{
+  if(pendingImport && Array.isArray(pendingImport.categories)){
+    // 重新編 id，避免撞 key
+    pendingImport.categories.forEach(cat=>{
+      const nc={...cat, id:uid(), isUncat:false, cards:(cat.cards||[]).map(cd=>({...cd,id:uid()}))};
+      const uncatIdx=state.categories.findIndex(c=>c.isUncat);
+      if(uncatIdx===-1) state.categories.push(nc);
+      else state.categories.splice(uncatIdx,0,nc);
+    });
+    render(); save(); toast("已合併匯入");
+  }
+  closeImport();
+});
+
+/* ============================================================
+   10) 登入 / 權限
+   ============================================================ */
+const loginBtn=document.getElementById("loginBtn");
+const logoutBtn=document.getElementById("logoutBtn");
+const whoEl=document.getElementById("who");
+const modeNote=document.getElementById("modeNote");
+
+function paintAuthUI(){
+  if(currentUser){
+    loginBtn.style.display="none";
+    logoutBtn.style.display="inline-flex";
+    whoEl.innerHTML = (currentUser.photo?`<img src="${currentUser.photo}" alt="">`:"") +
+      `<span class="email">${currentUser.email||""}${isAdmin?" · 管理員":" · 訪客"}</span>`;
+  }else{
+    loginBtn.style.display="inline-flex";
+    logoutBtn.style.display="none";
+    whoEl.innerHTML="";
+  }
+}
+
+if(LOCAL_MODE){
+  modeNote.classList.add("on");
+  loginBtn.textContent="示範登入（本機管理員）";
+  loginBtn.addEventListener("click", ()=>{
+    currentUser={email:"demo@local", photo:""}; isAdmin=true;
+    paintAuthUI(); render();
+  });
+  logoutBtn.addEventListener("click", ()=>{
+    currentUser=null; isAdmin=false; paintAuthUI(); render();
+  });
+}else{
+  const {authMod, auth}=fb;
+  loginBtn.addEventListener("click", async ()=>{
+    try{ await authMod.signInWithPopup(auth, new authMod.GoogleAuthProvider()); }
+    catch(e){ toast("登入失敗"); console.warn(e); }
+  });
+  logoutBtn.addEventListener("click", ()=> authMod.signOut(auth));
+  authMod.onAuthStateChanged(auth, user=>{
+    if(user){
+      currentUser={email:user.email, photo:user.photoURL};
+      isAdmin=ADMIN_EMAILS.map(x=>x.toLowerCase()).includes((user.email||"").toLowerCase());
+    }else{
+      currentUser=null; isAdmin=false;
+    }
+    paintAuthUI(); render();
+  });
+}
+
+/* ---------- 子頁面「返回」掣 ---------- */
+const backBtn=document.getElementById("backBtn");
+if(isSubBoard){
+  backBtn.style.display="inline-flex";
+  backBtn.addEventListener("click", ()=>{
+    if(history.length>1) history.back();
+    else location.href="index.html";
+  });
+}
+
+/* ============================================================
+   11) 啟動
+   ============================================================ */
+await loadData();
+paintAuthUI();
+render();
+startRealtime();   // 開啟實時同步
+
+</script>
+</body>
+</html>
