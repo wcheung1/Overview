@@ -211,18 +211,11 @@
   .name-input{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:14px; outline:none}
   .name-input:focus{border-color:var(--accent)}
   .pages-list{display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow:auto}
-  .page-row{
-    display:flex; align-items:center; gap:8px; padding:10px 12px;
-    border:1px solid var(--line); border-radius:10px;
-  }
+  .page-row{display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--line); border-radius:10px}
   .page-row .p-name{font-weight:600; font-size:14px}
   .page-row .p-id{font-size:11px; color:var(--ink-soft)}
   .page-row .p-spacer{flex:1}
-  .page-row .mini{
-    font-size:12px; font-weight:600; cursor:pointer;
-    border:1px solid var(--line); background:#fff; color:var(--ink);
-    padding:5px 10px; border-radius:8px;
-  }
+  .page-row .mini{font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--ink); padding:5px 10px; border-radius:8px}
   .page-row .mini:hover{border-color:#cfd4de}
   .page-row .mini.danger{color:#b42318;border-color:#f3c1bb}
   .pages-empty{color:var(--ink-soft); font-size:14px; padding:24px 4px; text-align:center}
@@ -230,10 +223,7 @@
   .help-body h4{margin:16px 0 6px; font-size:14px; color:var(--accent)}
   .help-body ul{margin:0 0 4px; padding-left:20px}
   .help-body li{margin:5px 0; line-height:1.5}
-  .help-body kbd{
-    background:#f0f2f6; border:1px solid var(--line); border-bottom-width:2px;
-    border-radius:5px; padding:0 5px; font-size:12px; font-family:inherit;
-  }
+  .help-body kbd{background:#f0f2f6; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:0 5px; font-size:12px; font-family:inherit}
   .help-switch{display:flex; align-items:center; gap:8px; margin-top:14px; font-size:12.5px; color:var(--ink-soft)}
   .help-switch input{width:16px;height:16px}
   .modal p{margin:0 0 18px; color:var(--ink-soft); font-size:14px}
@@ -272,8 +262,8 @@
     <button class="btn ghost admin-only" id="pagesBtn" title="子頁面總覽">🗂 頁面</button>
 
     <button class="btn admin-only" id="addCatBtn">＋ 分類</button>
-    <button class="btn ghost admin-only" id="exportBtn">匯出</button>
-    <button class="btn ghost admin-only" id="importBtn">匯入</button>
+    <button class="btn ghost" id="exportBtn">匯出</button>
+    <button class="btn ghost" id="importBtn">匯入</button>
     <input type="file" id="importFile" accept="application/json" style="display:none" />
 
     <button class="icon-btn" id="helpBtn" title="使用說明">？</button>
@@ -410,9 +400,9 @@ const LOCAL_MODE = firebaseConfig.apiKey.startsWith("PASTE_");
 /* ---------- Firebase 動態載入（只喺有設定時） ---------- */
 let fb = null;
 if(!LOCAL_MODE){
-  const appMod  = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-  const authMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-  const dbMod   = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  const appMod  = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js");
+  const authMod = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js");
+  const dbMod   = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js");
   const app  = appMod.initializeApp(firebaseConfig);
   const auth = authMod.getAuth(app);
   const db   = dbMod.getFirestore(app);
@@ -476,6 +466,9 @@ let layout = safeGet("overview_layout") || "single";
 /* 「喺手機都用雙排」隱藏開關（每部瀏覽器記住） */
 let forceDoubleMobile = safeGet("overview_force_double") === "1";
 
+function safeGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+function safeSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+
 /* 收合狀態記憶：每部瀏覽器、每塊板各自記住（登出 / 重新整理都仲喺度） */
 const COLLAPSE_KEY = "overview_collapse_" + boardId;
 let collapseMemory = {};
@@ -485,9 +478,6 @@ function effectiveCollapsed(cat){
   return Object.prototype.hasOwnProperty.call(collapseMemory, cat.id)
     ? !!collapseMemory[cat.id] : !!cat.collapsed;
 }
-
-function safeGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
-function safeSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
 
 /* ============================================================
    3) 讀 / 寫 後端
@@ -711,12 +701,11 @@ const layoutBtn=document.getElementById("layoutBtn");
 function isMobile(){ return window.innerWidth < 768; }
 function applyLayout(){
   const mobile = isMobile();
-  // 預設：手機強制單排並隱藏切換掣。開咗隱藏開關就照桌面咁做。
   const forceSingle = mobile && !forceDoubleMobile;
   const eff = forceSingle ? "single" : layout;
   board.classList.toggle("double", eff==="double");
   board.classList.toggle("single", eff==="single");
-  board.classList.toggle("force-double", eff==="double");   // 蓋過 CSS 嘅手機單排規則
+  board.classList.toggle("force-double", eff==="double");
   layoutBtn.style.display = forceSingle ? "none" : "inline-flex";
   layoutBtn.textContent = layout==="double" ? "▥▥ 雙排" : "▤ 單排";
 }
@@ -942,7 +931,7 @@ headingEl.addEventListener("dblclick", ()=>{
     editing=false;
     state.title=headingEl.textContent.trim()||"Overview";
     document.title=state.title;
-    if(isSubBoard){ regUpsert(boardId, state.title); saveRegistry(); }  // 更新總覽名
+    if(isSubBoard){ regUpsert(boardId, state.title); saveRegistry(); }
     save();
   };
   headingEl.addEventListener("blur", commit);
@@ -1034,7 +1023,6 @@ function renamePage(p){
   askName("改名子頁面", "呢個名會同時改到子頁面自己嘅標題。", p.title, async (name)=>{
     const t=(name||"").trim(); if(!t) return;
     p.title=t; regUpsert(p.id, t); await saveRegistry();
-    // 同步更新該子頁面自己嘅標題
     try{
       if(LOCAL_MODE){
         const k="overview_data_"+p.id;
@@ -1073,7 +1061,6 @@ forceDoubleChk.addEventListener("change", ()=>{
   safeSet("overview_force_double", forceDoubleMobile?"1":"0");
   applyLayout();
 });
-
 const HELP_GUEST = `
   <p>歡迎！呢版係一個連結總覽板。你可以咁樣用：</p>
   <h4>睇 / 搵</h4>
@@ -1120,7 +1107,10 @@ helpBtn.addEventListener("click", openHelp);
 document.getElementById("helpClose").addEventListener("click", ()=> helpModal.classList.remove("on"));
 helpModal.addEventListener("click", e=>{ if(e.target===helpModal) helpModal.classList.remove("on"); });
 
-
+/* ============================================================
+   刪除卡片 modal（確認先刪，防止手殘）
+   ============================================================ */
+let cardDelTarget=null;
 const cardDelModal=document.getElementById("cardDelModal");
 function openCardDeleteModal(catId, cardId){
   const card=findCard(cardId); if(!card) return;
@@ -1269,16 +1259,15 @@ if(LOCAL_MODE){
       await authMod.signInWithPopup(auth, provider());
     }catch(e){
       console.warn("login error:", e.code, e.message);
-      // 彈窗被擋 / 環境唔支援 → 改用整頁跳轉方式再試
       if(e.code==="auth/popup-blocked" || e.code==="auth/popup-closed-by-user" ||
-         e.code==="auth/cancelled-popup-request" || e.code==="auth/operation-not-supported-in-this-environment"){
+         e.code==="auth/cancelled-popup-request" || e.code==="auth/internal-error" ||
+         e.code==="auth/operation-not-supported-in-this-environment"){
         try{ await authMod.signInWithRedirect(auth, provider()); return; }catch(e2){ console.warn(e2); }
       }
       toast("登入失敗：" + (e.code||e.message||""));
     }
   });
   logoutBtn.addEventListener("click", ()=> authMod.signOut(auth));
-  // 處理 redirect 方式返嚟嘅結果（順便顯示錯誤）
   authMod.getRedirectResult(auth).catch(e=> console.warn("redirect result:", e.code));
   authMod.onAuthStateChanged(auth, async user=>{
     if(user){
@@ -1288,12 +1277,9 @@ if(LOCAL_MODE){
       currentUser=null; isAdmin=false;
     }
     paintAuthUI(); render();
-    // 管理員入到未登記嘅子頁面 → 自動加入總覽
     if(isAdmin && isSubBoard){
       await loadRegistry();
-      if(!registry.pages.find(p=>p.id===boardId)){
-        regUpsert(boardId, state.title || boardId); saveRegistry();
-      }
+      if(!registry.pages.find(p=>p.id===boardId)){ regUpsert(boardId, state.title||boardId); saveRegistry(); }
     }
   });
 }
