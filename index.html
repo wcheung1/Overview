@@ -90,7 +90,10 @@
   main{max-width:1180px; margin:0 auto; padding:22px 20px 80px}
   #board.double{ column-count:2; column-gap:20px; }
   #board.single{ column-count:1; }
-  @media (max-width:767px){ #board{ column-count:1 !important; } }
+  @media (max-width:767px){
+    #board{ column-count:1 !important; }
+    #board.force-double{ column-count:2 !important; }
+  }
 
   .cat{
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
@@ -204,6 +207,35 @@
     padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.3);
   }
   .modal h3{margin:0 0 8px; font-size:17px}
+  .modal.wide{max-width:560px}
+  .name-input{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:14px; outline:none}
+  .name-input:focus{border-color:var(--accent)}
+  .pages-list{display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow:auto}
+  .page-row{
+    display:flex; align-items:center; gap:8px; padding:10px 12px;
+    border:1px solid var(--line); border-radius:10px;
+  }
+  .page-row .p-name{font-weight:600; font-size:14px}
+  .page-row .p-id{font-size:11px; color:var(--ink-soft)}
+  .page-row .p-spacer{flex:1}
+  .page-row .mini{
+    font-size:12px; font-weight:600; cursor:pointer;
+    border:1px solid var(--line); background:#fff; color:var(--ink);
+    padding:5px 10px; border-radius:8px;
+  }
+  .page-row .mini:hover{border-color:#cfd4de}
+  .page-row .mini.danger{color:#b42318;border-color:#f3c1bb}
+  .pages-empty{color:var(--ink-soft); font-size:14px; padding:24px 4px; text-align:center}
+  .help-body{font-size:14px; color:var(--ink); max-height:56vh; overflow:auto}
+  .help-body h4{margin:16px 0 6px; font-size:14px; color:var(--accent)}
+  .help-body ul{margin:0 0 4px; padding-left:20px}
+  .help-body li{margin:5px 0; line-height:1.5}
+  .help-body kbd{
+    background:#f0f2f6; border:1px solid var(--line); border-bottom-width:2px;
+    border-radius:5px; padding:0 5px; font-size:12px; font-family:inherit;
+  }
+  .help-switch{display:flex; align-items:center; gap:8px; margin-top:14px; font-size:12.5px; color:var(--ink-soft)}
+  .help-switch input{width:16px;height:16px}
   .modal p{margin:0 0 18px; color:var(--ink-soft); font-size:14px}
   .modal-actions{display:flex; flex-direction:column; gap:8px}
   .modal-actions .btn{justify-content:center}
@@ -237,11 +269,14 @@
 
     <button class="icon-btn" id="searchToggle" title="搜尋 (Ctrl/⌘+F)">🔍</button>
     <button class="btn ghost" id="layoutBtn" title="切換單排 / 雙排">▤ 單排</button>
+    <button class="btn ghost admin-only" id="pagesBtn" title="子頁面總覽">🗂 頁面</button>
 
     <button class="btn admin-only" id="addCatBtn">＋ 分類</button>
     <button class="btn ghost admin-only" id="exportBtn">匯出</button>
     <button class="btn ghost admin-only" id="importBtn">匯入</button>
     <input type="file" id="importFile" accept="application/json" style="display:none" />
+
+    <button class="icon-btn" id="helpBtn" title="使用說明">？</button>
 
     <span class="mode-note" id="modeNote">本機示範模式</span>
 
@@ -295,6 +330,46 @@
   </div>
 </div>
 
+<!-- 子頁面總覽 dashboard（管理員專用） -->
+<div class="modal-back" id="pagesModal">
+  <div class="modal wide">
+    <h3>子頁面總覽</h3>
+    <p>你所有嘅子頁面（＝同一格式、有卡片功能嘅板）。撳「進入」直接去。</p>
+    <div id="pagesList" class="pages-list"></div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn ghost" id="pagesClose">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- 命名 / 改名 modal -->
+<div class="modal-back" id="nameModal">
+  <div class="modal">
+    <h3 id="nameTitle">改名</h3>
+    <p id="nameHint"></p>
+    <input id="nameInput" type="text" class="name-input" placeholder="輸入名稱…" />
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn primary" id="nameOk">確定</button>
+      <button class="btn ghost" id="nameCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 使用說明 modal（訪客 / 管理員唔同版本） -->
+<div class="modal-back" id="helpModal">
+  <div class="modal wide">
+    <h3 id="helpTitle">使用說明</h3>
+    <div id="helpBody" class="help-body"></div>
+    <label class="help-switch">
+      <input type="checkbox" id="forceDoubleChk" />
+      <span>喺手機都用雙排顯示（進階：細螢幕會逼到好窄）</span>
+    </label>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn ghost" id="helpClose">明白，關閉</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 /* ============================================================
    1) Firebase 設定
@@ -342,7 +417,9 @@ if(!LOCAL_MODE){
   const auth = authMod.getAuth(app);
   const db   = dbMod.getFirestore(app);
   fb = { authMod, dbMod, auth, db,
-         ref: dbMod.doc(db, DOC_PATH.col, DOC_PATH.id) };
+         ref: dbMod.doc(db, DOC_PATH.col, DOC_PATH.id),
+         regRef: dbMod.doc(db, "overview", "__index__"),   // 子頁面總覽登記表
+         boardRef: (id)=> dbMod.doc(db, "overview", id) };
 }
 
 /* ============================================================
@@ -396,6 +473,19 @@ const sortables = [];
 /* layout 係「本機瀏覽偏好」，存 localStorage，唔寫入共用資料 */
 let layout = safeGet("overview_layout") || "single";
 
+/* 「喺手機都用雙排」隱藏開關（每部瀏覽器記住） */
+let forceDoubleMobile = safeGet("overview_force_double") === "1";
+
+/* 收合狀態記憶：每部瀏覽器、每塊板各自記住（登出 / 重新整理都仲喺度） */
+const COLLAPSE_KEY = "overview_collapse_" + boardId;
+let collapseMemory = {};
+try{ collapseMemory = JSON.parse(safeGet(COLLAPSE_KEY)) || {}; }catch(e){ collapseMemory = {}; }
+function saveCollapseMemory(){ safeSet(COLLAPSE_KEY, JSON.stringify(collapseMemory)); }
+function effectiveCollapsed(cat){
+  return Object.prototype.hasOwnProperty.call(collapseMemory, cat.id)
+    ? !!collapseMemory[cat.id] : !!cat.collapsed;
+}
+
 function safeGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
 function safeSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
 
@@ -417,6 +507,39 @@ async function loadData(){
   }catch(e){ console.warn("load fail", e); }
 }
 function emptyBoard(){ return { title:"新頁面", categories:[] }; }
+
+/* ---------- 子頁面登記表（畀 dashboard 用） ---------- */
+const REG_LS = "overview_registry";
+let registry = { pages: [] };
+async function loadRegistry(){
+  if(LOCAL_MODE){
+    try{ registry = JSON.parse(safeGet(REG_LS)) || {pages:[]}; }catch(e){ registry = {pages:[]}; }
+    return;
+  }
+  try{ const s = await fb.dbMod.getDoc(fb.regRef); registry = s.exists()? s.data() : {pages:[]}; }
+  catch(e){ registry = {pages:[]}; }
+  if(!Array.isArray(registry.pages)) registry.pages = [];
+}
+async function saveRegistry(){
+  if(LOCAL_MODE){ safeSet(REG_LS, JSON.stringify(registry)); return; }
+  if(!isAdmin) return;
+  try{ await fb.dbMod.setDoc(fb.regRef, registry); }catch(e){ console.warn("reg save", e); }
+}
+function regUpsert(id, title){
+  const e = registry.pages.find(p=>p.id===id);
+  if(e) e.title = title; else registry.pages.push({id, title});
+}
+function regRemove(id){ registry.pages = registry.pages.filter(p=>p.id!==id); }
+function slugify(s){
+  const base = (s||"").toLowerCase().trim().replace(/[^a-z0-9\u4e00-\u9fff]+/g,"-").replace(/^-+|-+$/g,"");
+  return base || uid();
+}
+function uniqueBoardId(want){
+  const taken = new Set(registry.pages.map(p=>p.id).concat(["board","__index__"]));
+  if(!taken.has(want)) return want;
+  let i=2; while(taken.has(want+"-"+i)) i++;
+  return want+"-"+i;
+}
 
 let isDragging = false;      // 拖曳中 → 唔好被實時更新打斷
 let pendingRemote = null;    // 編輯 / 拖曳期間收到嘅遠端更新，遲啲先套用
@@ -520,7 +643,7 @@ function render(){
 }
 
 function buildCategory(cat, visibleCards, q){
-  const collapsed = q ? false : !!cat.collapsed;
+  const collapsed = q ? false : effectiveCollapsed(cat);
   const wrap=document.createElement("section");
   wrap.className="cat"+(collapsed?" collapsed":"");
   wrap.dataset.id=cat.id;
@@ -587,11 +710,14 @@ function toHexInput(c){ return /^#([0-9a-f]{6})$/i.test(c)? c : "#dddddd"; }
 const layoutBtn=document.getElementById("layoutBtn");
 function isMobile(){ return window.innerWidth < 768; }
 function applyLayout(){
-  const mobile=isMobile();
-  const eff = mobile ? "single" : layout;
+  const mobile = isMobile();
+  // 預設：手機強制單排並隱藏切換掣。開咗隱藏開關就照桌面咁做。
+  const forceSingle = mobile && !forceDoubleMobile;
+  const eff = forceSingle ? "single" : layout;
   board.classList.toggle("double", eff==="double");
   board.classList.toggle("single", eff==="single");
-  layoutBtn.style.display = mobile ? "none" : "inline-flex";
+  board.classList.toggle("force-double", eff==="double");   // 蓋過 CSS 嘅手機單排規則
+  layoutBtn.style.display = forceSingle ? "none" : "inline-flex";
   layoutBtn.textContent = layout==="double" ? "▥▥ 雙排" : "▤ 單排";
 }
 layoutBtn.addEventListener("click", ()=>{
@@ -692,8 +818,10 @@ board.addEventListener("click", e=>{
   if(!role) return;
   if(role==="collapse"){
     const cat=findCat(catEl.dataset.id);
-    cat.collapsed=!cat.collapsed;
-    if(isAdmin) save();     // admin 先會存收合狀態；訪客只係本次瀏覽變化
+    const next = !effectiveCollapsed(cat);
+    collapseMemory[cat.id] = next;          // 每部瀏覽器記住（登出後都記得）
+    saveCollapseMemory();
+    if(isAdmin){ cat.collapsed = next; save(); }  // admin 順便更新畀新訪客嘅預設
     render();
   }
   else if(role==="add-card" && isAdmin){
@@ -723,9 +851,16 @@ function openCardUrl(url){
 function makeSubpage(cardId){
   const card=findCard(cardId); if(!card) return;
   if(card.url && !confirm("呢張卡片已經有網址，確定覆蓋成新子頁面？")) return;
-  card.url = "?board=" + uid();     // 產生一個新板 id
-  render(); save();
-  toast("已建立子頁面，撳「進入 →」開始編輯");
+  askName("建立子頁面", "改個名（可留空，系統會自動命名）。呢個名亦會用喺網址。", card.title==="新卡片"?"":card.title, (name)=>{
+    const title = (name||"").trim() || "新頁面";
+    const id = uniqueBoardId(name ? slugify(name) : uid());
+    card.url = "?board=" + id;
+    if(!card.title || card.title==="新卡片") card.title = title;
+    regUpsert(id, title);
+    saveRegistry();
+    render(); save();
+    toast("已建立子頁面，撳「進入 →」開始編輯");
+  });
 }
 
 // 雙擊 → 進入編輯
@@ -807,6 +942,7 @@ headingEl.addEventListener("dblclick", ()=>{
     editing=false;
     state.title=headingEl.textContent.trim()||"Overview";
     document.title=state.title;
+    if(isSubBoard){ regUpsert(boardId, state.title); saveRegistry(); }  // 更新總覽名
     save();
   };
   headingEl.addEventListener("blur", commit);
@@ -831,9 +967,160 @@ document.getElementById("addCatBtn").addEventListener("click", ()=>{
 });
 
 /* ============================================================
-   刪除卡片 modal（確認先刪，防止手殘）
+   命名 / 改名 modal（可重用）
    ============================================================ */
-let cardDelTarget=null;
+const nameModal=document.getElementById("nameModal");
+const nameInput=document.getElementById("nameInput");
+let nameCb=null;
+function askName(title, hint, defVal, cb){
+  document.getElementById("nameTitle").textContent=title;
+  document.getElementById("nameHint").textContent=hint||"";
+  nameInput.value=defVal||"";
+  nameCb=cb;
+  nameModal.classList.add("on");
+  setTimeout(()=>{ nameInput.focus(); nameInput.select(); },30);
+}
+function closeName(){ nameModal.classList.remove("on"); nameCb=null; }
+document.getElementById("nameOk").addEventListener("click", ()=>{
+  const v=nameInput.value; const cb=nameCb; closeName(); if(cb) cb(v);
+});
+document.getElementById("nameCancel").addEventListener("click", closeName);
+nameModal.addEventListener("click", e=>{ if(e.target===nameModal) closeName(); });
+nameInput.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){ e.preventDefault(); document.getElementById("nameOk").click(); }
+  if(e.key==="Escape"){ closeName(); }
+});
+
+/* ============================================================
+   子頁面總覽 dashboard（管理員專用）
+   ============================================================ */
+const pagesModal=document.getElementById("pagesModal");
+const pagesList=document.getElementById("pagesList");
+document.getElementById("pagesBtn").addEventListener("click", async ()=>{
+  if(!isAdmin) return;
+  await loadRegistry();
+  renderPagesList();
+  pagesModal.classList.add("on");
+});
+document.getElementById("pagesClose").addEventListener("click", ()=> pagesModal.classList.remove("on"));
+pagesModal.addEventListener("click", e=>{ if(e.target===pagesModal) pagesModal.classList.remove("on"); });
+
+function renderPagesList(){
+  pagesList.innerHTML="";
+  if(!registry.pages.length){
+    pagesList.innerHTML=`<div class="pages-empty">仲未有子頁面。喺任何卡片撳「🗂 建立子頁面」就會加入呢度。</div>`;
+    return;
+  }
+  registry.pages.forEach(p=>{
+    const row=document.createElement("div");
+    row.className="page-row";
+    row.innerHTML=`
+      <div>
+        <div class="p-name">${escapeHtml(p.title||"未命名")}</div>
+        <div class="p-id">?board=${escapeHtml(p.id)}</div>
+      </div>
+      <div class="p-spacer"></div>
+      <button class="mini" data-act="enter">進入 →</button>
+      <button class="mini" data-act="rename">改名</button>
+      <button class="mini danger" data-act="del">刪除</button>
+    `;
+    row.querySelector('[data-act="enter"]').onclick=()=>{ location.href="index.html?board="+p.id; };
+    row.querySelector('[data-act="rename"]').onclick=()=> renamePage(p);
+    row.querySelector('[data-act="del"]').onclick=()=> deletePage(p);
+    pagesList.appendChild(row);
+  });
+}
+function renamePage(p){
+  askName("改名子頁面", "呢個名會同時改到子頁面自己嘅標題。", p.title, async (name)=>{
+    const t=(name||"").trim(); if(!t) return;
+    p.title=t; regUpsert(p.id, t); await saveRegistry();
+    // 同步更新該子頁面自己嘅標題
+    try{
+      if(LOCAL_MODE){
+        const k="overview_data_"+p.id;
+        let d={}; try{ d=JSON.parse(safeGet(k))||emptyBoard(); }catch(e){ d=emptyBoard(); }
+        d.title=t; safeSet(k, JSON.stringify(d));
+      }else{
+        const s=await fb.dbMod.getDoc(fb.boardRef(p.id));
+        const d=s.exists()?s.data():emptyBoard(); d.title=t;
+        await fb.dbMod.setDoc(fb.boardRef(p.id), d);
+      }
+    }catch(e){ console.warn("rename sync", e); }
+    renderPagesList(); toast("已改名");
+  });
+}
+function deletePage(p){
+  if(!confirm(`刪除子頁面「${p.title||p.id}」？\n入面所有卡片會一齊消失（連去佢嘅卡片會變成死連結，要自己再刪）。`)) return;
+  (async ()=>{
+    regRemove(p.id); await saveRegistry();
+    try{
+      if(LOCAL_MODE){ localStorage.removeItem("overview_data_"+p.id); }
+      else{ await fb.dbMod.deleteDoc(fb.boardRef(p.id)); }
+    }catch(e){ console.warn("del page", e); }
+    renderPagesList(); toast("已刪除子頁面");
+  })();
+}
+
+/* ============================================================
+   使用說明（? icon）— 訪客 / 管理員唔同版本
+   ============================================================ */
+const helpModal=document.getElementById("helpModal");
+const helpBtn=document.getElementById("helpBtn");
+const forceDoubleChk=document.getElementById("forceDoubleChk");
+forceDoubleChk.checked=forceDoubleMobile;
+forceDoubleChk.addEventListener("change", ()=>{
+  forceDoubleMobile=forceDoubleChk.checked;
+  safeSet("overview_force_double", forceDoubleMobile?"1":"0");
+  applyLayout();
+});
+
+const HELP_GUEST = `
+  <p>歡迎！呢版係一個連結總覽板。你可以咁樣用：</p>
+  <h4>睇 / 搵</h4>
+  <ul>
+    <li><b>撳卡片</b> → 直接去到嗰個連結。</li>
+    <li><b>撳分類個 ▾</b> → 展開或收起，慳位。</li>
+    <li><b>搜尋</b>：撳右上 🔍 或者 <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>F</kbd>，收埋咗嘅卡片都搵得到。</li>
+    <li><b>單排 / 雙排</b>：撳「▤ 單排」切換，雙排一次過睇多啲（手機預設單排）。</li>
+  </ul>
+  <h4>想編輯？</h4>
+  <ul><li>要有管理員 Gmail 先可以改嘢。撳右上「Google 登入」用管理員帳號登入。</li></ul>
+`;
+const HELP_ADMIN = `
+  <p>你已登入做管理員，改乜都會<b>自動儲存</b>（右下角會閃「已儲存」）。</p>
+  <h4>標題 / 卡片</h4>
+  <ul>
+    <li><b>雙擊</b>頂部標題、卡片標題或描述 → 即場改字，撳去空白處就存。</li>
+    <li>卡片入面有<b>網址欄</b>：貼 <kbd>https://…</kbd> 或站內檔案 <kbd>pages/xxx.html</kbd>。</li>
+    <li><b>＋ 新增卡片</b>喺分類底；卡片右上 <b>✕</b> 刪除（會問你確認）。</li>
+    <li>拖卡片左上 <b>⋮⋮</b> → 上下移，或者拖去<b>另一個分類</b>（顏色自動跟新分類）。</li>
+  </ul>
+  <h4>分類</h4>
+  <ul>
+    <li><b>＋ 分類</b>新增；分類標題有<b>色板</b>可改色（卡片跟大分類色，淺色系）。</li>
+    <li>拖分類個 <b>⋮⋮</b> → 排上下，入面卡片跟住郁。</li>
+    <li>刪分類會問你：卡片一齊刪，定係留返去「未分類」。「未分類」永遠喺最底，冇得刪。</li>
+  </ul>
+  <h4>子頁面（好正！）</h4>
+  <ul>
+    <li>任何卡片撳 <b>🗂 建立子頁面</b> → 開一個一模一樣、有卡片功能嘅新頁，可以自己改名。</li>
+    <li>撳 <b>進入 →</b> 入去編輯；左上 <b>←</b> 返主頁。</li>
+    <li>右上 <b>🗂 頁面</b> = 所有子頁面總覽，一撳就跳入去（管理員專用）。</li>
+  </ul>
+  <h4>備份</h4>
+  <ul><li><b>匯出</b>成 JSON 存落電腦；<b>匯入</b>可覆蓋或合併。</li></ul>
+`;
+function openHelp(){
+  document.getElementById("helpTitle").textContent = isAdmin ? "使用說明（管理員）" : "使用說明（訪客）";
+  document.getElementById("helpBody").innerHTML = isAdmin ? HELP_ADMIN : HELP_GUEST;
+  forceDoubleChk.checked = forceDoubleMobile;
+  helpModal.classList.add("on");
+}
+helpBtn.addEventListener("click", openHelp);
+document.getElementById("helpClose").addEventListener("click", ()=> helpModal.classList.remove("on"));
+helpModal.addEventListener("click", e=>{ if(e.target===helpModal) helpModal.classList.remove("on"); });
+
+
 const cardDelModal=document.getElementById("cardDelModal");
 function openCardDeleteModal(catId, cardId){
   const card=findCard(cardId); if(!card) return;
@@ -963,21 +1250,37 @@ function paintAuthUI(){
 if(LOCAL_MODE){
   modeNote.classList.add("on");
   loginBtn.textContent="示範登入（本機管理員）";
-  loginBtn.addEventListener("click", ()=>{
+  loginBtn.addEventListener("click", async ()=>{
     currentUser={email:"demo@local", photo:""}; isAdmin=true;
     paintAuthUI(); render();
+    if(isSubBoard){
+      await loadRegistry();
+      if(!registry.pages.find(p=>p.id===boardId)){ regUpsert(boardId, state.title||boardId); saveRegistry(); }
+    }
   });
   logoutBtn.addEventListener("click", ()=>{
     currentUser=null; isAdmin=false; paintAuthUI(); render();
   });
 }else{
   const {authMod, auth}=fb;
+  const provider = ()=> new authMod.GoogleAuthProvider();
   loginBtn.addEventListener("click", async ()=>{
-    try{ await authMod.signInWithPopup(auth, new authMod.GoogleAuthProvider()); }
-    catch(e){ toast("登入失敗"); console.warn(e); }
+    try{
+      await authMod.signInWithPopup(auth, provider());
+    }catch(e){
+      console.warn("login error:", e.code, e.message);
+      // 彈窗被擋 / 環境唔支援 → 改用整頁跳轉方式再試
+      if(e.code==="auth/popup-blocked" || e.code==="auth/popup-closed-by-user" ||
+         e.code==="auth/cancelled-popup-request" || e.code==="auth/operation-not-supported-in-this-environment"){
+        try{ await authMod.signInWithRedirect(auth, provider()); return; }catch(e2){ console.warn(e2); }
+      }
+      toast("登入失敗：" + (e.code||e.message||""));
+    }
   });
   logoutBtn.addEventListener("click", ()=> authMod.signOut(auth));
-  authMod.onAuthStateChanged(auth, user=>{
+  // 處理 redirect 方式返嚟嘅結果（順便顯示錯誤）
+  authMod.getRedirectResult(auth).catch(e=> console.warn("redirect result:", e.code));
+  authMod.onAuthStateChanged(auth, async user=>{
     if(user){
       currentUser={email:user.email, photo:user.photoURL};
       isAdmin=ADMIN_EMAILS.map(x=>x.toLowerCase()).includes((user.email||"").toLowerCase());
@@ -985,6 +1288,13 @@ if(LOCAL_MODE){
       currentUser=null; isAdmin=false;
     }
     paintAuthUI(); render();
+    // 管理員入到未登記嘅子頁面 → 自動加入總覽
+    if(isAdmin && isSubBoard){
+      await loadRegistry();
+      if(!registry.pages.find(p=>p.id===boardId)){
+        regUpsert(boardId, state.title || boardId); saveRegistry();
+      }
+    }
   });
 }
 
@@ -1002,6 +1312,7 @@ if(isSubBoard){
    11) 啟動
    ============================================================ */
 await loadData();
+await loadRegistry();
 paintAuthUI();
 render();
 startRealtime();   // 開啟實時同步
