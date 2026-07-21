@@ -1100,6 +1100,11 @@ const HELP_ADMIN = `
     <li>撳 <b>進入 →</b> 入去編輯；左上 <b>←</b> 返主頁。</li>
     <li>右上 <b>🗂 頁面</b> = 所有子頁面總覽，一撳就跳入去（管理員專用）。</li>
   </ul>
+  <h4>訪客預覽</h4>
+  <ul>
+    <li>撳右上 <b>👁 訪客預覽</b> → 唔使登出都可以扮訪客，撳卡片會直接開網址、編輯掣全部收起。</li>
+    <li>想改返嘢，撳返轉頭嗰粒 <b>✏️ 返回編輯</b>（藍色掣）即可。右上會顯示「管理員（預覽中）」。</li>
+  </ul>
   <h4>備份</h4>
   <ul><li><b>匯出</b>成 JSON 存落電腦；<b>匯入</b>可覆蓋或合併。</li></ul>
 `;
@@ -1234,12 +1239,15 @@ const previewBtn=document.getElementById("previewBtn");
 function updatePreviewBtn(){
   previewBtn.style.display = isAdmin ? "inline-flex" : "none";
   previewBtn.textContent = previewMode ? "✏️ 返回編輯" : "👁 訪客預覽";
+  // 預覽時用實色掣（藍底白字），編輯時用淡色掣；唔可以兩個 class 疊住，
+  // 否則 .ghost 會蓋走底色淨返白字，變成睇唔到。
   previewBtn.classList.toggle("primary", previewMode);
+  previewBtn.classList.toggle("ghost", !previewMode);
 }
 previewBtn.addEventListener("click", ()=>{
   if(!isAdmin) return;
   previewMode = !previewMode;
-  updatePreviewBtn();
+  paintAuthUI();   // 同時更新掣同右上「管理員（預覽中）」標示
   render();
   toast(previewMode ? "訪客預覽中，撳卡片會開網址" : "已返回編輯模式");
 });
@@ -1296,6 +1304,11 @@ if(LOCAL_MODE){
     if(user){
       currentUser={email:user.email, photo:user.photoURL};
       isAdmin=ADMIN_EMAILS.map(x=>x.toLowerCase()).includes((user.email||"").toLowerCase());
+      if(!isAdmin){
+        // 診斷：已登入但唔喺管理員名單 → 會被當訪客
+        console.warn("已登入：" + user.email + "，但唔喺 ADMIN_EMAILS 名單：", ADMIN_EMAILS);
+        toast("已登入 " + (user.email||"") + "，但唔喺管理員名單");
+      }
     }else{
       currentUser=null; isAdmin=false;
     }
