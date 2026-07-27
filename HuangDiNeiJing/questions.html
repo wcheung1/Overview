@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《黃帝內經 · 素問》前五篇跨章綜合問題</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --fg: #2c2c2c;
+    --accent: #8b4513;
+    --accent-dark: #5c2e0c;
+    --green: #4a7c59;
+    --critical: #b03a2e;
+    --border: #d4c5a9;
+    --card-bg: #ffffff;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Noto Serif TC", "Source Han Serif", "PingFang TC", "Microsoft JhengHei", serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.8;
+    margin: 0;
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    border-bottom: 2px double var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 0.15em;
+  }
+  header .subtitle {
+    font-size: 0.95rem;
+    color: #6b6b6b;
+  }
+  .intro {
+    background: var(--card-bg);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow);
+    font-size: 0.98rem;
+  }
+  .intro strong { color: var(--accent-dark); }
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin: 1rem 0 1.5rem 0;
+    font-size: 0.88rem;
+    justify-content: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .legend-box {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #999;
+    display: inline-block;
+  }
+  .q-card {
+    background: var(--card-bg);
+    margin: 1.2rem 0;
+    padding: 1.2rem 1.5rem;
+    box-shadow: var(--shadow);
+    border-radius: 4px;
+    border-left: 4px solid var(--green);
+  }
+  .q-card.critical {
+    border-left-color: var(--critical);
+    background: #fdf5f4;
+  }
+  .q-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .q-num {
+    background: var(--green);
+    color: #fff;
+    padding: 0.15rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: "Consolas", monospace;
+  }
+  .q-card.critical .q-num {
+    background: var(--critical);
+  }
+  .q-tag {
+    font-size: 0.78rem;
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: #6b6b6b;
+    background: #faf7f0;
+  }
+  .q-card.critical .q-tag {
+    border-color: var(--critical);
+    color: var(--critical);
+    background: #fcebe9;
+  }
+  .q-question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin: 0.5rem 0 0.8rem 0;
+    line-height: 1.6;
+  }
+  .q-source {
+    font-size: 0.82rem;
+    color: #888;
+    margin-bottom: 0.8rem;
+    font-style: italic;
+  }
+  details {
+    background: #fafaf3;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
+  }
+  details[open] {
+    background: #fdfdf8;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 0.3rem 0;
+    user-select: none;
+  }
+  summary:hover { color: var(--accent-dark); }
+  .answer {
+    padding-top: 0.8rem;
+    border-top: 1px dashed var(--border);
+    margin-top: 0.5rem;
+  }
+  .answer p { margin: 0.5rem 0; }
+  .answer .src {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    padding: 0.05rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    font-family: "Consolas", monospace;
+    margin: 0 0.1rem;
+  }
+  .answer .warning {
+    background: #fdf6e3;
+    border-left: 3px solid var(--critical);
+    padding: 0.5rem 0.8rem;
+    margin: 0.6rem 0;
+    font-size: 0.92rem;
+    border-radius: 2px;
+  }
+  .answer ul {
+    margin: 0.4rem 0;
+    padding-left: 1.5rem;
+  }
+  .answer li { margin: 0.3rem 0; }
+  footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: #888;
+  }
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent);
+  }
+  footer a:hover { border-bottom-style: solid; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>《黃帝內經 · 素問》前五篇跨章綜合問題</h1>
+  <div class="subtitle">10 條綜合題｜含 3 條批判性問題｜點擊題目展開答案</div>
+</header>
+
+<div class="intro">
+  <strong>點用呢頁：</strong>下面 10 條問題分兩組——頭 7 條係跨章綜合題，考你能否打通前五篇嘅邏輯；後 3 條係<strong>批判性問題</strong>，要求你跳出《內經》框架，用現代醫學同邏輯學嘅角度去檢視呢套二千年嘅醫理。每條問題下面都有用 <code><details></code> 折疊嘅參考答案，諗完先好撳開。
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-box" style="background:#4a7c59;"></span>綜合題（7 條）</div>
+  <div class="legend-item"><span class="legend-box" style="background:#b03a2e;"></span>批判性問題（3 條）</div>
+</div>
+
+<!-- ============ Q1 ============ -->
+<div class="q-card">
+  <div class="q-header">
+    <span class="q-num">Q1</span>
+    <span class="q-tag">整合題 · 理論閉環</span>
+  </div>
+  <div class="q-question">《上古天真論》話要「法於陰陽」，《陰陽應象大論》又話「陰陽者，天地之道」——呢兩句喺全書理論結構上係咩關係？係咪只係重複講緊同一樣嘢？</div>
+  <div class="q-source">涉及：SW_01 上古天真論｜SW_05 陰陽應象大論</div>
+  <details>
+    <summary>展開參考答案</summary>
+    <div class="answer">
+      <p><strong>唔係重複，而係「綱領」同「總綱」嘅首尾呼應。</strong></p>
+      <p><span class="src">SW_01</span>「法於陰陽」係<strong>養生實踐嘅行動綱領</strong>——話俾人聽「你應該點做」。佢出現喺全書開頭，建立咗「養生必須順應陰陽」嘅大方向，但無詳細解釋陰陽到底係咩。</p>
+      <p><span class="src">SW_05</span>「陰陽者，天地之道」係<strong>理論嘅終極總綱</strong>——話俾人聽「點解要咁做」。佢將陰陽提升到「宇宙根本規律」嘅高度，解釋咗養生之所以要「法於陰陽」嘅本體論依據。</p>
+      <p>兩者形成理論閉環：<strong>SW_01 提出「要做」，SW_05 解釋「點解要做」</strong>。呢個「首尾呼應」正係《內經》前五篇結構嘅精妙——讀者讀到最後一篇，先真正明白第一篇嗰句「法於陰陽」有幾重的分量。</p>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q2 ============ -->
+<div class="q-card">
+  <div class="q-header">
+    <span class="q-num">Q2</span>
+    <span class="q-tag">對比題 · 養陽觀念</span>
+  </div>
+  <div class="q-question">《四氣調神大論》講「春夏養陽」，《生氣通天論》又話「陽氣者，若天與日」——兩篇都強調陽氣，佢哋嘅「養陽觀」有咩唔同？</div>
+  <div class="q-source">涉及：SW_02 四氣調神大論｜SW_03 生氣通天論</div>
+  <details>
+    <summary>展開參考答案</summary>
+    <div class="answer">
+      <p>兩篇都重視陽氣，但<strong>切入維度完全唔同</strong>：</p>
+      <ul>
+        <li><strong><span class="src">SW_02</span> 係「時間維度」嘅養陽</strong>：陽氣要跟四季節律走——春夏養陽（順勢補）、秋冬養陰（為來年儲備）。重點係「順時」，係外部節律。</li>
+        <li><strong><span class="src">SW_03</span> 係「生理維度」嘅養陽</strong>：陽氣係生命主導，好似天上的太陽。重點係「護衛」——避免「煩勞則張」（過度消耗）同「四邪」侵襲，係內在保護。</li>
+      </ul>
+      <p>簡單講：<strong>SW_02 講「幾時養」，SW_03 講「點解要養同埋點樣護」</strong>。兩者結合先完整——你既要跟季節節奏，又要理解陽氣本身的生理機理，先唔會盲從。</p>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q3 ============ -->
+<div class="q-card">
+  <div class="q-header">
+    <span class="q-num">Q3</span>
+    <span class="q-tag">應用題 · 系統整合</span>
+  </div>
+  <div class="q-question">《金匱真言論》嗰張「五臟應四方四時五行」對應表，點樣幫我哋理解《四氣調神大論》嘅四季養生？冇咗呢張表會點？</div>
+  <div class="q-source">涉及：SW_02 四氣調神大論｜SW_04 金匱真言論</div>
+  <details>
+    <summary>展開參考答案</summary>
+    <div class="answer">
+      <p><strong>冇咗呢張表，四季養生就只係「行為指引」，有咗呢張表先變成「系統理論」。</strong></p>
+      <p><span class="src">SW_02</span> 話你知「春三月要夜訓早起、散步放鬆」，但冇解釋點解。讀完可能會問：「點解春天一定要對應肝？點解唔係對應心？」</p>
+      <p><span class="src">SW_04</span> 嘅五行對應表補咗呢個缺口——佢建立咗「春→木→肝→東→生」嘅完整對應鏈，令 SW_02 嘅養生建議唔再係孤立的規則，而係嵌入咗一個「天—地—人」對應網絡。你知道「春天養肝」唔係隨意配對，而係基於「春季陽氣生發 ↔ 肝主疏泄」嘅內在聯繫。</p>
+      <p>冇咗呢張表，SW_02 會淪為一本「養生 tips 清單」；有咗佢，先成為「有理論基礎的養生系統」。</p>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q4 ============ -->
+<div class="q-card">
+  <div class="q-header">
+    <span class="q-num">Q4</span>
+    <span class="q-tag">追溯題 · 層次對應</span>
+  </div>
+  <div class="q-question">《上古天真論》將養生者分成「真人、至人、聖人、賢人」四境界，《陰陽應象大論》又講「壯火食氣，少火生氣」——呢兩套分層有冇對應關係？你覺得邊個境界最符合「少火」原則？</div>
+  <div class="q-source">涉及：SW_01 上古天真論｜SW_05 陰陽應象大論</div>
+  <details>
+    <summary>展開參考答案</summary>
+    <div class="answer">
+      <p><strong>有對應關係，而且揭示咗《內經》養生觀嘅核心價值：溫和勝於激烈。</strong></p>
+      <ul>
+        <li><strong>真人／至人</strong>（最高境界）：完全「把握陰陽」，已超越「火」嘅層次，同天地同壽。</li>
+        <li><strong>聖人</strong>：「適嗜欲」，符合「少火生氣」——溫和、克制、唔過度。呢個係<strong>普通人最現實可達嘅理想境界</strong>。</li>
+        <li><strong>賢人</strong>：「法則天地」，仍需努力遵循規律，偶有偏差。</li>
+        <li><strong>「壯火」狀態</strong>（反面）：對應放縱欲望、過度勞累嘅人，即 SW_01 所講「以酒為漿，以妄為常」嘅「半百而衰」者。</li>
+      </ul>
+      <p>所以「少火」對應嘅係<strong>聖人境界</strong>——唔係最高，但係最務實。呢個呼應住《內經》一個潛在訊息：真正嘅養生智慧唔係追求極端，而係「中庸溫和」。</p>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q5 ============ -->
+<div class="q-card">
+  <div class="q-header">
+    <span class="q-num">Q5</span>
+    <span class="q-tag">整合題 · 病因與預防</span>
+  </div>
+  <div class="q-question">《四氣調神大論》話「不治已病，治未病」，《生氣通天論》就詳細列舉「風寒暑濕」四邪同「酸傷脾」等五味之害——呢兩篇喺「預防醫學」上係咩關係？</div>
+  <div class="q-source">涉及：SW_02 四氣調神大論｜SW_03 生氣通天論</div>
+  <details>
+    <summary>展開參考答案</summary>
+    <div class="answer">
+      <p><strong>一個講「原則」，一個講「具體敵人」，兩者係預防策略嘅兩面。</strong></p>
+      <p><span class="src">SW_02</span>「治未病」係<strong>預防嘅總原則</strong>——提出「最好嘅治療係未病先防」呢個理念，但冇具體講要防咩。</p>
+      <p><span class="src">SW_03</span> 嘅「四邪五味」就係<strong>具體嘅「敵人清單」</strong>——話你知原來風、寒、暑、濕會傷陽氣，過酸會傷脾，過鹹會傷骨。冇呢個清單，「治未病」只係空話。</p>
+      <p>兩者結合：SW_02 提供「為咩要防」嘅動機，SW_03 提供「要防咩」嘅內容。呢個正係預防醫學嘅完整邏輯——<strong>理念 + 具體風險清單 = 可執行的預防方案</strong>。</p>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q6 ============ -->
+<div class="q-card">
+  <div class="q-header">
+    <span class="q-num">Q6</span>
+    <span class="q-tag">對比題 · 情志致病</span>
+  </div>
+  <div class="q-question">《生氣通天論》話「煩勞則張，精絕」會致病，《陰陽應象大論》就提出「怒傷肝、悲勝怒」嘅五志相勝——兩者對「情緒致病」嘅睇法有咩分別？</div>
+  <div class="q-source">涉及：SW_03 生氣通天論｜SW_05 陰陽應象大論</div>
+  <details>
+    <summary>展開參考答案</summary>
+    <div class="answer">
+      <p><strong>分別在於：SW_03 講「點解會病」，SW_05 講「點樣醫」。</strong></p>
+      <p><span class="src">SW_03</span>「煩勞則張」係<strong>病理機制</strong>——解釋情緒點樣破壞身體：過度煩勞會令陽氣亢奮（張），繼而精氣耗竭。重點係「避免」，係消極防禦。</p>
+      <p><span class="src">SW_05</span>「五志相勝」係<strong>治療方法</strong>——如果已經有情志病，可以用另一種情緒去平衡：悲勝怒、恐勝喜、怒勝思、喜勝憂、思勝恐。重點係「疏導」，係積極介入。</p>
+      <p>一個係「防火」，一個係「救火」。兩者結合先完整：平時避免「煩勞則張」，萬一病咗就用「五志相勝」疏導。<strong>《內經》對情志病嘅處理，已經有「預防＋治療」嘅現代醫學雙軌思維。</strong></p>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q7 ============ -->
+<div class="q-card">
+  <div class="q-header">
+    <span class="q-num">Q7</span>
+    <span class="q-tag">應用題 · 現代養生方案</span>
+  </div>
+  <div class="q-question">如果要用前五篇嘅理論，設計一套畀現代都市人嘅日常養生方案，你會點整合五篇嘅智慧？請列出具體建議同對應章節。</div>
+  <div class="q-source">涉及：SW_01 至 SW_05（綜合應用）</div>
+  <details>
+    <summary>展開參考答案</summary>
+    <div class="answer">
+      <p><strong>整合方案（一天示例）：</strong></p>
+      <ul>
+        <li><strong>作息</strong>（<span class="src">SW_01</span> 起居有常 + <span class="src">SW_02</span> 順四時）：跟季節調整睡眠——春夏夜啲起身早啲，秋冬早啲瞓遲啲起身。唔好通宵打機。</li>
+        <li><strong>飲食</strong>（<span class="src">SW_03</span> 四邪五味 + <span class="src">SW_05</span> 壯火少火）：飲食清淡，避免過酸過鹹；少食「壯火」之物（辛辣油炸令火亢奮），多食「少火」之物（溫和易消化）。</li>
+        <li><strong>運動</strong>（<span class="src">SW_05</span> 壯火食氣）：適量運動，唔好過度——過度運動反而耗氣。行山、太極等溫和運動最符合「少火生氣」。</li>
+        <li><strong>情緒管理</strong>（<span class="src">SW_03</span> 煩勞則張 + <span class="src">SW_05</span> 五志相勝）：避免長期高壓；嬲到爆時，嘗試用「悲」去平衡（例如諗啲令人平靜感傷嘅嘢）。</li>
+        <li><strong>環境</strong>（<span class="src">SW_03</span> 風寒暑濕 + <span class="src">SW_04</span> 五方對應）：避免冷氣直吹（風邪）、久坐濕地（濕邪）；春秋兩季特別注意對應臟腑（春肝、秋肺）。</li>
+      </ul>
+      <p>核心原則：<strong>「少火」貫穿所有——溫和、克制、順應自然」</strong>，呢個正係 SW_01「聖人」境界嘅現代版。</p>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q8（批判性）============ -->
+<div class="q-card critical">
+  <div class="q-header">
+    <span class="q-num">Q8</span>
+    <span class="q-tag">批判性問題 · 邏輯脆弱點</span>
+  </div>
+  <div class="q-question">《內經》成個理論體系建立喺「陰陽」呢個二元對立嘅概念上面。但人體嘅生理病理真係可以用「陰／陽」二元去完整承載嗎？呢套二元論最脆弱嘅邏輯環節喺邊？有冇一啲現代醫學發現係陰陽理論根本解釋唔到嘅？</div>
+  <div class="q-source">涉及：SW_05 陰陽應象大論（陰陽總綱）｜SW_03 生氣通天論（陽氣主導）</div>
+  <details>
+    <summary>展開參考答案（含批判分析）</summary>
+    <div class="answer">
+      <p><strong>陰陽二元論有三個邏輯脆弱點：</strong></p>
+      <ul>
+        <li><strong>過度概括</strong>：將「寒熱、虛實、表裡、升降」等本來獨立嘅維度，全部壓縮入「陰／陽」二元。例如「寒」同「虛」都係「陰」，但兩者嘅病理機理完全唔同。呢個造成診斷上嘅模糊。</li>
+        <li><strong>缺乏量化標準</strong>：<span class="src">SW_05</span>「陽勝則熱，陰勝則寒」係對嘅，但「幾多為勝」？冇客觀標準。現代醫學用「體溫 37.5°C 以上為發燒」，但《內經》只能講「陽勝」，無法量化。</li>
+        <li><strong>解釋力嘅邊界</strong>：陰陽理論對「對立統一」嘅現象解釋得好（如交感神經 vs 副交感神經），但對<strong>多因素、非對立</strong>嘅現象解釋唔到。例如基因突變、病毒感染、微量元素缺乏——呢啲都唔係「陰陽失衡」，而係具體物質層面嘅問題。</li>
+      </ul>
+      <div class="warning">
+        <strong>平衡視角：</strong>陰陽理論嘅價值唔在於佢係「精確科學」，而在於佢係一個<strong>高度抽象嘅系統思維框架</strong>。正如現代系統生物學都強調「整體觀」，陰陽理論提早二千年提出咗類似思想。佢嘅局限係微觀精確性，但宏觀方向上仍有啟發價值。真正嘅批判唔係全盤否定，而係<strong>認清佢嘅適用邊界</strong>。
+      </div>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q9（批判性）============ -->
+<div class="q-card critical">
+  <div class="q-header">
+    <span class="q-num">Q9</span>
+    <span class="q-tag">批判性問題 · 理想 vs 實踐</span>
+  </div>
+  <div class="q-question">《四氣調神大論》話「聖人不治已病，治未病」——呢句聽落好理想，但喺實際臨床入面，「治未病」有咩根本性嘅困難？「治未病」同現代預防醫學之間，最大嘅落差喺邊？</div>
+  <div class="q-source">涉及：SW_02 四氣調神大論（治未病）｜SW_01 上古天真論（養生總則）</div>
+  <details>
+    <summary>展開參考答案（含批判分析）</summary>
+    <div class="answer">
+      <p><strong>「治未病」嘅三個根本困難：</strong></p>
+      <ul>
+        <li><strong>「未病」定義模糊</strong>：幾時算「未病」？<span class="src">SW_02</span> 冇講。現代醫學有「亞健康」、「潛伏期」等清晰界定，但《內經》只能靠主觀判斷，容易淪為空話。</li>
+        <li><strong>激勵機制缺失</strong>：治未病嘅效果係「冇病發生」——但病人感受唔到「冇病」係療效。冇即時回饋，病人難堅持。呢個係古今共同嘅難題。</li>
+        <li><strong>過度醫療風險</strong>：如果對「未病」狀態過度干預，反而可能製造新問題。現代預防醫學都有呢個問題（例如過度篩查、過度用藥）。</li>
+      </ul>
+      <p><strong>同現代預防醫學嘅最大落差：</strong>現代預防醫學建基於<strong>統計學同流行病學</strong>（例如「戒煙可降低肺癌風險 80%」），有量化依據。而《內經》嘅「治未病」建基於<strong>哲學推論</strong>（順四時就會健康），缺乏實證支撐。呢個落差令《內經》嘅預防建議<strong>方向正確，但執行精度不足</strong>。</p>
+      <div class="warning">
+        <strong>平衡視角：</strong>《內經》提出「治未病」呢個理念本身已經係劃時代嘅突破——西方醫學直到 20 世紀先真正重視預防醫學。雖然佢嘅具體方法需要現代化，但「預防勝於治療」嘅核心思想，至今仍係公共衛生嘅金科玉律。
+      </div>
+    </div>
+  </details>
+</div>
+
+<!-- ============ Q10（批判性）============ -->
+<div class="q-card critical">
+  <div class="q-header">
+    <span class="q-num">Q10</span>
+    <span class="q-tag">批判性問題 · 古今對話</span>
+  </div>
+  <div class="q-question">《陰陽應象大論》話「壯火食氣，少火生氣」——即係過度亢奮會消耗能量。呢個二千年嘅假說，同現代醫學嘅發現係衝突定係印證？試用具體例子討論，並指出《內經》喺呢度有冇「講過龍」或者「講得啱」嘅地方。</div>
+  <div class="q-source">涉及：SW_05 陰陽應象大論（壯火少火）｜SW_03 生氣通天論（陽氣主導）</div>
+  <details>
+    <summary>展開參考答案（含批判分析）</summary>
+    <div class="answer">
+      <p><strong>「壯火食氣，少火生氣」同現代醫學既部分印證、又部分衝突：</strong></p>
+      <p><strong>印證嘅地方：</strong></p>
+      <ul>
+        <li><strong>氧化應激（Oxidative Stress）</strong>：現代醫學發現，過度活躍嘅代謝會產生大量自由基，破壞細胞。呢個同「壯火食氣」出奇地吻合——過度消耗＝能量（氣）被「食」掉。</li>
+        <li><strong>運動生理學</strong>：適量運動（少火）增強體能，極端運動（壯火，如馬拉松）反而令免疫力短暫下降、增加受傷風險。</li>
+        <li><strong>甲狀腺功能</strong>：甲亢（壯火）令代謝過旺，病人反而消瘦乏力——真係「食氣」。</li>
+      </ul>
+      <p><strong>衝突／講過龍嘅地方：</strong></p>
+      <ul>
+        <li><strong>將「火」過度道德化</strong>：<span class="src">SW_05</span> 暗示「壯火＝壞，少火＝好」，但現代醫學知道，適度嘅「火」（如發炎反應、急性應激）係身體必要嘅防禦機制。一味抑壓「火」反而不利。</li>
+        <li><strong>缺乏病理層次</strong>：《內經》將「火」籠統視之，但現代醫學區分「生理性發熱」（有益）同「病理性炎症」（有害）。呢個層次係《內經》冇嘅。</li>
+      </ul>
+      <div class="warning">
+        <strong>平衡視角：</strong>「壯火食氣」係《內經》最具現代科學對話潛力嘅命題之一。佢用「火」呢個意象捕捉咗「過度消耗能量」嘅普遍規律，雖然具體機制唔夠精確，但<strong>直覺方向同現代生理學驚人地一致</strong>。呢個正係點解《內經》唔可以當佢係過時古董——佢嘅洞察力，往往超前咗佢嘅技術水平。
+      </div>
+    </div>
+  </details>
+</div>
+
+<footer>
+  《黃帝內經 · 素問》前五篇跨章綜合問題｜STAGE-2 階段 3 任務 B 輸出<br/>
+  <a href="00-map.html">← 上一頁：全書論證地圖</a>
+</footer>
+
+</body>
+</html>

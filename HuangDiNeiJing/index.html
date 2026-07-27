@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《黃帝內經 · 素問》前五篇閱讀系統</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --fg: #2c2c2c;
+    --accent: #8b4513;
+    --accent-dark: #5c2e0c;
+    --accent-light: #d4b896;
+    --green: #4a7c59;
+    --green-light: #e8f0ea;
+    --border: #d4c5a9;
+    --card-bg: #ffffff;
+    --sidebar-bg: #f5efe0;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: "Noto Serif TC", "Source Han Serif", "PingFang TC", "Microsoft JhengHei", serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== Top Bar ===== */
+  .topbar {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    z-index: 10;
+  }
+  .topbar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+  .topbar-title small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.85;
+    display: block;
+    letter-spacing: 0.05em;
+    margin-top: 0.1rem;
+  }
+  .topbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .progress-display {
+    font-size: 0.88rem;
+    background: rgba(255,255,255,0.15);
+    padding: 0.35rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .progress-display strong { color: #ffd; }
+  .toggle-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .toggle-btn:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.7);
+  }
+  .toggle-btn.off {
+    background: rgba(0,0,0,0.25);
+    border-color: rgba(255,255,255,0.2);
+    opacity: 0.75;
+  }
+  .toggle-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffd54f;
+    box-shadow: 0 0 4px rgba(255,213,79,0.8);
+  }
+  .toggle-btn.off .toggle-dot {
+    background: #888;
+    box-shadow: none;
+  }
+
+  /* ===== Main Layout ===== */
+  .main-layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    width: 300px;
+    min-width: 300px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 1rem 0;
+  }
+  .sidebar-section {
+    margin-bottom: 1rem;
+  }
+  .sidebar-section-title {
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.3rem 1.2rem;
+    margin-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+    color: var(--fg);
+  }
+  .nav-item:hover {
+    background: var(--green-light);
+    border-left-color: var(--green);
+  }
+  .nav-item.active {
+    background: var(--green-light);
+    border-left-color: var(--accent);
+    font-weight: 600;
+  }
+  .nav-item-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .nav-item-code {
+    font-family: "Consolas", monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    background: rgba(139,69,19,0.1);
+    padding: 0.05rem 0.35rem;
+    border-radius: 2px;
+    margin-right: 0.3rem;
+  }
+  .nav-item-title {
+    font-size: 0.92rem;
+    color: var(--fg);
+    display: block;
+    line-height: 1.4;
+  }
+  .nav-item-subtitle {
+    font-size: 0.78rem;
+    color: #888;
+    display: block;
+    margin-top: 0.1rem;
+  }
+  .nav-item.active .nav-item-title { color: var(--accent-dark); }
+
+  /* Read checkbox */
+  .read-checkbox {
+    margin-top: 0.2rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--green);
+  }
+  .read-checkbox-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #999;
+  }
+  .read-checkbox-label {
+    margin-top: 0.1rem;
+    font-size: 0.65rem;
+    line-height: 1;
+  }
+
+  /* Nav items without checkbox (map/questions) */
+  .nav-item.no-checkbox .read-checkbox-wrap { display: none; }
+
+  /* ===== Content Area ===== */
+  .content-area {
+    flex: 1;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+  }
+  #content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+  .loading-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 0.95rem;
+    z-index: 5;
+  }
+  .loading-overlay.show { display: flex; }
+
+  /* ===== Mobile ===== */
+  .mobile-toggle {
+    display: none;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 768px) {
+    .sidebar {
+      position: absolute;
+      left: -300px;
+      top: 0;
+      bottom: 0;
+      z-index: 20;
+      transition: left 0.25s;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    }
+    .sidebar.open { left: 0; }
+    .mobile-toggle { display: block; }
+    .topbar-title { font-size: 1rem; }
+    .topbar-title small { display: none; }
+  }
+
+  /* ===== Reset Progress Button ===== */
+  .reset-btn {
+    display: block;
+    margin: 1rem auto 0.5rem;
+    padding: 0.3rem 0.8rem;
+    background: transparent;
+    border: 1px dashed #c9a96e;
+    color: #b03a2e;
+    font-size: 0.78rem;
+    cursor: pointer;
+    border-radius: 3px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover {
+    background: #fdf5f4;
+    border-style: solid;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Top Bar ===== -->
+<div class="topbar">
+  <div style="display:flex; align-items:center; gap:0.8rem;">
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰ 目錄</button>
+    <div class="topbar-title">
+      《黃帝內經 · 素問》前五篇閱讀系統
+      <small>STAGE-2 階段 4｜Vanilla HTML/CSS/JS｜無外部依賴</small>
+    </div>
+  </div>
+  <div class="topbar-controls">
+    <div class="progress-display">已讀進度：<strong id="progress-text">0 / 5</strong></div>
+    <button class="toggle-btn" id="highlight-toggle" onclick="toggleHighlight()" title="隱藏／顯示內文 Highlight">
+      <span class="toggle-dot"></span>
+      <span id="highlight-label">Highlight：開</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== Main Layout ===== -->
+<div class="main-layout">
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">全書導覽</div>
+      <a class="nav-item no-checkbox active" data-target="00-map.html" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">MAP</span>
+          <span class="nav-item-title">全書論證地圖</span>
+          <span class="nav-item-subtitle">主張 → 分論點 → 證據</span>
+        </div>
+      </a>
+      <a class="nav-item no-checkbox" data-target="questions.html" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">Q&A</span>
+          <span class="nav-item-title">跨章綜合問題</span>
+          <span class="nav-item-subtitle">10 題（含 3 條批判性）</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">章節閱讀</div>
+
+      <a class="nav-item" data-target="chapters/SW_01_上古天真論.html" data-key="SW_01" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_01</span>
+          <span class="nav-item-title">養生總則與生命境界</span>
+          <span class="nav-item-subtitle">上古天真論｜法於陰陽·四境界</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_01" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_01 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_02_四氣調神大論.html" data-key="SW_02" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_02</span>
+          <span class="nav-item-title">四季養生大法</span>
+          <span class="nav-item-subtitle">四氣調神大論｜春夏養陽·治未病</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_02" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_02 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_03_生氣通天論.html" data-key="SW_03" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_03</span>
+          <span class="nav-item-title">陽氣與陰陽平衡</span>
+          <span class="nav-item-subtitle">生氣通天論｜陽氣若天·四邪五味</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_03" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_03 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_04_金匱真言論.html" data-key="SW_04" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_04</span>
+          <span class="nav-item-title">五行對應系統</span>
+          <span class="nav-item-subtitle">金匱真言論｜八風·五臟對應表</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_04" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_04 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_05_陰陽應象大論.html" data-key="SW_05" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_05</span>
+          <span class="nav-item-title">陰陽總綱與治病大法</span>
+          <span class="nav-item-subtitle">陰陽應象大論｜壯火少火·五志相勝</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_05" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_05 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+    </div>
+
+    <button class="reset-btn" onclick="resetProgress()">清除所有已讀記錄</button>
+  </nav>
+
+  <!-- Content Area -->
+  <main class="content-area">
+    <div class="loading-overlay" id="loading">載入中…</div>
+    <iframe id="content-frame" src="00-map.html" title="章節內容" onload="onFrameLoad()"></iframe>
+  </main>
+
+</div>
+
+<script>
+  // ===== 讀取狀態管理（localStorage）=====
+  const STORAGE_PREFIX = 'hdnj_read_';
+  const CHAPTER_KEYS = ['SW_01', 'SW_02', 'SW_03', 'SW_04', 'SW_05'];
+
+  function getReadState(key) {
+    return localStorage.getItem(STORAGE_PREFIX + key) === '1';
+  }
+  function setReadState(key, value) {
+    localStorage.setItem(STORAGE_PREFIX + key, value ? '1' : '0');
+  }
+
+  // 載入時還原 checkbox 狀態
+  function restoreReadStates() {
+    document.querySelectorAll('.read-checkbox').forEach(cb => {
+      cb.checked = getReadState(cb.dataset.key);
+    });
+    updateProgressDisplay();
+  }
+
+  function saveReadState(checkbox) {
+    setReadState(checkbox.dataset.key, checkbox.checked);
+    updateProgressDisplay();
+  }
+
+  function updateProgressDisplay() {
+    let count = 0;
+    CHAPTER_KEYS.forEach(k => { if (getReadState(k)) count++; });
+    document.getElementById('progress-text').textContent = count + ' / 5';
+  }
+
+  function resetProgress() {
+    if (!confirm('確定要清除所有已讀記錄嗎？')) return;
+    CHAPTER_KEYS.forEach(k => localStorage.removeItem(STORAGE_PREFIX + k));
+    document.querySelectorAll('.read-checkbox').forEach(cb => cb.checked = false);
+    updateProgressDisplay();
+  }
+
+  // ===== 內容載入（iframe 動態切換）=====
+  function loadContent(navItem) {
+    // 切換 active 樣式
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    navItem.classList.add('active');
+
+    // 顯示 loading 並切換 iframe src
+    const target = navItem.dataset.target;
+    if (!target) return;
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('content-frame').src = target;
+
+    // 手機版自動收起側欄
+    if (window.innerWidth <= 768) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+  }
+
+  // iframe 載入完成後套用當前 Highlight 狀態
+  function onFrameLoad() {
+    document.getElementById('loading').classList.remove('show');
+    applyHighlightState();
+  }
+
+  // ===== Highlight 開關掣（postMessage 通知 iframe）=====
+  let highlightOn = true;
+
+  function toggleHighlight() {
+    highlightOn = !highlightOn;
+    updateHighlightButton();
+    applyHighlightState();
+  }
+
+  function updateHighlightButton() {
+    const btn = document.getElementById('highlight-toggle');
+    const label = document.getElementById('highlight-label');
+    if (highlightOn) {
+      btn.classList.remove('off');
+      label.textContent = 'Highlight：開';
+    } else {
+      btn.classList.add('off');
+      label.textContent = 'Highlight：關';
+    }
+  }
+
+  function applyHighlightState() {
+    const iframe = document.getElementById('content-frame');
+    try {
+      const win = iframe.contentWindow;
+      if (!win) return;
+      // 透過 postMessage 通知 iframe 內部切換 class（避開 local file:// 嘅 CORS 限制）
+      // 章節 HTML 內已由 inject_highlight_listener.py 插入對應嘅 message listener
+      win.postMessage({
+        type: 'toggle-highlight',
+        hide: !highlightOn
+      }, '*');
+    } catch (e) {
+      console.warn('無法發送 postMessage 到 iframe：', e.message);
+    }
+  }
+
+  // ===== 手機側欄開關 =====
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // ===== 鍵盤快捷鍵：H 切換 Highlight =====
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'h' || e.key === 'H') {
+      // 避免喺輸入框觸發
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      toggleHighlight();
+    }
+  });
+
+  // ===== 初始化 =====
+  restoreReadStates();
+</script>
+
+</body>
+</html>

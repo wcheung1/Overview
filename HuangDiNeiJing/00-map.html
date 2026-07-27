@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《黃帝內經 · 素問》前五篇論證地圖</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'base' });
+</script>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --fg: #2c2c2c;
+    --accent: #8b4513;
+    --accent-dark: #5c2e0c;
+    --green: #4a7c59;
+    --border: #d4c5a9;
+    --card-bg: #ffffff;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Noto Serif TC", "Source Han Serif", "PingFang TC", "Microsoft JhengHei", serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.8;
+    margin: 0;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    border-bottom: 2px double var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 0.15em;
+  }
+  header .subtitle {
+    font-size: 0.95rem;
+    color: #6b6b6b;
+  }
+  .intro {
+    background: var(--card-bg);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow);
+    font-size: 0.98rem;
+  }
+  .intro strong { color: var(--accent-dark); }
+  section {
+    background: var(--card-bg);
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border-radius: 4px;
+  }
+  section h2 {
+    font-size: 1.3rem;
+    color: var(--accent);
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+  }
+  .mermaid {
+    text-align: center;
+    background: #fff;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  .relation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.92rem;
+  }
+  .relation-table th,
+  .relation-table td {
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .relation-table th {
+    background: #f3ede0;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .relation-table tr:nth-child(even) td { background: #faf7f0; }
+  .ch-label {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    padding: 0.1rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-right: 0.3rem;
+    font-family: "Consolas", monospace;
+  }
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+    justify-content: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .legend-box {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #999;
+    display: inline-block;
+  }
+  .note {
+    background: #fdf6e3;
+    border: 1px dashed var(--border);
+    padding: 0.8rem 1rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: #5c4a1e;
+    border-radius: 4px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: #888;
+  }
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent);
+  }
+  footer a:hover { border-bottom-style: solid; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>《黃帝內經 · 素問》前五篇論證地圖</h1>
+  <div class="subtitle">主張 → 分論點 → 證據 三層結構｜含章節承接與呼應關係</div>
+</header>
+
+<div class="intro">
+  <strong>點用呢張圖：</strong>下圖以「人與天地陰陽相應」為全書總綱，將 SW_01 至 SW_05 五篇嘅核心主張按承接順序排列，再連去各篇嘅關鍵證據（原文原則）。圖下面嘅文字表格補充講解章節之間嘅呼應關係同邏輯層次。
+</div>
+
+<section>
+  <h2>一、全書論證地圖</h2>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-box" style="background:#8b4513;"></span>總綱層（主張）</div>
+    <div class="legend-item"><span class="legend-box" style="background:#4a7c59;"></span>分論點層（各篇核心）</div>
+    <div class="legend-item"><span class="legend-box" style="background:#fdf6e3;border-color:#c9a96e;"></span>證據層（關鍵原則／原文）</div>
+    <div class="legend-item"><span style="display:inline-block;width:24px;border-top:2px dotted #8b4513;"></span>章節承接（橫向呼應）</div>
+  </div>
+
+  <div class="mermaid">
+graph TD
+    %% ===== 總綱層 =====
+    ROOT["全書總綱<br/>人與天地陰陽相應<br/>養生治病之本"]
+
+    %% ===== 分論點層（5 章核心） =====
+    SW01["SW_01 上古天真論<br/>養生總則與四境界"]
+    SW02["SW_02 四氣調神大論<br/>四時養生大法"]
+    SW03["SW_03 生氣通天論<br/>陽氣主導與陰陽平衡"]
+    SW04["SW_04 金匱真言論<br/>五行對應系統"]
+    SW05["SW_05 陰陽應象大論<br/>陰陽總綱與治病大法"]
+
+    %% ===== 證據層（各篇關鍵原則／原文） =====
+    E01a["法於陰陽，和於術數"]
+    E01b["天癸至／竭：女七男八"]
+    E01c["真人·至人·聖人·賢人"]
+
+    E02a["春夏養陽，秋冬養陰"]
+    E02b["春生夏長秋收冬藏"]
+    E02c["逆四時之害"]
+    E02d["不治已病，治未病"]
+
+    E03a["陽氣者，若天與日"]
+    E03b["煩勞則張，精絕"]
+    E03c["四邪五味：風寒暑濕·酸傷脾"]
+
+    E04a["八風應四時五行"]
+    E04b["背為陽，腹為陰"]
+    E04c["五臟應四方四時"]
+
+    E05a["陰陽者，天地之道"]
+    E05b["壯火食氣，少火生氣"]
+    E05c["五志相勝：悲勝怒·恐勝喜"]
+    E05d["陽病治陰，陰病治陽"]
+
+    %% ===== 總綱 → 分論點（實線） =====
+    ROOT --> SW01
+    ROOT --> SW02
+    ROOT --> SW03
+    ROOT --> SW04
+    ROOT --> SW05
+
+    %% ===== 分論點 → 證據（實線） =====
+    SW01 --> E01a
+    SW01 --> E01b
+    SW01 --> E01c
+    SW02 --> E02a
+    SW02 --> E02b
+    SW02 --> E02c
+    SW02 --> E02d
+    SW03 --> E03a
+    SW03 --> E03b
+    SW03 --> E03c
+    SW04 --> E04a
+    SW04 --> E04b
+    SW04 --> E04c
+    SW05 --> E05a
+    SW05 --> E05b
+    SW05 --> E05c
+    SW05 --> E05d
+
+    %% ===== 章節承接（虛線，橫向呼應） =====
+    SW01 -. "總則落實到四季" .-> SW02
+    SW02 -. "四時需陽氣通天支撐" .-> SW03
+    SW03 -. "陰陽平衡擴展為五行" .-> SW04
+    SW04 -. "五行抽象回陰陽總綱" .-> SW05
+    SW05 -. "治病大法呼應養生總則" .-> SW01
+
+    %% ===== 樣式 =====
+    classDef root fill:#8b4513,color:#fff,stroke:#5c2e0c,stroke-width:2px,font-weight:bold;
+    classDef chapter fill:#4a7c59,color:#fff,stroke:#2d4d35,stroke-width:1.5px;
+    classDef evidence fill:#fdf6e3,color:#5c4a1e,stroke:#c9a96e,stroke-width:1px;
+
+    class ROOT root;
+    class SW01,SW02,SW03,SW04,SW05 chapter;
+    class E01a,E01b,E01c,E02a,E02b,E02c,E02d,E03a,E03b,E03c,E04a,E04b,E04c,E05a,E05b,E05c,E05d evidence;
+  </div>
+
+  <div class="note">
+    <strong>睇圖貼士：</strong>實線係「從屬關係」（總綱→分論點→證據），虛線係「承接關係」（前章為後章理論基礎）。留意 SW_05 最後用虛線返去 SW_01，形成「養生—治病」嘅理論閉環，呢個結構反映《內經》並非零散醫論，而係一個有機嘅理論體系。
+  </div>
+</section>
+
+<section>
+  <h2>二、章節承接與呼應關係</h2>
+  <table class="relation-table">
+    <thead>
+      <tr>
+        <th style="width:18%">由</th>
+        <th style="width:18%">承接／呼應去</th>
+        <th style="width:18%">關係性質</th>
+        <th>關鍵連結點</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="ch-label">SW_01</span>上古天真論</td>
+        <td><span class="ch-label">SW_02</span>四氣調神大論</td>
+        <td>總則 → 應用</td>
+        <td>「法於陰陽」嘅總綱，喺 SW_02 落實為「春夏養陽，秋冬養陰」嘅四季具體方法。養生唔再係抽象境界，而有咗時間表。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_02</span>四氣調神大論</td>
+        <td><span class="ch-label">SW_03</span>生氣通天論</td>
+        <td>行為 → 機理</td>
+        <td>SW_02 講「順四時」嘅具體做法，SW_03 解釋點解要順——因為「陽氣者若天與日」，四時養生本質上就係護養陽氣。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_03</span>生氣通天論</td>
+        <td><span class="ch-label">SW_04</span>金匱真言論</td>
+        <td>陰陽 → 五行</td>
+        <td>SW_03 嘅陰陽平衡理論，喺 SW_04 擴展為「五臟應四方四時」嘅五行對應系統，由二元對立變成多元網絡。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_04</span>金匱真言論</td>
+        <td><span class="ch-label">SW_05</span>陰陽應象大論</td>
+        <td>系統 → 總綱</td>
+        <td>SW_04 嘅五行對應再往上抽象，回到 SW_05「陰陽者，天地之道」嘅宇宙級總綱，並由靜態對應推進到動態治病大法。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_05</span>陰陽應象大論</td>
+        <td><span class="ch-label">SW_01</span>上古天真論</td>
+        <td>醫治 → 養生（閉環）</td>
+        <td>SW_05「陽病治陰，陰病治陽」嘅治病大法，呼應 SW_01「聖人不治已病治未病」，形成「養生—治病」嘅理論閉環：最高明嘅醫術，其實就係養生。</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>三、五篇嘅邏輯層次總覽</h2>
+  <table class="relation-table">
+    <thead>
+      <tr>
+        <th style="width:18%">章節</th>
+        <th style="width:18%">層次定位</th>
+        <th style="width:28%">核心主張</th>
+        <th>關鍵證據</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="ch-label">SW_01</span>上古天真論</td>
+        <td>養生總綱</td>
+        <td>養生有層次之分，最高係「真人」境界</td>
+        <td>法於陰陽，和於術數；天癸至／竭；真人·至人·聖人·賢人四境界</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_02</span>四氣調神大論</td>
+        <td>時間維度</td>
+        <td>養生必須順應四時節律，逆之則害</td>
+        <td>春夏養陽，秋冬養陰；春生夏長秋收冬藏；不治已病治未病</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_03</span>生氣通天論</td>
+        <td>生理基礎</td>
+        <td>陽氣係生命主導，陰陽平衡係健康關鍵</td>
+        <td>陽氣若天與日；煩勞則張；四邪五味（風寒暑濕·酸傷脾）</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_04</span>金匱真言論</td>
+        <td>系統對應</td>
+        <td>人體五臟與天地四方四時五行一一對應</td>
+        <td>八風應四時；背陽腹陰；五臟對應一覽表</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_05</span>陰陽應象大論</td>
+        <td>宇宙總綱</td>
+        <td>陰陽係萬象之本，治病以陰陽為綱</td>
+        <td>天地之道；壯火食氣；五志相勝；陽病治陰，陰病治陽</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>層次解讀：</strong>五篇形成「總綱（SW_01）→ 時間應用（SW_02）→ 生理機理（SW_03）→ 系統對應（SW_04）→ 宇宙總綱＋治病（SW_05）」嘅螺旋上升結構。SW_05 表面上係最後一篇，但佢嘅「陰陽總綱」反而係對 SW_01「法於陰陽」嘅終極解釋，呢個正係《內經》理論「首尾呼應」嘅精妙之處。
+  </div>
+</section>
+
+<footer>
+  《黃帝內經 · 素問》前五篇論證地圖｜STAGE-2 階段 3 任務 A 輸出<br/>
+  <a href="questions.html">下一頁：跨章綜合問題 →</a>
+</footer>
+
+</body>
+</html>
