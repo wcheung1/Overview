@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・生氣通天論篇第三</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0; padding:24px;
+       max-width:840px; margin:0 auto;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>生氣通天論篇第三</h1>
+  <div class="subtitle">素問・卷三｜陽氣為主・陰陽平衡・五味調和</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇叫「生氣通天」，意思係「人體生命之氣同天氣相通」。核心論點有三：第一，<strong>陽氣好似太陽咁重要</strong>，失去正常位置就會折壽；第二，<strong>陰陽要平衡</strong>——「陰平陽秘，精神乃治」，陰陽離決人就死；第三，<strong>四時邪氣同五味失調</strong>都會傷五臟。全篇圍繞住一個問題：<strong>點樣保護陽氣、維持陰陽平衡，令人體唔受外邪內傷？</strong></p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>陽氣之問：</strong>中醫成日講「陽氣」，到底陽氣係咩？點解《內經》話佢「若天與日」咁重要？陽氣唔夠會點？</li>
+      <li><strong>陰陽之問：</strong>「陰平陽秘，精神乃治」——呢句話係咪即係「陰陽平衡」咁簡單？「平」同「秘」分別代表咩？佢同一般講嘅「平衡」有咩唔同？</li>
+      <li><strong>五味之問：</strong>酸、苦、甘、辛、鹹——呢五種味道點解會對應五臟？食得太多某一種味道，真係會傷特定嘅臟腑？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>陽氣（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>陰陽平衡（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>四時邪氣＋五味（藍）</span>
+  —— 同色即文言與白話對應重點。
+</div>
+
+<!-- ===== 第一段：陽氣的重要性 ===== -->
+<section class="passage">
+  <div class="passage-title">一、陽氣若天與日：保護身體嘅第一防線</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k1">人體嘅陽氣，好似天上嘅太陽一樣重要</mark>——如果陽氣失去咗正常嘅位置而唔能夠發揮作用，人就會減損壽命，生命機能亦會闇弱不足。所以天體正常運行，靠太陽光明普照而顯現；而人嘅陽氣亦應該喺上喺外，起到保護身體、抵禦外邪嘅作用。</p>
+      <p>陽氣<mark class="k1">喺一日之內主宰體表</mark>：清晨嘅時候陽氣開始活躍趨向外；中午時陽氣達到最旺盛；太陽偏西時體表陽氣逐漸減少，汗孔開始閉合。所以到咗晚上，陽氣收斂拒守於內——呢個時候唔好擾動筋骨，亦唔好接近霧露。如果違反咗一日之內呢三個時間嘅陽氣活動規律，形體就會被邪氣侵擾而睏乏衰薄。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：點解陽氣＝太陽？</strong>
+      古人觀察到：<em>冇太陽，萬物唔生；冇陽氣，人必死。</em>所以用太陽比喻陽氣，強調佢嘅「溫煦、推動、保衛」三大功能。現代理解：陽氣相當於新陳代謝嘅動力、免疫力、體溫調節。陽氣唔夠＝基礎代謝低、手腳冰冷、容易感冒。「平旦人氣生」亦預示咗現代「生理時鐘」嘅概念。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k1">陽氣者，若天與日</mark>，失其所，則折壽而不彰。故天運當以日光明。是故陽因而上，衛外者也。</p>
+      <p>故陽氣者，<mark class="k1">一日而主外</mark>。平旦人氣生，日中而陽氣隆，日西而陽氣已虛，氣門乃閉。是故暮而收拒，無擾筋骨，無見霧露，反此三時，形乃困薄。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：陰陽平衡 ===== -->
+<section class="passage">
+  <div class="passage-title">二、陰平陽秘：陰陽平衡嘅最高境界</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>岐伯話：陰係藏精於內而不斷扶持陽氣；陽係衛護於外令體表固密。如果陰不勝陽（陽氣亢盛），血脈流動就會迫促，再受熱邪就會發狂；如果陽不勝陰（陰氣亢盛），五臟之氣就會不調，九竅不通。所以聖人令陰陽平衡，筋脈調和、骨髓堅固、血氣暢順——咁樣內外調和，邪氣唔能夠侵害，耳目聰明，氣機正常運行。</p>
+      <p>大凡陰陽嘅關鍵，<mark class="k2">以陽氣緻密最為重要——陽氣緻密，陰氣就能固守於內</mark>。陰陽二者唔協調，就好似一年之中只有春天冇秋天、只有冬天冇夏天。所以陽氣亢盛唔能夠固密，陰氣就會竭絕。<mark class="k2">「陰氣和平、陽氣固密」，人嘅精神先至正常</mark>；如果陰陽分離決絕，精氣就會隨之竭絕。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「陰平陽秘」唔係一般「平衡」</strong>
+      「陰平」= 陰氣和平（平靜、唔亢奮）；「陽秘」= 陽氣固密（緻密、唔外散）。呢個唔係簡單嘅「一半半」，而係一種<strong>動態嘅協調狀態</strong>：陰要夠但要平靜，陽要足但要收得住。好似一對舞伴——各有各嘅角色，互相配合而唔係互相抵消。現代「homeostasis（恆定）」概念都係類似，但中醫更強調「陽氣嘅主導性」。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>岐伯曰：陰者，藏精而起亟也，陽者，衛外而爲固也。陰不勝其陽，則脈流薄疾，並乃狂。陽不勝其陰，則五臟氣爭，九竅不通。是以聖人陳陰陽，筋脈和同，骨髓堅固，氣血皆從。如是則內外調和，邪不能害，耳目聰明，氣立如故。</p>
+      <p>凡陰陽之要，<mark class="k2">陽密乃固</mark>，兩者不和，若春無秋，若冬無夏。因而和之，是謂聖度。故陽強不能密，陰氣乃絕。<mark class="k2">陰平陽祕，精神乃治</mark>；陰陽離決，精氣乃絕。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：四時邪氣 ===== -->
+<section class="passage">
+  <div class="passage-title">三、四時邪氣：寒暑濕風點樣傷人</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>由於<mark class="k3">寒邪</mark>，陽氣應該好似門軸喺門臼中運轉一樣活動於體內；如果起居猝急擾動陽氣，就容易令神氣外越。因於<mark class="k3">暑邪</mark>，就會汗多煩躁、喘喝，安靜時多言多語；如果身體發高熱，就好似炭火燒灼，一經出汗熱邪就能散去。因於<mark class="k3">濕邪</mark>，頭部就好似有嘢蒙住咁沉重；如果濕熱相兼而唔能排除，就會傷害大小諸筋，出現短縮（拘攣）或弛縱（痿弱）。因於<mark class="k3">風邪</mark>，可以導致浮腫。以上四種邪氣維繫纏綿、相互更代傷人，就會令陽氣傾竭。</p>
+      <p>由於霧露風寒之邪嘅侵犯，就會發生寒熱。春天傷於風邪，留而不去，會發生急驟泄瀉。夏天傷於暑邪，到秋天會發生瘧疾。秋天傷於濕邪，邪氣上逆，會發生咳嗽，並且可能發展為痿厥。<mark class="k3">冬天傷於寒氣，到來年春天就會發生溫病</mark>。四時邪氣交替傷害人嘅五臟。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「冬傷於寒，春必溫病」嘅原理</strong>
+      呢個係中醫「伏邪」理論嘅源頭——冬天受寒，寒邪潛伏體內，到春天陽氣升發時，潛伏嘅寒邪隨之而發，成為溫病（發熱性疾病）。呢個解釋咗點解春天特別多流感、發熱病——唔係春天先感染，而係冬天種下嘅因。現代醫學嘅「潛伏期」概念，雖然機制唔同，但都承認「感染同發病之間有時間差」。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言・四邪）</span>
+      <p>因於寒，欲如運樞，起居如驚，神氣乃浮。因於暑，汗，煩則喘喝，靜則多言，體若燔炭，汗出而散。因於溼，首如裹，溼熱不攘，大筋緛短，小筋馳長。緛短爲拘，馳長爲痿。因於氣，爲腫，四維相代，陽氣乃竭。</p>
+      <p>因於露風，乃生寒熱。是以春傷於風，邪氣留連，乃爲洞泄。夏傷於暑，秋爲痎瘧。秋傷於溼，上逆而咳，發爲痿厥。<mark class="k3">冬傷於寒，春必溫病</mark>。四時之氣，更傷五臟。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第四段：五味失調 ===== -->
+<section class="passage">
+  <div class="passage-title">四、五味失調：飲食偏嗜點樣傷五臟</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k3">陰精嘅產生來源於飲食五味；但儲藏陰精嘅五臟，亦都會因為五味而受傷</mark>。</p>
+      <p>過食<mark class="k3">酸味，會令肝氣淫溢亢盛，從而導致脾氣衰竭</mark>；過食<mark class="k3">鹹味，會令骨骼損傷、肌肉短縮、心氣抑鬱</mark>；過食<mark class="k3">甜味，會令心氣滿悶、氣逆作喘、顏面發黑、腎氣失於平衡</mark>；過食<mark class="k3">苦味，會令脾氣過燥而唔濡潤，從而令胃氣滯</mark>；過食<mark class="k3">辛味，會令筋脈敗壞、發生弛縱、精神受損</mark>。</p>
+      <p>因此<mark class="k3">謹慎調和五味，會令骨骼強健、筋脈柔和、氣血通暢、腠理致密</mark>——咁樣骨氣就精強有力。所以重視養生之道，並且依照正確方法實行，就會長期保有天賦嘅生命力。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：五味對應五臟嘅對應關係</strong>
+      酸→肝、苦→心、甘→脾、辛→肺、鹹→腎。<em>適量有益，過量有害。</em>呢個對應唔係隨意，而係基於五行理論。例如「過食鹹傷骨」——腎主骨，鹹對應腎，過鹹會令腎氣偏亢而傷骨。現代營養學都證實：過鹹確實會增加骨質疏鬆風險（因為鈉會促進鈣排出），呢個對應有一定科學根據。<strong>重點：唔好偏食，五味均衡先至健康。</strong>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>陰之所生，本在五味；<mark class="k3">陰之五宮，傷在五味</mark>。</p>
+      <p>是故味過於酸，肝氣以津，脾氣乃絕。味過於鹹，大骨氣勞，短肌，心氣抑。味過於甘，心氣喘滿，色黑，腎氣不衡。味過於苦，脾氣不濡，胃氣乃厚。味過於辛，筋脈沮弛，精神乃央。</p>
+      <p>是故<mark class="k3">謹和五味</mark>，骨正筋柔，氣血以流，腠理以密，如是則骨氣以精。謹道如法，長有天命。</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>陽氣為主</strong>：陽氣好似太陽——溫煦、推動、保衛身體；失去正常位置就會折壽。</li>
+    <li><strong>一日陽氣規律</strong>：清晨生發→中午最旺→傍晚虛少→夜晚閉藏；晚上唔好劇烈運動、唔好接近霧露。</li>
+    <li><strong>陰陽平衡</strong>：「陰平陽秘，精神乃治」＝陰氣和平＋陽氣固密；陰陽離決人就死。</li>
+    <li><strong>陽密為要</strong>：陰陽關係中，陽氣緻密最關鍵——陽氣固密，陰氣先至能固守。</li>
+    <li><strong>四時邪氣</strong>：寒、暑、濕、風四邪傷人；「冬傷於寒，春必溫病」係伏邪理論源頭。</li>
+    <li><strong>五味調和</strong>：酸苦甘辛鹹各對應一臟；過量傷臟，均衡先至健康。</li>
+  </ul>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「陽氣之問」）：陽氣到底係咩？點解《內經》話佢「若天與日」？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>陽氣係人體生命活動嘅<strong>動力、熱力同保衛力</strong>。</p>
+    <p>具體功能：</p>
+    <ul>
+      <li><strong>溫煦</strong>：維持體溫（似太陽溫暖大地）。</li>
+      <li><strong>推動</strong>：推動氣血運行、臟腑功能（似太陽推動萬物生長）。</li>
+      <li><strong>保衛</strong>：衛護體表、抵禦外邪（「衛外而為固」）。</li>
+    </ul>
+    <p>《內經》用太陽比喻，因為「<em>冇太陽，萬物唔生；冇陽氣，人必死</em>」。陽氣唔夠＝基礎代謝低、手腳冰冷、免疫力差、容易感冒。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「陰陽之問」）：「陰平陽秘」同一般「平衡」有咩唔同？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>「陰平陽秘」唔係簡單嘅「一半半」，而係一種<strong>有層次嘅動態協調</strong>。</p>
+    <ul>
+      <li><strong>「陰平」</strong>＝陰氣和平（平靜、充足而唔亢奮）。陰精係物質基礎，要夠但要安靜。</li>
+      <li><strong>「陽秘」</strong>＝陽氣固密（緻密、充足而唔外散）。陽氣係動力，要足但要收得住。</li>
+    </ul>
+    <p>同一般「平衡」嘅分別：一般平衡係對等；「陰平陽秘」強調<strong>陽氣嘅主導性</strong>（陽密乃固），陰氣係配合。好似一對舞伴——男（陽）帶領、女（陰）配合，各有角色。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「五味之問」）：五味點解對應五臟？食太多某一種真係會傷特定臟腑？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>對應關係：酸→肝、苦→心、甘→脾、辛→肺、鹹→腎。基於五行理論。</p>
+    <p><strong>過量嘅危害：</strong></p>
+    <ul>
+      <li>過酸→肝亢傷脾</li>
+      <li>過鹹→傷骨、心氣抑（現代證實過鹹增加骨質疏鬆風險）</li>
+      <li>過甘→心滿、腎氣失衡（現代證實過多糖份傷心血管同腎）</li>
+      <li>過苦→傷脾、胃氣滯</li>
+      <li>過辛→傷筋脈、精神受損</li>
+    </ul>
+    <p><strong>關鍵：</strong>適量有益，過量有害。<em>唔好偏食，五味均衡先健康。</em>呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：「冬傷於寒，春必溫病」——點解冬天受寒，病會喺春天先發？</summary>
+    <p>呢個係中醫「<strong>伏邪</strong>」理論嘅源頭。</p>
+    <p><strong>機制：</strong>冬天受寒，寒邪潛伏體內（因為冬天陽氣內收，正氣唔夠力將寒邪驅逐出去）。到咗春天，陽氣開始升發，潛伏嘅寒邪隨之而發，成為溫病（發熱性疾病）。</p>
+    <p><strong>現代對照：</strong>雖然現代醫學嘅「潛伏期」機制唔同（係病原體喺體內繁殖），但都承認「感染同發病之間有時間差」。中醫嘅洞察係：<em>疾病嘅「因」可能喺好耐之前種下，唔一定係即時發作。</em></p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「陽氣者，煩勞則張」——過勞點解會傷陽氣？現代人嘅「過勞」同古人嘅「煩勞」一樣嗎？</summary>
+    <p><strong>原文機制：</strong>煩勞過度→陽氣亢盛外張→陰精耗竭→到夏天暑熱時就容易發生「煎厥」（中暑類似嘅急性病）。</p>
+    <p><strong>現代對照：</strong></p>
+    <ul>
+      <li>古人嘅「煩勞」主要係體力勞動＋情志壓力。</li>
+      <li>現代人嘅「過勞」重複雜：加班熬夜、精神壓力、屏幕疲勞、睡眠不足——呢啲都係「煩勞」嘅現代版。</li>
+    </ul>
+    <p><strong>結果都一樣：</strong>長期過勞會令交感神經長期亢奮（陽氣外張）、內分泌失調（陰精耗竭），最終引發各種慢性病甚至猝死。呢個就係現代「過勞死」嘅中醫解釋。</p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「高梁之變，足生大丁」——成日食肥肉精米，點解會生疔瘡？</summary>
+    <p>「高梁」通「膏粱」，指肥膩精細嘅食物。「丁」通「疔」，指瘡癤。</p>
+    <p><strong>機制：</strong>肥膩食物難消化，積滯腸胃→化濕生熱→濕熱外發於肌膚→形成瘡癤疔毒。原文形容「受如持虛」，即係好似用空器皿接嘢咁容易——身體積滯，病就好容易發出嚟。</p>
+    <p><strong>現代對照：</strong>高脂高糖飲食→代謝症候群→皮膚問題（暗瘡、濕疹）、糖尿病、心血管病。古人嘅觀察相當精準：<em>飲食太肥膩，身體一定出事。</em></p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「陰陽離決，精氣乃絕」——咩情況下會「陰陽離決」？有冇現代對應？</summary>
+    <p>「陰陽離決」＝陰陽徹底分離、互相脫勾，係生命最危險嘅狀態。</p>
+    <p><strong>臨床表現：</strong></p>
+    <ul>
+      <li><strong>亡陽</strong>：大汗淋漓、四肢冰冷、脈微欲絕（似休克）。</li>
+      <li><strong>亡陰</strong>：大汗、口渴、皮膚乾燥（似嚴重脫水）。</li>
+      <li>兩者最終都會走向「陰陽離決」＝死亡。</li>
+    </ul>
+    <p><strong>現代對應：</strong>休克、多器官衰竭、彌散性血管內凝血（DIC）——呢啲都係現代醫學中「生命體徵崩潰」嘅狀態，本質上就係身體各系統失去協調（陰陽離決）。</p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《生氣通天論》嘅「陽氣為主」觀念，同現代醫學嘅「代謝健康」觀念，可以點樣對話？</summary>
+    <p><strong>可以對話嘅地方：</strong></p>
+    <ul>
+      <li>中醫「陽氣」≈ 現代醫學嘅「基礎代謝率＋甲狀腺功能＋免疫力」。陽氣唔夠≈代謝低下。</li>
+      <li>「陽氣者，一日而主外」對應現代生理時鐘（circadian rhythm）研究——日頭代謝活躍、夜晚代謝減慢。</li>
+      <li>「煩勞則張」對應現代「慢性壓力」研究——長期壓力令皮質醇升高、最終耗竭。</li>
+    </ul>
+    <p><strong>需要注意嘅地方：</strong></p>
+    <ul>
+      <li>中醫「陽氣」係一個綜合性概念，唔能夠簡單等同於某一個現代指標。</li>
+      <li>「五味對應五臟」嘅五行理論，部分有現代根據（如過鹹傷骨），部分需要更多研究。</li>
+      <li>唔好急於「科學化」中醫——兩者係唔同嘅認知框架，可以互補而唔一定要統一。</li>
+    </ul>
+    <p><strong>啟示：</strong>《內經》早喺兩千年前就洞察到「生活方式影響健康」嘅大原則，呢個洞察喺今日依然有效。</p>
+  </details>
+
+</section>
+
+<footer>
+  素問・生氣通天論篇第三｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_03_生氣通天論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>

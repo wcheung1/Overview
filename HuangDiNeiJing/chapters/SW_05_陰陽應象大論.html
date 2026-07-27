@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・陰陽應象大論篇第五</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0; padding:24px;
+       max-width:840px; margin:0 auto;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .summary table{border-collapse:collapse; margin:10px 0; font-size:0.88em; width:100%;}
+  .summary th, .summary td{border:1px solid var(--border); padding:5px 7px; text-align:center;}
+  .summary th{background:var(--accent); color:#fff;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>陰陽應象大論篇第五</h1>
+  <div class="subtitle">素問・卷五｜陰陽總綱・五行對應・治病大法</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇係《素問》前五篇嘅<strong>理論高峰</strong>。篇名「陰陽應象」意思係「陰陽之理對應各種現象」——將陰陽由抽象哲學落實到具體嘅天地現象、人體結構、疾病表現同治療方法。內容極豐富：① 陰陽係「<strong>天地之道、萬物之綱紀</strong>」，治病必求其本；② 「<strong>壯火食氣，少火生氣</strong>」點出亢奮同正常陽氣嘅分別；③ 五方應五臟嘅完整對應（東方風→木→酸→肝→怒，南方熱→火→苦→心→喜……）；④ 「<strong>陽病治陰，陰病治陽</strong>」嘅治療總則。全篇圍繞住一個問題：<strong>陰陽之理點樣貫穿養生、診病、治療嘅每一個環節？</strong></p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>陰陽總綱之問：</strong>《內經》話「陰陽者，天地之道也」——點解陰陽可以涵蓋宇宙萬物？「治病必求於本」嘅「本」係咪即係陰陽？呢個觀念對我哋理解疾病有咩衝擊？</li>
+      <li><strong>壯火少火之問：</strong>「壯火食氣，少火生氣」——同樣係「火／陽氣」，點解亢奮嘅會損元氣、正常嘅反而增強元氣？呢個道理對我哋養生同用藥有咩啟示？</li>
+      <li><strong>五行情志之問：</strong>東方對應肝對應「怒」、南方對應心對應「喜」……情志點解會對應特定臟腑？「怒傷肝、悲勝怒」——用一種情緒克制另一種情緒，真係有效嘅治療方法？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>陰陽總綱（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>壯火少火＋陰陽偏勝（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>四時五行對應五臟五志（藍）</span>
+</div>
+
+<!-- ===== 第一段：陰陽總綱 ===== -->
+<section class="passage">
+  <div class="passage-title">一、陰陽者，天地之道：治病必求於本</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k1">陰陽係宇宙間嘅一般規律</mark>，係一切事物嘅綱紀，萬物變化嘅起源，生長毀滅嘅根本，神明變化嘅府第。<strong>凡是醫治疾病，必須<mark class="k1">求得病情變化嘅根本</mark>，而道理都唔外乎陰陽二字。</strong></p>
+      <p>用自然界變化嚟比喻：清陽之氣聚於上而成為天，濁陰之氣積於下而成為地。陰比較靜止，陽比較躁動；陽主生成，陰主成長；陽主肅殺，陰主收藏；陽能化生力量，陰能構成形體。</p>
+      <p><mark class="k1">寒到極點會生熱，熱到極點會生寒</mark>。清陽之氣居下面唔升，就會發生飧泄（泄瀉）；濁陰之氣居上面唔降，就會發生脹滿——呢個就係陰陽反常變化導致嘅疾病。</p>
+      <p>所以清陽出上竅（目耳口鼻），濁陰出下竅（前後二陰）；清陽發洩於腠理（皮膚毛孔），濁陰走五臟；清陽充實四肢，濁陰歸六腑。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「治病必求於本」嘅「本」係咩？</strong>
+      「本」就係陰陽。中醫認為一切疾病嘅根源都係陰陽失調——陽偏勝則熱、陰偏勝則寒。<em>所以無論症狀幾複雜，最終都要歸結到「係陰定係陽、係寒定係熱、係虛定係實」</em>。呢個係中醫辨證論治嘅總綱。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>黃帝曰：<mark class="k1">陰陽者，天地之道也</mark>，萬物之綱紀，變化之父母，生殺之本始，神明之府也。<mark class="k1">治病必求於本</mark>。</p>
+      <p>故積陽爲天，積陰爲地。陰靜陽燥，陽生陰長，陽殺陰藏，陽化氣，陰成形。<mark class="k1">寒極生熱，熱極生寒</mark>，寒氣生濁，熱氣生清。清氣在下，則生飧泄；濁氣在上，則生(月真)脹。此陰陽反作，病之逆從也。</p>
+      <p>故清陽出上竅，濁陰出下竅；清陽發腠理，濁陰走五臟；清陽實四肢，濁陰歸六腑。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：壯火少火 + 陰陽偏勝 ===== -->
+<section class="passage">
+  <div class="passage-title">二、壯火食氣，少火生氣：亢奮 vs 正常嘅陽氣</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k2">味厚嘅屬純陰，味薄屬陰中之陽；氣厚屬純陽，氣薄屬陽中之陰</mark>。味厚嘅有泄下作用，味薄嘅有疏通作用；氣薄能向外發泄，氣厚能助陽生熱。</p>
+      <p><strong>亢奮嘅陽氣（<mark class="k2">壯火</mark>）會令元氣衰弱；正常嘅陽氣（<mark class="k2">少火</mark>）會令元氣旺盛。</strong>因為過度亢奮嘅陽氣會損害元氣（<mark class="k2">壯火食氣</mark>、壯火散氣），而元氣依賴正常嘅陽氣（<mark class="k2">少火生氣</mark>）。凡氣味辛甘而有發散功用嘅屬陽；氣味酸苦而有通泄功用嘅屬陰。</p>
+      <p><mark class="k2">陰氣偏勝則陽氣受損而病，陽氣偏勝則陰氣耗損而病</mark>。陽偏勝表現為熱證，陰偏勝表現為寒證。<strong>寒到極點會表現熱象，熱到極點會表現寒象</strong>（重寒則熱、重熱則寒）。<mark class="k2">寒能傷形體（腫），熱能傷氣分（痛）</mark>。所以先痛後腫係氣分先傷，先腫後痛係形體先病。</p>
+      <p><mark class="k2">風邪太過則痙攣動搖</mark>；<mark class="k2">熱邪太過則紅腫</mark>；<mark class="k2">燥邪太過則乾枯</mark>；<mark class="k2">寒邪太過則浮腫</mark>；<mark class="k2">濕邪太過則濡瀉</mark>（水瀉）。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「壯火 vs 少火」係中醫用藥嘅核心原則</strong>
+      「壯火」指亢奮、過度嘅陽氣（或溫熱藥過量），會損耗正氣；「少火」指正常、溫和嘅陽氣（或適量嘅溫補藥），會增強正氣。<em>呢個揭示咗一個重要道理：補藥唔可以亂食、唔可以過量</em>——人參、鹿茸等溫補藥過量反而會「壯火食氣」，令人虛弱。現代「過度進補」嘅問題，正正違反咗呢個原則。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k2">味厚者爲陰，薄爲陰之陽。氣厚者爲陽，薄爲陽之陰</mark>。味厚則泄，薄則通。氣薄則發泄，厚則發熱。</p>
+      <p>壯火之氣衰，少火之氣壯。<mark class="k2">壯火食氣</mark>，氣食少火。壯火散氣，<mark class="k2">少火生氣</mark>。氣味，辛甘發散爲陽，酸苦湧泄爲陰。</p>
+      <p><mark class="k2">陰勝則陽病，陽勝則陰病</mark>。陽勝則熱，陰勝則寒。重寒則熱，重熱則寒。<mark class="k2">寒傷形，熱傷氣</mark>。氣傷痛，形傷腫。故先痛而後腫者，氣傷形也，先腫而後痛者，形傷氣也。風勝則動，熱勝則腫，燥勝則幹，寒勝則浮，溼勝則濡瀉。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：四時五行對應五臟五志 ===== -->
+<section class="passage">
+  <div class="passage-title">三、五方應五臟：情志、病變、克制嘅完整對應體系</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k3">大自然嘅變化有春夏秋冬四時交替，有木火土金水五行變化</mark>，因此產生寒暑燥濕風五種氣候，影響萬物形成生長化收藏嘅規律。<mark class="k3">人體有肝心脾肺腎五臟，五臟之氣化生五志，產生喜怒悲憂恐五種情志</mark>。</p>
+      <p><mark class="k3">東方應春，生風→木→酸→肝→筋→目</mark>；色蒼、音角、聲呼、變動為握、志為怒。<strong>怒傷肝，悲勝怒；風傷筋，燥勝風；酸傷筋，辛勝酸。</strong></p>
+      <p><mark class="k3">南方應夏，生熱→火→苦→心→血→舌</mark>；色赤、音徵、聲笑、變動為憂、志為喜。<strong>喜傷心，恐勝喜；熱傷氣，寒勝熱；苦傷氣，鹹勝苦。</strong></p>
+      <p><mark class="k3">中央應長夏，生濕→土→甘→脾→肉→口</mark>；色黃、音宮、聲歌、變動為噦、志為思。<strong>思傷脾，怒勝思；濕傷肉，風勝濕；甘傷肉，酸勝甘。</strong></p>
+      <p><mark class="k3">西方應秋，生燥→金→辛→肺→皮毛→鼻</mark>；色白、音商、聲哭、變動為咳、志為憂。<strong>憂傷肺，喜勝憂；熱傷皮毛，寒勝熱；辛傷皮毛，苦勝辛。</strong></p>
+      <p><mark class="k3">北方應冬，生寒→水→鹹→腎→骨髓→耳</mark>；色黑、音羽、聲呻、變動為慄、志為恐。<strong>恐傷腎，思勝恐；寒傷血，燥勝寒；鹹傷血，甘勝鹹。</strong><span class="page-num">（原檔頁碼：11-12）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「情志相勝」——五種情緒互相克制</strong>
+      這係中醫「<strong>情志療法</strong>」嘅理論基礎：悲勝怒、恐勝喜、怒勝思、喜勝憂、思勝恐。對應五行相剋：金（悲）剋木（怒）、水（恐）剋火（喜）、木（怒）剋土（思）、火（喜）剋金（憂）、土（思）剋水（恐）。
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">五方</th><th style="padding:5px 7px;">五臟</th><th style="padding:5px 7px;">五志</th><th style="padding:5px 7px;">所傷</th><th style="padding:5px 7px;">相勝（克制）</th></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">東</td><td style="padding:5px 7px; text-align:center;">肝</td><td style="padding:5px 7px; text-align:center;">怒</td><td style="padding:5px 7px; text-align:center;">怒傷肝</td><td style="padding:5px 7px; text-align:center;">悲勝怒（金剋木）</td></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">南</td><td style="padding:5px 7px; text-align:center;">心</td><td style="padding:5px 7px; text-align:center;">喜</td><td style="padding:5px 7px; text-align:center;">喜傷心</td><td style="padding:5px 7px; text-align:center;">恐勝喜（水剋火）</td></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">中</td><td style="padding:5px 7px; text-align:center;">脾</td><td style="padding:5px 7px; text-align:center;">思</td><td style="padding:5px 7px; text-align:center;">思傷脾</td><td style="padding:5px 7px; text-align:center;">怒勝思（木剋土）</td></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">西</td><td style="padding:5px 7px; text-align:center;">肺</td><td style="padding:5px 7px; text-align:center;">憂</td><td style="padding:5px 7px; text-align:center;">憂傷肺</td><td style="padding:5px 7px; text-align:center;">喜勝憂（火剋金）</td></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">北</td><td style="padding:5px 7px; text-align:center;">腎</td><td style="padding:5px 7px; text-align:center;">恐</td><td style="padding:5px 7px; text-align:center;">恐傷腎</td><td style="padding:5px 7px; text-align:center;">思勝恐（土剋水）</td></tr>
+      </table>
+      <em>例如：大怒傷肝，可以引導病人回憶悲傷嘅事（悲勝怒）嚟緩解；過度思慮傷脾，可以用憤怒激發（怒勝思）嚟打破僵局。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k3">天有四時五行，以生長收藏</mark>，以生寒暑燥溼風。<mark class="k3">人有五臟化五氣，以生喜怒悲憂恐</mark>。故喜怒傷氣，寒暑傷形。暴怒傷陰，暴喜傷陽。厥氣上行，滿脈去形。喜怒不節，寒暑過度，生乃不固。</p>
+      <p><mark class="k3">東方生風，風生木，木生酸，酸生肝，肝生筋，筋生心，肝主目</mark>……在志爲怒。怒傷肝，悲勝怒，風傷筋，燥勝風，酸傷筋，辛勝酸。</p>
+      <p><mark class="k3">南方生熱，熱生火，火生苦，苦生心，心生血</mark>……在志爲喜。喜傷心，恐勝喜，熱傷氣，寒勝熱，苦傷氣，鹹勝苦。</p>
+      <p><mark class="k3">中央生溼，溼生土，土生甘，甘生脾</mark>……在志爲思。思傷脾，怒勝思，溼傷肉，風勝溼，甘傷肉，酸勝甘。</p>
+      <p><mark class="k3">西方生燥，燥生金，金生辛，辛生肺</mark>……在志爲憂。憂傷肺，喜勝憂，熱傷皮毛，寒勝熱，辛傷皮毛，苦勝辛。</p>
+      <p><mark class="k3">北方生寒，寒生水，水生鹹，鹹生腎</mark>……在志爲恐。恐傷腎，思勝恐，寒傷血，燥勝寒，鹹傷血，甘勝鹹。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第四段：七損八益 + 左右強弱 ===== -->
+<section class="passage">
+  <div class="passage-title">四、七損八益＋左右強弱：養生同天人相應</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝問：點樣調攝陰陽？岐伯話：如果懂得「<mark class="k1">七損八益</mark>」嘅養生之道，陰陽就可以調攝；唔懂得呢啲道理，就會發生早衰現象。</p>
+      <p>一般人年到四十，陰氣已經自然衰減一半，起居動作漸漸衰退；到五十歲，身體覺得沉重，耳目唔夠聰明；到六十歲，陰氣萎弱，腎氣大衰，九竅唔通利，出現下虛上實，成日流眼淚鼻涕。所以<strong><mark class="k1">知道調攝嘅人身體強健，唔知道嘅就容易衰老</mark></strong>。智者能注意共有嘅健康本能，愚者只知強弱異形。善於調攝嘅人常有餘——耳目聰明、身體輕強，年老都可以強壯。</p>
+      <p>所以聖人唔作勉強嘅事，唔胡思亂想，有樂觀愉快嘅旨趣，常令心曠神怡，保持寧靜生活，所以壽命無窮，盡享天年。</p>
+      <p>天氣不足於西北，所以西北方屬陰，而人嘅右耳目唔及左邊聰明；地氣不足於東南，所以東南方屬陽，而人嘅左手足唔及右邊強——東方屬陽，精氣集合於上，所以上部強盛下部虛弱；西方屬陰，精氣集合於下，所以下部強盛上部虛弱。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「七損八益」係咩？</strong>
+      「七損八益」係古代房中養生術嘅術語：女子以七為週期、男子以八為週期（呼應 SW_01 嘅「女七男八」）。「損」指房事中應避免嘅七種情況，「益」指有益嘅八種方法。<em>狹義係房中術，廣義泛指順應男女生命節律嘅養生方法。核心思想：唔好逆住自然節律嚟消耗精力。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>岐伯曰：能知<mark class="k1">七損八益</mark>，則二者可調，不知用此，則早衰之節也。年四十，而陰氣自半也，起居衰矣。年五十，體重，耳目不聰明矣。年六十，陰痿，氣大衰，九竅不利，下虛上實，涕泣俱出矣。</p>
+      <p>故曰：<mark class="k1">知之則強，不知則老</mark>，故同出而名異耳。智者察同，愚者察異，愚者不足，智者有餘，有餘而耳目聰明，身體強健，老者復壯，壯者益治。是以聖人爲無爲之事，樂恬憺之能，從欲快志於虛無之守，故壽命無窮，與天地終，此聖人之治身也。</p>
+      <p>天不足西北，故西北方陰也，而人右耳目不如左明也。地不滿東南，故東南方陽也，而人左手足不如右強也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第五段：治病大法 ===== -->
+<section class="passage">
+  <div class="passage-title">五、善治者治皮毛＋陽病治陰：治病嘅總原則</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>外感致病因素傷害人體，急如疾風暴雨。<strong>善於治病嘅醫生，<mark class="k2">喺邪氣喺皮毛嗰陣就治療</mark>；其次肌膚先治；其次筋脈；其次六腑；最差嘅等到病邪入五臟先治——<mark class="k2">治五臟嘅，半死半生</mark>。</strong></p>
+      <p>所以善於用針嘅，<mark class="k2">病喺陽就從陰引導，病喺陰就從陽引導</mark>；取右邊治左邊病，取左邊治右邊病；以自己正常狀態比較病人異常狀態，以表症了解裏病；判斷太過或不及，喺疾病初起時就知道病邪所在——咁樣治療就唔會有危險。</p>
+      <p>善於診治嘅醫生，<mark class="k2">察色按脈，先辨別陰陽</mark>；審察清濁而知部位；觀察呼吸、聽聲音而知所苦；觀察色脈而知病所主；按寸口脈，從浮沉滑澀而知病因。</p>
+      <p><strong>所以：病輕嘅用發散輕揚之法；病重嘅用消減之法；氣血衰弱嘅用補益之法。形體虛弱，溫補其氣；精氣不足，補以厚味。病喺上用吐法；病喺下用疏導法；中滿用瀉下法。<mark class="k2">陽病治陰，陰病治陽</mark>；血實宜決之（放血），氣虛宜掣引之（導引）。</strong><span class="page-num">（原檔頁碼：13-15）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「陽病治陰，陰病治陽」嘅奧妙</strong>
+      呢個係中醫「<strong>從對立面治療</strong>」嘅智慧——唔係頭痛醫頭。例如：<em>陽虛導致嘅「陰盛」（如寒證），表面睇係陰病，但根源係陽氣不足，所以要補陽（陽中求陰）。</em>又如：陰虛導致嘅「陽亢」（如潮熱盜汗），表面睇係陽病，但根源係陰液不足，所以要補陰（陰中求陽）。呢個揭示咗中醫辨證論治嘅深層邏輯：<strong>睇透表象，治療根源。</strong>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>故邪風之至，疾如風雨，故<mark class="k2">善治者治皮毛</mark>，其次治肌膚，其次治筋脈，其次治六腑，其次治五臟。<mark class="k2">治五臟者，半死半生也</mark>。</p>
+      <p>故善用針者，<mark class="k2">從陰引陽，從陽引陰</mark>，以右治左，以左治右，以我知彼，以表知裏，以觀過與不及之理，見微得過，用之不殆。</p>
+      <p>善診者，<mark class="k2">察色按脈，先別陰陽</mark>，審清濁而知部分；視喘息，聽音聲，而知所苦；觀權衡規矩，而知病所主；按尺寸，觀浮沉滑澀，而知病所生。以治無過，以診則不失矣。</p>
+      <p>故因其輕而揚之，因其重而減之，因其衰而彰之。形不足者，溫之以氣；精不足者，補之以味。其高者，因而越之；其下者，引而竭之；中滿者，瀉之於內。審其陰陽，以別柔剛。<strong><mark class="k2">陽病治陰，陰病治陽</mark>。</strong>定其血氣，各守其鄉。血實宜決之，氣虛宜掣引之。</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>陰陽總綱</strong>：「陰陽者，天地之道」——陰陽係宇宙規律；「治病必求於本」＝求於陰陽。</li>
+    <li><strong>清濁升降</strong>：清陽出上竅／發腠理／實四肢；濁陰出下竅／走五臟／歸六腑。升降失常就會病（飧泄、脹滿）。</li>
+    <li><strong>壯火少火</strong>：亢奮嘅陽氣（壯火）食氣、散氣；正常嘅陽氣（少火）生氣、壯氣。補藥唔可亂食過量。</li>
+    <li><strong>陰陽偏勝</strong>：陽勝則熱、陰勝則寒；重寒則熱、重熱則寒（極端轉化）。</li>
+    <li><strong>五臟五志對應</strong>：肝→怒、心→喜、脾→思、肺→憂、腎→恐；每種情志太過都會傷對應臟腑。</li>
+    <li><strong>情志相勝</strong>：悲勝怒、恐勝喜、怒勝思、喜勝憂、思勝恐——中醫情志療法嘅基礎。</li>
+    <li><strong>七損八益</strong>：順應男女生命節律嘅養生方法；知之則強，不知則老。</li>
+    <li><strong>治病總則</strong>：① 善治者治皮毛（早治）；② 從陰引陽、從陽引陰（整體治療）；③ <strong>陽病治陰，陰病治陽</strong>（從對立面治療根源）。</li>
+  </ul>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「陰陽總綱之問」）：點解陰陽可以涵蓋宇宙萬物？「治病求本」嘅「本」係咪陰陽？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>陰陽係古人對宇宙規律嘅<strong>最高抽象</strong>——任何事物都有陰陽兩面（日與夜、熱與寒、動與靜、男與女、上與下），所以陰陽可以涵蓋萬物。</p>
+    <p><strong>「治病求本」嘅「本」</strong>＝陰陽失調。中醫認為一切疾病嘅根源都係陰陽失衡——陽偏勝則熱、陰偏勝則寒。所以無論症狀幾複雜，最終都要歸結到「陰定陽、寒定熱、虛定實」。</p>
+    <p><strong>對現代理解疾病嘅衝擊：</strong>呢個觀念提醒我哋——<em>疾病唔係淨係局部問題，而係整體失衡嘅表現</em>。例如長期失眠、消化唔好，可能唔係單一器官嘅問題，而係整體陰陽失調。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「壯火少火之問」）：點解亢奮嘅陽氣會損元氣、正常嘅反而增強？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>關鍵在於「<strong>度</strong>」——過度亢奮會燃燒自己，正常溫和先至可持續。</p>
+    <ul>
+      <li><strong>壯火</strong>＝過度亢奮嘅陽氣／過量嘅溫熱藥／長期壓力亢奮→會過度消耗陰精同元氣（食氣、散氣）。</li>
+      <li><strong>少火</strong>＝正常溫和嘅陽氣／適量嘅溫補／平穩嘅生理活動→會持續增強正氣（生氣、壯氣）。</li>
+    </ul>
+    <p><strong>養生啟示：</strong>唔好亂食補藥（過量人參、鹿茸＝壯火）；唔好長期亢奮（熬夜、過勞＝壯火）；要保持溫和穩定嘅生活節奏（少火）。<strong>用藥啟示：</strong>補藥要少量、溫和，唔可大劑量猛補。</p>
+    <p>呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「五行情志之問」）：情志點解對應臟腑？「怒傷肝、悲勝怒」真係有效？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>情志對應臟腑基於<strong>五行理論同臨床觀察</strong>。</p>
+    <p><strong>對應根據：</strong></p>
+    <ul>
+      <li>臨床觀察：大怒嘅人確實容易肝氣鬱結（脅痛、易怒）；長期憂慮嘅人容易肺氣虛（氣短、咳嗽）。</li>
+      <li>五行相剋：金剋木→悲（金）勝怒（木）；水剋火→恐（水）勝喜（火）。</li>
+    </ul>
+    <p><strong>「情志相勝」真係有效？</strong>部分有效——例如古代名醫華佗用激怒法治好憂思過度嘅病人（怒勝思）；現代心理學嘅「情緒替代療法」都有類似原理。<em>但要注意：呢種方法要專業判斷，唔好亂試——例如心臟病人唔可以被激到驚恐（恐勝喜可能令心臟病發）。</em>呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：「重寒則熱，重熱則寒」——寒到極點會變熱？呢個唔係自相矛盾？</summary>
+    <p><strong>唔係矛盾，而係「物極必反」嘅規律。</strong></p>
+    <ul>
+      <li><strong>臨床表現</strong>：高燒到極點反而會手腳冰冷（熱深厥亦深）；嚴重凍傷反而會覺得熱（皮膚發紅）。</li>
+      <li><strong>機制</strong>：極端狀態下，身體嘅調節機制崩潰或反向反應。</li>
+    </ul>
+    <p><strong>現代對照</strong>：發燒到極高溫時，反而會出現寒顫（重熱則寒）；嚴重失溫症患者反而會覺得熱而脫衫（重寒則熱，係死亡前嘅症狀）。<em>呢個提醒醫生：睇到嘅「熱象」可能係「寒極」嘅假象，反之亦然——所以中醫強調「辨真假」。</em></p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「年四十，而陰氣自半也」——四十歲真係衰減嘅轉捩點？</summary>
+    <p><strong>《內經》觀點：</strong>四十歲開始陰氣自然衰減一半，起居漸衰；五十耳目不聰明；六十陰痿氣大衰。</p>
+    <p><strong>現代對照：</strong></p>
+    <ul>
+      <li>基礎代謝率確實喺 30-40 歲開始下降（每十年約降 1-2%）。</li>
+      <li>女性更年期約 45-55 歲（對應「五十耳目不聰明」）。</li>
+      <li>男性睾酮水平 40 歲後開始下降。</li>
+    </ul>
+    <p><strong>啟示：</strong>四十歲係養生嘅關鍵節點——<em>要開始注意保養，唔好再好似後生咁透支。</em>但「陰氣自半」唔係話四十歲就開始等死——而係提醒：<strong>顺應自然節律，及早養生。</strong></p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「智者察同，愚者察異」——呢句話有咩深意？放喺現代點解？</summary>
+    <p><strong>原文語境：</strong>智者（善於養生嘅人）注重共有嘅健康本能（察同）；愚者淨係留意強弱異形（察異）——等到出現明顯差異（病咗）先至關注。</p>
+    <p><strong>深意：</strong></p>
+    <ul>
+      <li><strong>察同</strong>＝關注規律、共性、預防（例如知道四季都要養生，唔好等病咗先醫）。</li>
+      <li><strong>察異</strong>＝淨係留意特殊情況、症狀（例如等到有病先去關注）。</li>
+    </ul>
+    <p><strong>現代對照：</strong>現代人成日「察異」——等體檢報告出問題先緊張。但真正嘅健康管理應該「察同」——<em>平時就保持健康生活，唔好等出事先處理。</em>呢個同《四氣調神大論》嘅「治未病」係同一道理。</p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「善治者治皮毛」——病邪入五臟就半死半生，咁嚴重？</summary>
+    <p><strong>病邪傳變層次：</strong>皮毛→肌膚→筋脈→六腑→五臟，越入越深、越難醫。</p>
+    <p><strong>點解五臟咁嚴重？</strong></p>
+    <ul>
+      <li>五臟係人體核心器官，藏精氣。</li>
+      <li>病邪入五臟，說明正氣已經好弱，難以抵抗。</li>
+      <li>古代醫療手段有限，入五臟後死亡率高。</li>
+    </ul>
+    <p><strong>現代對照：</strong>現代醫學有抗生素、手術、ICU，五臟病已經唔係「半死半生」。但道理依然啱用——<em>越早發現越早治療，效果越好</em>。例如癌症早期發現五年生存率遠高過晚期。</p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《陰陽應象大論》嘅「五行對應五臟五志」體系，同《金匱真言論》有咩唔同？兩篇點樣互補？</summary>
+    <p><strong>兩篇對應體系嘅比較：</strong></p>
+    <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+      <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">項目</th><th style="padding:5px 7px;">《金匱真言論》（SW_04）</th><th style="padding:5px 7px;">《陰陽應象大論》（SW_05）</th></tr>
+      <tr><td style="padding:5px 7px;">重點</td><td style="padding:5px 7px;">五臟全方位對應（色味畜穀星音數）</td><td style="padding:5px 7px;">五臟同<strong>情志</strong>、<strong>病變</strong>、<strong>克制</strong>嘅關係</td></tr>
+      <tr><td style="padding:5px 7px;">新元素</td><td style="padding:5px 7px;">五畜、五穀、五星、五音、數字</td><td style="padding:5px 7px;"><strong>五志（喜怒思憂恐）</strong>、五聲、變動、相勝關係</td></tr>
+      <tr><td style="padding:5px 7px;">臨床價值</td><td style="padding:5px 7px;">養生指導（季節飲食）</td><td style="padding:5px 7px;"><strong>情志療法</strong>、辨證定位</td></tr>
+    </table>
+    <p><strong>互補關係：</strong></p>
+    <ul>
+      <li>SW_04 建立靜態對應框架（臟腑↔自然）。</li>
+      <li>SW_05 加入<strong>動態關係</strong>（情志相剋、病變傳變、治療原則）。</li>
+      <li>兩者結合＝完整嘅「五行醫學」體系。</li>
+    </ul>
+    <p><strong>啟示：</strong>中醫嘅「五行」唔係僵化嘅符號遊戲，而係一個<strong>有臨床指導價值嘅動態系統</strong>——尤其係情志相勝嘅治療思路，喺現代心身醫學依然有啟發。</p>
+  </details>
+
+</section>
+
+<footer>
+  素問・陰陽應象大論篇第五｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_05_陰陽應象大論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>

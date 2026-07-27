@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・金匱真言論篇第四</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0; padding:24px;
+       max-width:840px; margin:0 auto;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .summary table{border-collapse:collapse; margin:10px 0; font-size:0.9em; width:100%;}
+  .summary th, .summary td{border:1px solid var(--border); padding:6px 10px; text-align:center;}
+  .summary th{background:var(--accent); color:#fff;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>金匱真言論篇第四</h1>
+  <div class="subtitle">素問・卷四｜八風五臟・陰陽劃分・五行對應</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>「金匱」係古代珍藏重要文獻嘅金匣——篇名暗示內容珍貴。呢篇建立咗中醫最完整嘅「對應體系」：<strong>四時（春夏秋冬）、五方（東南中西北）、五臟（肝心脾肺腎）、五行（木火土金水）</strong>之間嘅全方位對應，並將佢哋同顏色、味道、穀物、牲畜、星宿、音律、數字、氣味全部連起嚟。全篇圍繞住一個問題：<strong>自然環境（風、季節、方位）點樣對應人體臟腑？知道呢啲對應有咩用？</strong></p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>八風之問：</strong>「八風」係邊八種風？點解東風會傷肝、南風會傷心？風同臟腑之間嘅對應關係，係咪有科學根據，定係純粹哲學推演？</li>
+      <li><strong>陰陽劃分之問：</strong>「陽中之陽」「陰中之陰」——呢種「陰陽之中復有陰陽」嘅劃分，聽落好複雜。佢到底想表達咩？對實際診病有咩用？</li>
+      <li><strong>五行對應之問：</strong>東方＝青色＝肝＝酸味＝雞＝麥＝歲星＝角音＝數字八……呢一大串對應，係咪古人牽強附會？定係有一套內在邏輯？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>八風＋四時發病（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>陰陽劃分（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>五臟全方位對應（藍）</span>
+</div>
+
+<!-- ===== 第一段：八風與四時發病 ===== -->
+<section class="passage">
+  <div class="passage-title">一、八風觸五臟：四季風邪嘅發病規律</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝問：自然界有「八風」，人體經脈病變又有「五風」嘅講法，係點解？</p>
+      <p>岐伯答：自然界嘅八風係外部致病邪氣，佢侵犯經脈，產生經脈風病，風邪仲會沿經脈而侵害五臟，令五臟發生病變。一年四季有相剋關係：春勝長夏、長夏勝冬、冬勝夏、夏勝秋、秋勝春——呢個就係「<mark class="k1">四時相勝</mark>」。</p>
+      <p><mark class="k1">東風生於春季，病多發生喺肝</mark>，經氣輸注於頸項；<mark class="k1">南風生於夏季，病多發生喺心</mark>，經氣輸注於胸脅；<mark class="k1">西風生於秋季，病多發生喺肺</mark>，經氣輸注於肩背；<mark class="k1">北風生於冬季，病多發生喺腎</mark>，經氣輸注於腰股；中央屬土，<mark class="k1">病多發生喺脾</mark>，經氣輸注於脊。</p>
+      <p>所以春季邪氣傷人多病喺頭部；夏季多病喺臟（心）；秋季多病喺肩背；冬季多病喺四肢。春天多發生鼻塞流鼻血（鼽衄），夏天多發生胸脅疾患，長夏多發生洞泄裏寒證，秋天多發生風瘧，冬天多發生痹厥。</p>
+      <p>精係人體根本。<mark class="k1">陰精內藏而唔妄泄，春天就唔會得溫熱病</mark>。夏暑陽盛如果唔能排汗散熱，到秋天就會釀成風瘧病。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：點解「冬不按蹻，春不鼽衄」？</strong>
+      「按蹻」係古代按摩導引術，會令陽氣外泄。冬天應該閉藏，如果冬天做按蹻擾動陽氣，精氣外泄，到春天就會因為衛氣唔固而容易感冒流鼻血。<em>呢個反映咗「冬藏」對「春生」嘅影響——一季養生唔好，下一季就出事。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k1">東風生於春，病在肝</mark>，俞在頸項；<mark class="k1">南風生於夏，病在心</mark>，俞在胸肋；<mark class="k1">西風生於秋，病在肺</mark>，俞在肩背；<mark class="k1">北風生於冬，病在腎</mark>，俞在腰股；中央爲土，<mark class="k1">病在脾</mark>，俞在脊。</p>
+      <p>故春氣者，病在頭；夏氣者，病在髒；秋氣者，病在肩背；冬氣者，病在四肢。</p>
+      <p>故春善病鼽衄，仲夏善病胸脅，長夏善病洞泄寒中，秋善病風瘧，冬善痹厥。</p>
+      <p>夫精者，身之本也。故<mark class="k1">藏於精者，春不病溫</mark>。夏暑汗不出者，秋成風瘧，此平人脈法也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：陰陽劃分 ===== -->
+<section class="passage">
+  <div class="passage-title">二、陰中有陰，陽中有陽：一日同人體嘅陰陽劃分</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k2">陰陽之中，仲各有陰陽</mark>。白晝屬陽：平旦到中午，係「陽中之陽」；中午到黃昏，係「陽中之陰」。黑夜屬陰：合夜到雞鳴，係「陰中之陰」；雞鳴到平旦，係「陰中之陽」。</p>
+      <p>人嘅情況亦都相應：<mark class="k2">外部屬陽、內部屬陰；背屬陽、腹屬陰；臟屬陰、腑屬陽</mark>。肝、心、脾、肺、腎五臟都屬陰；膽、胃、大腸、小腸、膀胱、三焦六腑都屬陽。</p>
+      <p>背為陽：陽中之陽係心，陽中之陰係肺。腹為陰：陰中之陰係腎，陰中之陽係肝，陰中之至陰係脾。呢啲都係人體陰陽表裏、內外雌雄互相聯繫又互相對應嘅例證。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「陰陽之中復有陰陽」有咩用？</strong>
+      呢個劃分嘅用途係<strong>辨證定位</strong>——知道疾病喺陰定陽、喺表定裏、喺臟定腑，就可以決定治療方向（例如「冬病在陰，夏病在陽」就要用唔同方法醫）。<em>陰陽唔係一刀切，而係無限可分嘅——呢個係中醫辨證論治嘅哲學基礎。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>故曰：<mark class="k2">陰中有陰，陽中有陽</mark>。平旦至日中，天之陽，陽中之陽也；日中至黃昏，天之陽，陽中之陰也；合夜至雞鳴，天之陰，陰中之陰也；雞鳴至平旦，天之陰，陰中之陽也。</p>
+      <p>故人亦應之，夫言人之陰陽，<mark class="k2">則外爲陽，內爲陰</mark>。言人身之陰陽，<mark class="k2">則背爲陽，腹爲陰</mark>。言人身之臟腑中陰陽，<mark class="k2">則髒者爲陰，腑者爲陽</mark>。</p>
+      <p>故背爲陽，陽中之陽，心也；背爲陽，陽中之陰，肺也；腹爲陰，陰中之陰，腎也，陰中之陽，肝也；腹爲陰，陰中之至陰，脾也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：五臟全方位對應體系 ===== -->
+<section class="passage">
+  <div class="passage-title">三、五臟應四時：東南中西北嘅全方位對應體系</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k3">東方青色，同肝相通，開竅於目</mark>，發病常表現為驚駭，味酸，同草木同類，畜為雞，穀為麥，對應歲星，音為角，數為八，病多在筋，臭為臊。</p>
+      <p><mark class="k3">南方赤色，同心相通，開竅於耳</mark>，味苦，同火同類，畜為羊，穀為黍，對應熒惑星，音為徵，數為七，病多在脈，臭為焦。</p>
+      <p><mark class="k3">中央黃色，同脾相通，開竅於口</mark>，味甘，同土同類，畜為牛，穀為稷，對應鎮星，音為宮，數為五，病多在肉，臭為香。</p>
+      <p><mark class="k3">西方白色，同肺相通，開竅於鼻</mark>，味辛，同金同類，畜為馬，穀為稻，對應太白星，音為商，數為九，病多在皮毛，臭為腥。</p>
+      <p><mark class="k3">北方黑色，同腎相通，開竅於二陰</mark>，味鹹，同水同類，畜為彘（豬），穀為豆，對應辰星，音為羽，數為六，病多在骨，臭為腐。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：五臟對應體系一覽表</strong>
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.92em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 8px; border:1px solid var(--border);">五方</th><th style="padding:5px 8px; border:1px solid var(--border);">五色</th><th style="padding:5px 8px; border:1px solid var(--border);">五臟</th><th style="padding:5px 8px; border:1px solid var(--border);">五行</th><th style="padding:5px 8px; border:1px solid var(--border);">五味</th><th style="padding:5px 8px; border:1px solid var(--border);">五竅</th><th style="padding:5px 8px; border:1px solid var(--border);">五畜</th><th style="padding:5px 8px; border:1px solid var(--border);">五穀</th><th style="padding:5px 8px; border:1px solid var(--border);">五星</th><th style="padding:5px 8px; border:1px solid var(--border);">五音</th><th style="padding:5px 8px; border:1px solid var(--border);">數</th></tr>
+        <tr><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">東</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">青</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">肝</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">木</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">酸</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">目</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">雞</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">麥</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">歲星</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">角</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">8</td></tr>
+        <tr><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">南</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">赤</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">心</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">火</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">苦</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">耳</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">羊</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">黍</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">熒惑</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">徵</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">7</td></tr>
+        <tr><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">中</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">黃</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">脾</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">土</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">甘</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">口</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">牛</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">稷</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">鎮星</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">宮</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">5</td></tr>
+        <tr><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">西</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">白</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">肺</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">金</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">辛</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">鼻</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">馬</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">稻</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">太白</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">商</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">9</td></tr>
+        <tr><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">北</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">黑</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">腎</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">水</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">鹹</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">二陰</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">彘</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">豆</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">辰星</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">羽</td><td style="padding:5px 8px; border:1px solid var(--border); text-align:center;">6</td></tr>
+      </table>
+      <em>呢個表係中醫「整體觀」嘅具體化——人體五臟同自然界嘅顏色、味道、方位、季節、星宿全部對應，反映「天人合一」嘅哲學。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k3">東方青色，入通於肝，開竅於目</mark>，藏精於肝。其病發驚駭，其味酸，其類草木，其畜雞，其谷麥，其應四時，上爲歲星，是以春氣在頭也。其音角，其數八，是以知病之在筋也，其臭臊。</p>
+      <p><mark class="k3">南方赤色，入通於心，開竅於耳</mark>，藏於心，故病在五臟。其味苦，其類火，其畜羊，其谷黍，其應四時，上爲熒惑星。是以知病之在脈也。其音徵，其數七，其臭焦。</p>
+      <p><mark class="k3">中央黃色，入通於脾，開竅於口</mark>，藏精於脾，故病在舌本。其味甘，其類土，其畜牛，其谷稷，其應四時，上爲鎮星。是以知病之在肉也。其音宮，其數五，其臭香。</p>
+      <p><mark class="k3">西方白色，入通於肺，開竅於鼻</mark>，藏精於肺，故病背。其味辛，其類金，其畜馬，其谷稻，其應四時，上爲太白星。是以知病之在皮毛也。其音商，其數九，其臭腥。</p>
+      <p><mark class="k3">北方黑色，入通於腎，開竅於二陰</mark>，藏精於腎，故病在膝。其味鹹，其類水，其畜彘，其谷豆，其應四時，上爲辰星。是以知病之在骨也。其音羽，其數六，其臭腐。<span class="page-num">（原檔頁碼：8-9）</span></p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>八風五臟對應</strong>：東風→肝→頸項；南風→心→胸脅；西風→肺→肩背；北風→腎→腰股；中央→脾→脊。</li>
+    <li><strong>四時發病規律</strong>：春病在頭（鼽衄）、夏病在臟（胸脅）、秋病在肩背（風瘧）、冬病在四肢（痹厥）。</li>
+    <li><strong>藏精防病</strong>：「藏於精者，春不病溫」——冬天藏好精氣，春天就唔容易感染溫病。</li>
+    <li><strong>陰陽無限可分</strong>：一日分四段（陽中陽／陽中陰／陰中陰／陰中陽）；人體分背腹臟腑，各臟腑再分陰陽。</li>
+    <li><strong>五臟全方位對應</strong>：五臟同五方、五色、五行、五味、五竅、五畜、五穀、五星、五音、數字全部對應——「天人合一」嘅具體化。</li>
+    <li><strong>傳承之道</strong>：「非其人勿教，非其真勿授」——珍貴知識要傳俾真正嘅人。</li>
+  </ul>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「八風之問」）：八風點解會對應五臟？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>八風係指八個方位嘅風，佢哋帶有唔同季節嘅氣候特徵，會通過經脈侵害對應嘅臟腑。</p>
+    <p><strong>對應規律：</strong>東風（春季）→肝；南風（夏季）→心；西風（秋季）→肺；北風（冬季）→腎；中央（長夏）→脾。呢個對應基於<strong>五行相配</strong>：春屬木配肝、夏屬火配心、秋屬金配肺、冬屬水配腎、長夏屬土配脾。</p>
+    <p><strong>係咪有科學根據？</strong>部分有——例如春天多風、氣壓變化大，容易引起肝氣鬱結（情緒波動）；冬天寒冷確實容易引發關節痛（腎主骨）。但具體嘅「風→臟腑」對應，更多係古人<strong>宏觀觀察＋哲學推演</strong>嘅結果。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「陰陽劃分之問」）：「陰陽之中復有陰陽」有咩實際用途？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>用途係<strong>辨證定位</strong>，令診病更精準。</p>
+    <p><strong>具體應用：</strong></p>
+    <ul>
+      <li>知道疾病喺陰定陽，就可以判斷病情深淺（陽病較淺、陰病較深）。</li>
+      <li>「冬病在陰，夏病在陽」——冬天病多深入臟腑（陰），夏天病多喺體表（陽），治療方向唔同。</li>
+      <li>臟腑再分陰陽（心＝陽中之陽、腎＝陰中之陰），令五臟各有定位，方便配穴同用藥。</li>
+    </ul>
+    <p><strong>一句講晒：</strong>陰陽唔係一刀切，而係無限可分——越分越細，診病越精準。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「五行對應之問」）：五臟嘅全方位對應，係咪牽強附會？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>唔係純粹牽強附會，而係有一套<strong>內在邏輯（五行系統）</strong>，但部分對應確實有主觀成分。</p>
+    <p><strong>有邏輯嘅部分：</strong></p>
+    <ul>
+      <li>方位＋季節：東方配春季（日出方位、萬物生發）。</li>
+      <li>顏色：東方配青色（春天草木青綠），合理。</li>
+      <li>味道：酸對應肝（中醫認為酸入肝），有一定臨床根據。</li>
+    </ul>
+    <p><strong>主觀成分：</strong>五畜（雞羊牛馬豬）、五星、五音、數字嘅對應，更多係構建<strong>統一系統</strong>嘅需要，唔一定有因果關係。</p>
+    <p><strong>價值：</strong>呢個系統嘅意義唔在於每個對應都「科學」，而在於佢提供咗一個<strong>整體性嘅認知框架</strong>——提醒我哋人體同自然界係緊密相連嘅。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：「藏於精者，春不病溫」——點解冬天藏精可以預防春天嘅溫病？</summary>
+    <p><strong>機制：</strong>冬天係閉藏季節，精氣應該內藏。如果冬天過度消耗（房事過度、過勞、出汗太多），精氣外泄，到春天陽氣升發時，正氣不足，就容易感染溫熱病。</p>
+    <p><strong>同《生氣通天論》呼應：</strong>上一篇講「冬傷於寒，春必溫病」（外邪潛伏）；呢篇講「藏於精者，春不病溫」（正氣充足）。兩者結合＝<em>冬天既唔好受寒（避邪），又要藏好精氣（扶正）——雙管齊下。</em></p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「冬不按蹻」——冬天唔好做按摩導引？咁冬天完全唔運動？</summary>
+    <p><strong>原文意思：</strong>「按蹻」係古代一種<strong>比較劇烈嘅按摩導引術</strong>，會令陽氣外泄、出汗。冬天應該閉藏，做呢啲會干擾陽氣潛藏。</p>
+    <p><strong>唔係完全唔運動：</strong>冬天可以做<strong>溫和嘅運動</strong>——太極、散步、八段錦，微微暖就好，唔好大汗淋漓。關鍵係「無泄皮膚」——唔好令陽氣過度外散。</p>
+    <p><strong>現代對照：</strong>冬天去桑拿、熱瑜伽、劇烈運動到大汗，都係「按蹻」嘅現代版，中醫認為違反冬藏之氣。</p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：五臟對應「五竅」——肝開竅於目、心開竅於耳……點解咁對應？有臨床意義嗎？</summary>
+    <p><strong>對應：</strong>肝→目、心→耳、脾→口、肺→鼻、腎→二陰。</p>
+    <p><strong>臨床意義：</strong>觀察外在竅口嘅變化，可以推斷內臟嘅狀況。例如：</p>
+    <ul>
+      <li>眼睛乾澀、視力模糊→多係肝血不足（肝開竅於目）。</li>
+      <li>長期耳鳴、聽力下降→可能係腎虛（注意：原文心開竅於耳，但後世中醫多認為腎開竅於耳，呢個係《內經》內部嘅演變）。</li>
+      <li>鼻塞、嗅覺減退→肺氣不宣（肺開竅於鼻）。</li>
+    </ul>
+    <p><strong>價值：</strong>呢個係中醫「<strong>望診</strong>」嘅理論基礎——通過觀察體表徵象推斷內臟病變，係一種<em>非侵入性</em>嘅診斷智慧。</p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「非其人勿教，非其真勿授」——呢句反映咗古代醫學傳承嘅咩觀念？放喺現代仲啱用嗎？</summary>
+    <p><strong>古代語境：</strong>醫術係珍貴知識，要傳俾<strong>品德好、有天分、真心學習</strong>嘅人，唔好俾心術不正嘅人學（怕被濫用）。</p>
+    <p><strong>反映嘅觀念：</strong></p>
+    <ul>
+      <li>醫術＝關乎性命，要慎重傳承。</li>
+      <li>知識有「道德門檻」——唔係人人都有資格學。</li>
+      <li>師徒制嘅精英主義。</li>
+    </ul>
+    <p><strong>現代啟示：</strong>現代醫學教育主張普及，但「<strong>醫德教育</strong>」依然重要——技術可以教，但醫者嘅仁心同責任感唔可以忽略。呢句話提醒我哋：<em>醫術唔淨係技術，更係一種責任。</em></p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《金匱真言論》嘅「五行對應體系」，對現代中醫有咩價值同局限？</summary>
+    <p><strong>價值：</strong></p>
+    <ul>
+      <li><strong>整體觀嘅具體化</strong>：提醒醫者人體同自然環境緊密相連，診病要考慮季節、氣候、地域。</li>
+      <li><strong>診斷框架</strong>：五竅、五味對應提供咗望診同問診嘅思路。</li>
+      <li><strong>養生指導</strong>：根據季節調整飲食起居（春季養肝、冬季養腎）。</li>
+    </ul>
+    <p><strong>局限：</strong></p>
+    <ul>
+      <li><strong>部分對應牽強</strong>：五畜、五星、五音、數字嘅對應，更多係系統建構需要，缺乏實證。</li>
+      <li><strong>過度系統化</strong>：為咗湊夠「五」，有時會強行歸類（例如長夏係為咗配合五行而人為劃分）。</li>
+      <li><strong>內部矛盾</strong>：唔同篇章對同一事物嘅對應有時唔一致（如心開竅於耳 vs 腎開竅於耳）。</li>
+    </ul>
+    <p><strong>啟示：</strong>要用批判性眼光對待——<em>保留有臨床價值嘅對應（如五臟同季節、味道嘅關係），對缺乏根據嘅對應（如星宿、數字）作為文化遺產理解就得。</em></p>
+  </details>
+
+</section>
+
+<footer>
+  素問・金匱真言論篇第四｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_04_金匱真言論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>

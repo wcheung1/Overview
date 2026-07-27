@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・四氣調神大論篇第二</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0; padding:24px;
+       max-width:840px; margin:0 auto;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0; color:var(--ink);}
+
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>四氣調神大論篇第二</h1>
+  <div class="subtitle">素問・卷二｜四時養生・治未病之源</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇係《黃帝內經》講「四季養生」嘅專篇。佢將一年分成春夏秋冬四個階段，每個階段都有對應嘅起居、情志、行為準則——核心係「<strong>春生、夏長、秋收、冬藏</strong>」，人要順應四季氣機變化嚟調整生活節奏。文中仲提出咗兩個千古名言：「<strong>春夏養陽，秋冬養陰</strong>」同「<strong>不治已病，治未病</strong>」（等病咗先醫，就好似渴先至去掘井咁遲）。全篇圍繞住一個問題：<strong>點樣順應四季變化，令人體同自然同步，做到防病於未然？</strong></p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>四季之問：</strong>中醫話春天要「夜臥早起」、冬天又要「早臥晚起」——點解唔同季節連瞓覺起身時間都要唔同？背後原理係咩？</li>
+      <li><strong>養陰陽之問：</strong>「春夏養陽，秋冬養陰」呢句話，係咪即係夏天要補陽、冬天要補陰？點解反而夏天要養陽、冬天要養陰？呢個同我哋直覺好似有啲相反？</li>
+      <li><strong>治未病之問：</strong>「不治已病，治未病」——即係唔醫已經有嘅病？定係預防勝於治療？呢個觀念喺現代醫學仲有冇價值？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>春夏養陽（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>秋冬養陰（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>治未病／四時根本（藍）</span>
+  —— 同色即文言與白話對應重點，滑鼠指住會有框線提示。
+</div>
+
+<!-- ===== 第一段：春季養生 ===== -->
+<section class="passage">
+  <div class="passage-title">一、春三月：養「生」之氣——萬物萌發，人要順勢舒展</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>春季三個月，叫做「發陳」——即係將舊嘅推出去、新嘅生出嚟，生命開始萌發。天地自然都充滿生氣，萬物欣欣向榮。</p>
+      <p>呢個時候，人應該：<mark class="k1">入夜就要瞓，早啲起身；解開頭髮、放寬衣帶</mark>，令身體舒緩；喺庭院裡面闊步散步，令精神愉快、胸懷開朗，保持萬物生機。唔好亂殺伐，多施與、少奪取，多獎勵、少懲罰——呢個就係順應春季時令、保養「生發之氣」嘅方法。</p>
+      <p><mark class="k3">如果違反咗春生之氣，就會損傷肝臟</mark>，令到供給夏季「長」氣嘅條件不足，到咗夏天就會發生寒性病變。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：點解春天要「被髮緩形」？</strong>
+      古人束髮為冠，係正式、拘束嘅打扮。春天要「被髮（解開頭髮）緩形（放寬衣帶）」，係一種<strong>象徵性嘅身體放鬆</strong>——令氣血運行順暢，呼應萬物舒展生長嘅時令。同理，「廣步於庭」唔淨係散步咁簡單，而係令四肢氣血流通、呼應春氣升發。現代人春天可以理解為：<em>多啲去戶外活動、著寬鬆衫、保持心情舒暢，唔好成日屈喺室內。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>春三月，此爲發陳。天地俱生，萬物以榮，<mark class="k1">夜臥早起，廣步於庭，被髮緩形</mark>，以使志生，生而勿殺，予而勿奪，賞而勿罰，此春氣之應，養生之道也；</p>
+      <p><mark class="k3">逆之則傷肝</mark>，夏爲實寒變，奉長者少。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：夏季養生 ===== -->
+<section class="passage">
+  <div class="passage-title">二、夏三月：養「長」之氣——萬物繁茂，人要外向宣通</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>夏季三個月，叫做「蕃秀」——係自然界萬物繁茂秀美嘅時令。天氣下降、地氣上騰，天地之氣相交，植物開花結果，長勢旺盛。</p>
+      <p>呢個時候，人應該：<mark class="k1">夜晚瞓、早啲起身，唔好厭惡日長；保持情志愉快、唔好發怒</mark>；令精神嘅英華適應夏氣而展現秀美；令氣機宣暢、通泄自如，精神外向，對外界事物有濃厚興趣——呢個就係順應夏季時令、保養「長養之氣」嘅方法。</p>
+      <p><mark class="k3">如果違反咗夏長之氣，就會損傷心臟</mark>，令到供給秋季「收」氣嘅條件不足，到咗秋天就容易發生瘧疾，冬天仲會再發病。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：夏天「使氣得泄」即係點？</strong>
+      「使氣得泄」= 令體內陽氣得以宣泄外達。夏天氣機本來就向外、向上，人應該順勢而出汗、活動、社交。現代人最大嘅問題係：<em>日日留喺冷氣房、唔出汗、少運動</em>——呢個其實係違反夏長之氣，等於將應該外泄嘅陽氣強行壓抑，反而容易積熱生病（中醫叫「寒包火」）。所以夏天適度出汗、適度運動，反而係養生。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>夏三月，此爲蕃秀。天地氣交，萬物華實，<mark class="k1">夜臥早起，無厭於日，使志勿怒</mark>，使華英成秀，使氣得泄，若所愛在外，此夏氣之應，養長之道也；</p>
+      <p><mark class="k3">逆之則傷心</mark>，秋爲痎瘧，奉收者少，冬至重病。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：秋季養生 ===== -->
+<section class="passage">
+  <div class="passage-title">三、秋三月：養「收」之氣——萬物成熟，人要收斂安寧</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>秋季三個月，叫做「容平」——自然界景象因為萬物成熟而平定收斂。天高風急，地氣清肅。</p>
+      <p>呢個時候，人應該：<mark class="k2">早啲瞓、早啲起身，同雞嘅活動時間相仿；保持神志安寧，減緩秋季肅殺之氣對人體嘅影響；收斂神氣</mark>，適應秋季容平嘅特徵；唔好令神思外馳，保持肺氣清肅——呢個就係順應秋令、保養人體「收斂之氣」嘅方法。</p>
+      <p><mark class="k3">如果違反咗秋收之氣，就會傷及肺臟</mark>，令到供給冬季「藏」氣嘅條件不足，冬天就會發生飧泄（完穀不化嘅腹瀉）。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「與雞俱興」同「收斂神氣」</strong>
+      雞嘅作息係「日落而息、日出而作」，秋天日短夜長，所以人都要早啲瞓。「收斂神氣」係秋天嘅核心——夏天係外向發散，秋天就要開始收返入嚟。現代人秋天可以理解為：<em>減少過度社交同刺激、早啲休息、多靜坐冥想、減少熬夜</em>。秋天對應肺，肺主呼吸、主皮毛，所以秋天要特別注意保濕、防秋燥。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>秋三月，此謂容平。天氣以急，地氣以明，<mark class="k2">早臥早起，與雞俱興，使志安寧，以緩秋刑，收斂神氣</mark>，使秋氣平，無外其志，使肺氣清，此秋氣之應，養收之道也；</p>
+      <p><mark class="k3">逆之則傷肺</mark>，冬爲飧泄，奉藏者少。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第四段：冬季養生 ===== -->
+<section class="passage">
+  <div class="passage-title">四、冬三月：養「藏」之氣——萬物蟄伏，人要閉藏保陽</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>冬季三個月，叫做「閉藏」——生機潛伏，萬物蟄藏。水寒成冰，大地龜裂。</p>
+      <p>呢個時候，人應該：<mark class="k2">早啲瞓、晏啲起身，等到日光照耀先至起床；唔好輕易擾動陽氣、妄事操勞；令神志深藏於內、安靜自若</mark>，好似有個人秘密咁嚴守不外泄，又好似得到渴望嘅嘢將佢密藏起嚟；避開寒冷、求取溫暖；唔好令皮膚開泄而令陽氣不斷流失——呢個就係順應冬季氣候、保養人體「閉藏機能」嘅方法。</p>
+      <p><mark class="k3">如果違反咗冬藏之氣，就會損傷腎臟</mark>，令到供給春季「生」氣嘅條件不足，春天就會發生痿厥（手腳無力冰冷）之疾。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：冬天「無泄皮膚」＝唔好出汗？</strong>
+      「無泄皮膚」= 唔好令皮膚過度開泄出汗。冬天陽氣應該內藏，出汗會令陽氣外泄。所以中醫主張冬天運動要適度，<em>微微出汗就好，唔好大汗淋漓</em>。現代人冬天去桑拿、蒸氣浴、劇烈運動到大汗，其實都係違反冬藏之氣。冬天對應腎，腎主藏精，所以冬天係「進補」嘅最佳時節——但要注意係溫補，唔係燥補。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>冬三月，此爲閉藏。水冰地坼，勿擾乎陽，<mark class="k2">早臥晚起，必待日光，使志若伏若匿</mark>，若有私意，若已有得，去寒就溫，無泄皮膚，使氣極奪。此冬氣之應，養藏之道也；</p>
+      <p><mark class="k3">逆之則傷腎</mark>，春爲痿厥，奉生者少。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第五段：四時根本 + 治未病 ===== -->
+<section class="passage">
+  <div class="passage-title">五、四時陰陽係根本 + 治未病：養生嘅最高原則</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>四時陰陽嘅變化，係萬物生命嘅根本。所以聖人喺春夏季節<mark class="k3">保養陽氣</mark>以適應生長嘅需要，喺秋冬季節<mark class="k3">保養陰氣</mark>以適應收藏嘅需要——順從咗生命發展嘅根本規律，就能夠同萬物一樣，喺「生、長、收、藏」嘅生命過程中運動發展。如果違反呢個規律，就會削減生命力、破壞真元之氣。</p>
+      <p>陰陽四時係萬物嘅終結同開始，係盛衰存亡嘅根本。違反佢就會產生災害，順從佢就唔會發生重病——呢個就叫做「懂得養生之道」。對於養生之道，聖人能夠實行，愚人卻時常違背。順從陰陽消長就能生存，違反就會死亡；順從就會正常，違反就會乖亂；背道而行，就會令機體同自然環境互相格拒（內格）。</p>
+      <p>所以聖人唔係等病已經發生再去醫，而係<mark class="k3">治療喺疾病發生之前</mark>；唔係等亂事已經發生再去治理，而係治理喺佢發生之前。如果疾病已經發生然後再去醫、亂子已經形成然後再去治理，就好似<mark class="k3">渴咗先至去掘井、打仗先至去鑄造兵器</mark>咁——唔係太遲咩？</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「春夏養陽，秋冬養陰」嘅關鍵</strong>
+      呢句話唔係「春夏補陽、秋冬補陰」咁簡單，而係：<strong>春夏要順應陽氣外發升展嘅趨勢，唔好壓抑佢；秋冬要順應陰氣內收潛藏嘅趨勢，唔好耗散佢。</strong>例如夏天唔好成日留喺冷氣房壓抑陽氣（春夏養陽）；冬天唔好過度出汗令陰精外泄（秋冬養陰）。呢個係「順勢而為」，唔係「對抗補充」。
+    </div>
+
+    <div class="note">
+      <strong>註解：「治未病」嘅三層含義</strong>
+      ① <strong>未病先防</strong>：未病之前，透過順應四時、調暢情志、飲食有節嚟預防（本篇主旨）。<br>
+      ② <strong>既病防變</strong>：已經病咗，要防止病情惡化同傳變。<br>
+      ③ <strong>瘥後防復</strong>：病好咗之後，要防止復發。<br>
+      <em>「渴而穿井」嘅比喻，生動講出咗「等出事先處理」嘅荒謬——呢個觀念喺現代預防醫學依然係金科玉律。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>夫四時陰陽者，萬物之根本也。所以聖人<mark class="k3">春夏養陽，秋冬養陰</mark>，以從其根；故與萬物沉浮於生長之門。逆其根則伐其本，壞其真矣。</p>
+      <p>故陰陽四時者，萬物之終始也；生死之本也；逆之則災害生，從之則苛疾不起，是謂得道。</p>
+      <p>道者，聖人行之，愚者佩之。從陰陽則生，逆之則死；從之則治，逆之則亂。反順爲逆，是謂內格。</p>
+      <p>是故聖人<mark class="k3">不治已病，治未病</mark>；不治已亂，治未亂，此之謂也。夫病已成而後藥之，亂己成而後治之，譬猶<mark class="k3">渴而穿井，鬥而鑄錐</mark>，不亦晚乎？</p>
+    </div>
+
+    <!-- 天氣清淨段（文言原文忠實保留） -->
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言・天地氣象）</span>
+      <p>天氣清淨，光明者也，藏德不止，故不下也。天明則日月不明，邪害空竅。陽氣者閉塞，地氣者冒明，雲霧不精，則上應白露不下。交通不表，萬物命故不施，不施則名木多死。惡氣不發，風雨不節，白露不下，則菀不榮。賊風數至，暴雨數起，天地四時不相保，與道相失，則未央絕滅。唯聖人從之，故身無奇病，萬物不失，生氣不竭。</p>
+    </div>
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（天地氣象段）</span>
+      <p>天氣本來係清淨光明嘅，蘊藏住德澤而運行不止，所以永遠保持內蘊力量而唔會下泄。如果天氣陰霾晦暗，日月就會昏暗，陰霾邪氣會侵害山川空竅；陽氣閉塞不通、大地昏蒙不明、雲霧瀰漫日色無光，相應嘅雨露就唔能夠下降。天地之氣唔相交，萬物嘅生命就唔能夠綿延；生命唔能夠綿延，連高大嘅樹木都會死亡。惡劣氣候發作，風雨無時，雨露當降唔降，草木得唔到滋潤、生機鬱塞，茂盛嘅禾苗都會枯槁。賊風頻頻到、暴雨不時而作，天地四時變化失去秩序、違背正常規律，萬物嘅生命未到一半就夭折。只有聖人能夠順應自然變化、注重養生之道，所以身無大病，唔背離自然發展規律，生機唔會竭絕。</p>
+    </div>
+
+    <!-- 逆四時之害（文言原文忠實保留） -->
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言・逆四時之害）</span>
+      <p>逆春氣則少陽不生，肝氣內變。逆夏氣則太陽不長，心氣內洞。逆秋氣則太陰不收，肺氣焦滿。<span class="page-num">（原檔頁碼：4）</span>逆冬氣則少陰不藏，腎氣獨沉。</p>
+    </div>
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（逆四時之害）</span>
+      <p>違反春生之氣，少陽之氣就唔能夠生發，以致肝氣內鬱而發生病變；違反夏長之氣，太陽之氣就唔能夠盛長，以致心氣內虛；違反秋收之氣，太陰之氣就唔能夠收斂，以致肺熱葉焦而脹滿；違反冬藏之氣，少陰之氣就唔能夠潛藏，以致腎氣唔蓄，出現注瀉等疾病。</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>四季養生核心</strong>：春生、夏長、秋收、冬藏——每個季節都有對應嘅起居、情志、行為準則，唔可以一刀切。</li>
+    <li><strong>春天</strong>：夜臥早起、被髮緩形、廣步於庭、生而勿殺——順應生發之氣；逆之傷肝。</li>
+    <li><strong>夏天</strong>：夜臥早起、無厭於日、使志勿怒、使氣得泄——順應長養之氣；逆之傷心。</li>
+    <li><strong>秋天</strong>：早臥早起、與雞俱興、收斂神氣、使肺氣清——順應收斂之氣；逆之傷肺。</li>
+    <li><strong>冬天</strong>：早臥晚起、必待日光、無泄皮膚、去寒就溫——順應閉藏之氣；逆之傷腎。</li>
+    <li><strong>根本原則</strong>：「春夏養陽，秋冬養陰」＝順應陽氣外發同陰氣內收嘅趨勢，唔係對抗補充。</li>
+    <li><strong>最高原則</strong>：「不治已病，治未病」——預防勝於治療；「渴而穿井，鬥而鑄錐」係千古警喻。</li>
+  </ul>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「四季之問」）：點解唔同季節連瞓覺起身時間都要唔同？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>因為人體氣機要同四季氣機同步。</p>
+    <ul>
+      <li><strong>春／夏（夜臥早起）</strong>：春夏日照長、陽氣升發，人應該順勢早啲起身、活動多啲，配合「生、長」之氣。</li>
+      <li><strong>秋天（早臥早起，與雞俱興）</strong>：秋天日短夜長、陽氣開始收斂，所以要早啲瞓，但依然早起（因為秋氣清肅，早晨空氣好）。</li>
+      <li><strong>冬天（早臥晚起，必待日光）</strong>：冬天陽氣潛藏、寒冷，要等到日頭出嚟先起床，避免寒邪侵襲。</li>
+    </ul>
+    <p><strong>一句講晒：</strong>瞓覺起身時間唔係隨意，而係順應四季陽氣嘅升發同潛藏節奏。呢個答案解答咗章首嘅疑問——背後原理係「人體氣機要同自然氣機同步」。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「養陰陽之問」）：點解夏天要養陽、冬天要養陰？呢個同直覺好似相反？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>關鍵在於「<strong>順勢而為</strong>」而唔係「對抗補充」。</p>
+    <ul>
+      <li><strong>春夏養陽</strong>：春夏陽氣本來就向外升發，人要順應呢個趨勢——適度出汗、活動、精神外向，<em>唔好壓抑陽氣</em>（例如唔好成日留喺冷氣房）。</li>
+      <li><strong>秋冬養陰</strong>：秋冬陰氣本來就內收潛藏，人要順應呢個趨勢——早瞓、收斂神志、唔好過度出汗，<em>唔好耗散陰精</em>。</li>
+    </ul>
+    <p><strong>點解同直覺相反？</strong>因為我哋誤以為「養」=「補」。其實「養」=「順應、保養」。夏天養陽唔係食壯陽藥，而係令陽氣順利外發；冬天養陰唔係食滋陰藥，而係令陰精得以內藏。</p>
+    <p><strong>一句講晒：</strong>春夏養陽＝順勢令陽氣外發；秋冬養陰＝順勢令陰氣內收。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「治未病之問」）：「不治已病，治未病」係咪即係唔醫有嘅病？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>唔係唔醫病，而係強調<strong>預防優先</strong>。</p>
+    <p>「治未病」有三層含義：</p>
+    <ul>
+      <li>① <strong>未病先防</strong>：未病之前，透過順應四時、調暢情志、飲食有節嚟預防。</li>
+      <li>② <strong>既病防變</strong>：已經病咗，要防止惡化同傳變。</li>
+      <li>③ <strong>瘥後防復</strong>：病好咗，要防止復發。</li>
+    </ul>
+    <p>「渴而穿井，鬥而鑄錐」嘅比喻，生動講出「等出事先處理」嘅荒謬。呢個觀念喺現代預防醫學依然係金科玉律——例如疫苗接種、定期體檢、健康生活方式，都係「治未病」嘅現代實踐。</p>
+    <p><strong>一句講晒：</strong>「治未病」＝預防勝於治療，而唔係消極唔醫病。呢個解答咗章首嘅疑問。</p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：如果違反咗春生之氣，點解會「傷肝」？點解又會影響到夏天？</summary>
+    <p>中醫有「<strong>五行對應</strong>」理論：春天對應木、對應肝；夏天對應火、對應心。木生火，肝氣充足先可以支持心氣。如果春天違反生發之氣、傷咗肝，就等於「木」受損，供給夏天「火」嘅條件就不足，到咗夏天就會發生寒性病變（因為心陽唔夠）。</p>
+    <p>呢個體現咗中醫「<strong>四時相連、臟腑相生</strong>」嘅整體觀——一個季節養生唔好，會影響下一個季節。所以養生要全年持續，唔係頭痛醫頭。</p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「使氣得泄」同「無泄皮膚」——夏天要泄、冬天唔好泄，點解咁矛盾？</summary>
+    <p><strong>一啲都唔矛盾，而係順應相反嘅氣機趨勢。</strong></p>
+    <ul>
+      <li><strong>夏天「使氣得泄」</strong>：夏氣本來向外、向上，人應該順勢而出汗、活動，令陽氣外達。如果壓抑（冷氣房唔出汗），反而積熱生病。</li>
+      <li><strong>冬天「無泄皮膚」</strong>：冬氣本來內收、潛藏，人應該避免過度出汗，令陽氣得以內藏。如果冬天大汗淋漓（劇烈運動、桑拿），就會耗散陽氣。</li>
+    </ul>
+    <p><strong>原則：</strong>順應該季節嘅氣機方向——夏天向外就泄，冬天向內就藏。違反方向就係「逆」。</p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「聖人行之，愚者佩（違）之」——「佩」字點解？呢句反映咗咩養生態度差異？</summary>
+    <p><strong>「佩」字解詁：</strong>呢度「佩」通「背」，即係違背、背離嘅意思（唔係「佩戴」或「佩服」）。</p>
+    <p><strong>態度差異：</strong></p>
+    <ul>
+      <li><strong>聖人</strong>＝知道養生之道，而且<strong>切實實行</strong>（行之）。</li>
+      <li><strong>愚者</strong>＝知道（甚至可能講得頭頭是道），但<strong>行為上時常違背</strong>（佩之／背之）。</li>
+    </ul>
+    <p><strong>現代對照：</strong>呢個其實係講緊「<strong>知行合一</strong>」嘅問題。好多現代人都知道「早睡早起、適量運動、飲食有節」係好嘅，但實際做嘅時候就熬夜、唔運動、暴飲暴食——呢個就係「愚者佩之」。養生嘅關鍵唔係「知」，而係「行」。</p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：喺現代都市生活，點樣實踐「四氣調神」？有咩具體可行嘅建議？</summary>
+    <p><strong>春季：</strong>多去戶外散步、著寬鬆衫、保持心情舒暢；春遊、踏青。</p>
+    <p><strong>夏季：</strong>適度出汗（唔好成日冷氣房）、保持愉快、多接觸陽光；避免過度憤怒。</p>
+    <p><strong>秋季：</strong>早啲休息、減少過度刺激（夜生活、打機）、多靜態活動（冥想、閱讀）；注意保濕防秋燥。</p>
+    <p><strong>冬季：</strong>早睡晚起、避免劇烈運動到大汗、注意保暖；係進補嘅好時機（但要溫補，唔好燥補）。</p>
+    <p><strong>核心原則：</strong>留意四季變化，調整作息同飲食。唔好一年四季都一個模式（例如日日冷氣房、日日熬夜）——咁就係「逆」。</p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：「治未病」嘅觀念放喺現代醫療體系，有咩機遇同挑戰？</summary>
+    <p><strong>機遇：</strong></p>
+    <ul>
+      <li>現代醫學正面臨「慢性病爆發」嘅困境——糖尿病、高血壓、心血管病都同生活方式有關，「治未病」正好提供咗預防嘅理論基礎。</li>
+      <li>「精準醫療」、「健康管理」、「亞健康干预」等新興領域，同「治未病」理念高度契合。</li>
+      <li>降低整體醫療成本——預防遠比治療便宜。</li>
+    </ul>
+    <p><strong>挑戰：</strong></p>
+    <ul>
+      <li>現代醫療體系以「治療」為導向，醫生同醫院嘅收入來自醫病而唔係防病，「治未病」缺乏經濟誘因。</li>
+      <li>預防效果難以量化——「冇病發生」係一種「唔存在嘅結果」，好難證明預防措施嘅價值。</li>
+      <li>現代人生活節奏快，即時滿足嘅誘因遠大於「長期預防」嘅抽象好處。</li>
+    </ul>
+    <p><strong>啟示：</strong>要真正落實「治未病」，唔淨係醫療體系要改革，更重要係每個人都要建立「健康管理」嘅自覺——唔好等病咗先重視健康。</p>
+  </details>
+
+</section>
+
+<footer>
+  素問・四氣調神大論篇第二｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_02_四氣調神大論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・上古天真論篇第一</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    /* 雙重 Highlight 三組配對色 */
+    --hl1:#fff3b0; --hl1-d:#c9a800;   /* 黃：養生總則 */
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;   /* 綠：生命節律 */
+    --hl3:#bbdefb; --hl3-d:#1565c0;   /* 藍：四境界 */
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0; padding:24px;
+       max-width:840px; margin:0 auto;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+
+  /* 導讀（白話為主導） */
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0; color:var(--ink);}
+
+  /* 段落容器 */
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+
+  /* 白話文（主體，顯眼） */
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+
+  /* 文言原文（對照，輔助，較淡） */
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+
+  /* 註解（緊跟白話文，圍繞白話語境） */
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+
+  /* 原文重出標記（無 emoji，純文字） */
+  .dup-note{background:#fdecea; border-left:3px dashed #c0392b; padding:8px 14px; font-size:0.85em; color:#922b21; margin:12px 0; border-radius:0 4px 4px 0;}
+  .dup-note strong{font-weight:bold;}
+
+  /* 雙重 Highlight 三組配對 */
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  /* hover 聯動：同一組同時高亮 */
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+
+  /* 圖例 */
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+
+  /* 章末 */
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>上古天真論篇第一</h1>
+  <div class="subtitle">素問・卷一｜全書開篇・養生總綱</div>
+</header>
+
+<!-- ===== 導讀（白話為主導） ===== -->
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇係《黃帝內經》全書嘅第一篇，等於成套中醫理論嘅「總綱」。黃帝同岐伯透過「古人 vs 今人」嘅對比，講出養生嘅核心；再用「女七男八」嘅生命節律，描述人體由盛轉衰嘅過程；最後提出真人、至人、聖人、賢人四種養生境界，等讀者知道養生原來有深淺層次之分。全篇圍繞住一個問題：<strong>點樣可以活到天年（自然壽命）而動作不衰？</strong></p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>古今之問：</strong>點解以前嘅人可以過到一百歲都仲好精神，而家啲人五十歲就開始走下坡？到底係時代唔同，定係我哋自己唔識保養？</li>
+      <li><strong>節律之問：</strong>中醫話女人七年一個階段、男人八年一個階段——呢個「女七男八」嘅講法，放喺現代社會仲準唔準？對我哋健康管理有咩啟示？</li>
+      <li><strong>境界之問：</strong>真人、至人、聖人、賢人——呢四個名聽落好玄，其實佢哋代表緊咩層次嘅養生實踐？普通人最起碼做到邊一個層次？</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 圖例：雙重 Highlight 說明 -->
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>養生總則（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>生命節律（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>四種境界（藍）</span>
+  —— 同色即文言與白話對應重點，滑鼠指住會有框線提示。
+</div>
+
+<!-- ===== 第一段：養生之道（古今對比）— 白話為主 ===== -->
+<section class="passage">
+  <div class="passage-title">一、養生之道：古人點解長命、今人點解早衰</div>
+  <div class="passage-body">
+
+    <!-- 白話文（主體） -->
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>從前嘅黃帝，天生就聰明，好細個就識講嘢，細路時期對周圍事物領悟得好快；大個之後，為人敦厚又勤力；到咗成年，就登上天子之位。佢問岐伯：我聽聞上古嘅人，年紀個個都過百歲，動作一啲都唔見衰老；而家嘅人，啱啱五十歲就成身冇力，到底係時代唔同咗，定係人自己唔識養生？</p>
+      <p>岐伯就答：上古識得養生之道嘅人，<mark class="k1">順應天地陰陽</mark>嘅變化規律，用各種養生方法去配合，飲食有節制，作息有規律，唔會過度操勞，所以形體同精神都飽滿，活到自然壽命，過百歲先至走。而家嘅人就唔同喇——將酒當水咁飲，將反常生活當成習慣，飲醉就去行房，放縱慾望令到精氣枯竭，耗散真氣，唔識保持精氣充盈，淨係追求一時開心，<mark class="k1">違反養生之道</mark>，起居毫無規律，所以五十歲就衰老。</p>
+    </div>
+
+    <!-- 註解（圍繞白話語境） -->
+    <div class="note">
+      <strong>註解：「法於陰陽，和於術數」即係點？</strong>
+      「法於陰陽」= 順應自然規律（例如春夏養陽、秋冬養陰、日頭活動夜晚休息）；「和於術數」= 恰當運用各種養生手段（導引、按蹻、吐納等），令佢哋互相配合。兩句加埋，即係「<strong>順應自然 + 主動調攝</strong>」，而唔係消極乜都唔做，亦唔係亂咁進補。
+    </div>
+
+    <!-- 文言原文（對照） -->
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>昔在黃帝，生而神靈，弱而能言，幼而徇齊，長而敦敏，成而登天。乃問於天師曰：餘聞上古之人，春秋皆度百歲，而動作不衰；今時之人，年半百而動作皆衰者，時世異耶？人將失之耶？</p>
+      <p>岐伯對曰：上古之人，其知道者，<mark class="k1">法於陰陽，和於術數</mark>，食飲有節，起居有常，不妄作勞，故能形與神俱，而盡終其天年，度百歲乃去。</p>
+      <p>今時之人不然也，以酒爲漿，以妄爲常，醉以入房，以欲竭其精，以耗散其真，不知持滿，不時御神，務快其心，<mark class="k1">逆於生樂</mark>，起居無節，故半百而衰也。</p>
+    </div>
+
+    <!-- 白話文（續） -->
+    <div class="baihua-main">
+      <span class="label">白話解讀（續）</span>
+      <p>古代深懂養生之道嘅人教導普通人嘅時候，都會講：對於反常天氣同外來致病因素（虛邪賊風），要識得及時避開；心情要保持清靜安閒，排除雜念妄想，令真氣順暢，<mark class="k1">精神收攝喺內</mark>，咁樣疾病就無從發生。因此，人可以心志安閒、少有慾望，情緒安定唔焦慮，身體勞作但唔覺疲倦，真氣調順，每個人都可以隨心所願。</p>
+      <p>無論食咩都覺得好味，著咩都覺得滿意，鍾意自己嘅風俗習慣，愉快生活；社會地位無論高低都唔互相羨慕，呢啲人算得上樸實無華。所以任何不正當嘅嗜好都唔會引起佢哋注意，任何淫亂邪僻嘅嘢都唔能夠迷惑佢哋嘅心。無論愚笨、聰明、能力大定細，都唔會因為外界事物變化而動心焦慮，所以符合養生之道。佢哋之所以能夠過百歲而動作不衰，正正係因為領會同掌握咗養生方法，身體唔受內外邪氣干擾（<mark class="k1">德全不危</mark>）。</p>
+    </div>
+
+    <!-- 註解（圍繞白話語境） -->
+    <div class="note">
+      <strong>註解：虛邪賊風＝咩？</strong>
+      「虛邪」= 反常氣候（例如夏天突然凍、冬天突然暖）；「賊風」= 侵害人體嘅風邪。上古智者教百姓要「避之有時」——即係喺反常天氣下主動防護。呢個就係中醫「<strong>治未病</strong>」（預防勝於治療）思想嘅源頭：唔係等病咗先醫，而係喺未病之前就避開致病因素。
+    </div>
+
+    <!-- 文言原文（對照） -->
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>夫上古聖人之教下也，皆謂之虛邪賊風，避之有時，恬惔虛無，真氣從之，<mark class="k1">精神內守</mark>，病安從來。</p>
+      <p><mark class="k1">志閒而少欲</mark>，心安而不懼，形勞而不倦，氣從以順，各從其欲，皆得所願。</p>
+      <p>故美其食，任其服，樂其俗，高下不相慕，其民故曰樸。是以嗜慾不能勞其目，淫邪不能惑其心，愚智賢不肖，不懼於物，故合於道。所以能年皆度百歲而動作不衰者，以其<mark class="k1">德全不危</mark>也。</p>
+    </div>
+
+    <!-- 原文重出（忠實保留，加註） -->
+    <div class="dup-note">
+      <strong>編按：</strong>以下文言原文段落喺原檔此處重複出現一次（與上方「岐伯對曰：上古之人……故半百而衰也」完全相同）。依「原文一字不改」鐵律如實保留，僅作標記，唔作刪減。
+    </div>
+    <div class="wenyan-ref">
+      <span class="label">原文重出（文言）</span>
+      <p>岐伯對曰：上古之人，其知道者，法於陰陽，和於術數，食飲有節，起居有常，不妄作勞，故能形與神俱，而盡終其天年，度百歲乃去。今時之人不然也，以酒爲漿，以妄爲常，醉以入房，以欲竭其精，以耗散其真，不知持滿，不時御神，務快其心，逆於生樂，起居無節，故半百而衰也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：女七男八生命週期 ===== -->
+<section class="passage">
+  <div class="passage-title">二、女七男八：生命盛衰嘅自然節律</div>
+  <div class="passage-body">
+
+    <!-- 白話文（主體） -->
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝問：人年老而冇得生仔，係因為精力耗盡，定係自然規律限定？</p>
+      <p>岐伯答：女子七歲，腎氣盛旺，乳齒更換，頭髮開始茂盛。十四歲（二七），<mark class="k2">天癸產生</mark>，任脈通暢，太沖脈旺盛，月經按時來潮，具備生育能力。二十一歲（三七），腎氣充滿，真牙生出，牙齒長齊。二十八歲（四七），筋骨強健，頭髮生長到最茂盛，身體最強壯。</p>
+      <p>三十五歲（五七），陽明經脈氣血漸衰，面部開始憔悴，頭髮開始脫落。四十二歲（六七），三陽經脈氣血衰弱，面部憔悴無華，頭髮開始變白。四十九歲（七七），任脈氣血虛弱，太沖脈氣血衰少，<mark class="k2">天癸枯竭</mark>，月經斷絕，形體衰老，失去生育能力。</p>
+      <p>男子八歲，腎氣充實，頭髮茂盛，乳齒更換。十六歲（二八），腎氣旺盛，<mark class="k2">天癸產生</mark>，精氣滿溢外瀉，兩性交合就能生育。二十四歲（三八），腎氣充滿，筋骨強健，真牙生長，牙齒長齊。三十二歲（四八），筋骨豐隆盛實，肌肉豐滿健壯。</p>
+      <p>四十歲（五八），<mark class="k2">腎氣衰退</mark>，頭髮脫落，牙齒枯槁。四十八歲（六八），上部陽氣逐漸衰竭，面部憔悴無華，頭髮同兩鬢花白。五十六歲（七八），肝氣衰弱，筋嘅活動唔靈活自如。六十四歲（八八），<mark class="k2">天癸枯竭</mark>，精氣少，腎臟衰，牙齒頭髮脫落，形體衰疲。</p>
+      <p>腎主水，接受其他臟腑嘅精氣而加以貯藏，所以五臟功能都衰退嘅時候，筋骨懈惰無力，<mark class="k2">天癸亦都已經枯竭</mark>，髮鬢變白，身體沉重，步伐不穩，亦都冇得生仔。</p>
+    </div>
+
+    <!-- 註解（圍繞白話語境） -->
+    <div class="note">
+      <strong>註解：「天癸」係咩？</strong>
+      「天癸」係中醫特有概念，指<em>促進人體生殖機能成熟同維持嘅精微物質</em>，類似現代醫學講嘅性激素。女子「二七」（14 歲）天癸至，月經來潮；「七七」（49 歲）天癸竭，月經斷絕。呢個概念體現咗中醫對內分泌週期嘅早期觀察。<strong>記住：天癸唔係月經本身，而係推動月經同生殖嘅背後動力。</strong>
+    </div>
+
+    <!-- 文言原文（對照） -->
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>帝曰：人年老而無子者，材力盡邪？將天數然也？</p>
+      <p>岐伯曰：女子七歲，腎氣盛，齒更髮長。二七，而<mark class="k2">天癸至</mark>，任脈通，太沖脈盛，月事以時下，故有子。三七，腎氣平均，故真牙生而長極。四七，筋骨堅，髮長極，身體盛壯。</p>
+      <p>五七，陽明脈衰，面始焦，發始墮。六七，三陽脈衰於上，面皆焦，發始白。七七，任脈虛，太沖脈衰少，<mark class="k2">天癸竭</mark>，地道不通，故形壞而無子也。</p>
+      <p>丈夫八歲，腎氣實，髮長齒更。二八，腎氣盛，<mark class="k2">天癸至</mark>，精氣溢瀉，陰陽和，故能有子。三八，腎氣平均，筋骨勁強，故真牙生而長極。四八，筋骨隆盛，肌肉滿壯。</p>
+      <p>五八，<mark class="k2">腎氣衰</mark>，發墮齒槁。六八，陽氣衰竭於上，面焦，髮鬢頒白。七八，肝氣衰，筋不能動，<mark class="k2">天癸竭</mark>，精少，腎臟衰，形體皆極。八八，則齒髮去。</p>
+      <p>腎者主水，受五臟六腑之精而藏之，故五臟盛，乃能瀉。今五臟皆衰，筋骨解墮，<mark class="k2">天癸盡矣</mark>，故髮鬢白，身體重，行步不正，而無子耳。<span class="page-num">（原檔頁碼：2-3）</span></p>
+    </div>
+
+    <!-- 白話文（續） -->
+    <div class="baihua-main">
+      <span class="label">白話解讀（續）</span>
+      <p>黃帝問：有啲人年紀已老，仲可以生仔，係咩道理？</p>
+      <p>岐伯答：呢個係因為佢天賦精力超過常人，氣血經脈保持暢通，腎氣有餘。呢種人雖然有生育能力，但男子一般都唔超過六十四歲，女子一般都唔超過四十九歲，精氣就會枯竭。</p>
+      <p>黃帝問：掌握養生之道嘅人，年齡都可以達到一百歲左右，仲可唔可以生育？岐伯答：掌握養生之道嘅人，能夠防止衰老而保全形體，雖然年高，都仲可以生育子女。</p>
+    </div>
+
+    <!-- 文言原文（對照） -->
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>帝曰：有其年已老，而有子者，何也？岐伯曰：此其天壽過度，氣脈常通，而腎氣有餘也。此雖有子，男子不過盡八八，女子不過盡七七，而天地之精氣皆竭矣。</p>
+      <p>帝曰：夫道者年皆百歲，能有子乎？岐伯曰：夫道者能卻老而全形，身年雖壽，能生子也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：四種養生境界 ===== -->
+<section class="passage">
+  <div class="passage-title">三、四種養生境界：真人・至人・聖人・賢人</div>
+  <div class="passage-body">
+
+    <!-- 白話文（主體） -->
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k3">真人（最高境界）</mark>：掌握天地陰陽變化規律，能夠調節呼吸吸收精純清氣，超然獨處，令精神守持於內，鍛鍊身體令筋骨肌肉同整個身體達到高度協調，壽命同天地一樣長，無終結嘅時候——呢個係修道養生嘅結果。</p>
+      <p><mark class="k3">至人（第二境界）</mark>：具有醇厚道德，全面掌握養生之道，調和陰陽四時變化，離開世俗社會干擾，積蓄精氣集中精神，令視聽注意力守持喺八方之外——呢個係延長壽命強健身體嘅方法，呢種人亦都可以歸入真人行列。</p>
+      <p><mark class="k3">聖人（第三境界）</mark>：能夠安處於天地自然嘅正常環境之中，順從八風活動規律，令自己嘅嗜慾同世俗社會相應，冇惱怒怨恨之情，行為唔離開世俗一般準則，著普通紋彩衣服，舉動冇炫耀於世俗嘅地方；喺外面唔令形體因為事物而勞累，喺內心冇任何思想負擔，以安靜愉快為目的，以悠然自得為滿足，壽命都可以達到百歲左右。</p>
+      <p><mark class="k3">賢人（第四境界）</mark>：能夠依據天地變化、日月升降、星辰位置，順從陰陽消長同適應四時變遷，追隨上古真人，令生活符合養生之道——呢種人亦都能夠增益壽命，但係有終結嘅時候。</p>
+    </div>
+
+    <!-- 註解（圍繞白話語境） -->
+    <div class="note">
+      <strong>註解：四境界到底分咩層次？</strong>
+      呢四個層次，實質上係中醫對<strong>養生實踐深度</strong>嘅分級，由「完全超脫」到「努力追隨」：<br>
+      ① <strong>真人</strong>＝與道合一，超越時空（理論最高，近乎神話）<br>
+      ② <strong>至人</strong>＝離世修煉，超脫世俗（出家、隱修者嘅理想）<br>
+      ③ <strong>聖人</strong>＝生活於世俗但不被世俗所累（普通人最現實嘅目標：做到「外不勞形、內無思想之患」）<br>
+      ④ <strong>賢人</strong>＝效法規律、追隨前人（入門級：識得順應自然，但境界未圓滿）<br>
+      <em>重點：普通人唔使追求真人、至人，但起碼要做到「賢人」，努力向「聖人」層次邁進。</em>
+    </div>
+
+    <!-- 文言原文（對照） -->
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>黃帝曰：餘聞上古有真人者，提挈天地，把握陰陽，呼吸精氣，獨立守神，肌肉若一，故能壽敝天地，無有終時，<mark class="k3">此其道生</mark>。</p>
+      <p>中古之時，有至人者，淳德全道，和於陰陽，調於四時，去世離俗，積精全神，遊行天地之間，視聽八遠之外，此蓋益其壽命而強者也，<mark class="k3">亦歸於真人</mark>。</p>
+      <p>其次有聖人者，處天地之和，從八風之理，適嗜慾於世俗之間，無恚嗔之心，行不欲離於世，被服章，舉不欲觀於俗，外不勞形於事，內無思想之患，以恬愉爲務，以自得爲功，形體不敝，精神不散，<mark class="k3">亦可以百數</mark>。</p>
+      <p>其次有賢人者，法則天地，象似日月，辨列星辰，逆從陰陽，分別四時，將從上古合同於道，亦可使益壽而<mark class="k3">有極時</mark>。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 章末摘要 ===== -->
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>養生總綱</strong>在於「法於陰陽，和於術數」——順應自然規律 + 主動調攝，節制飲食起居，而唔係追求外在藥石。</li>
+    <li><strong>早衰根源</strong>：將酒當水、反常生活成習慣、房事過度、唔識保養精氣——歸根究柢係「逆於生樂，起居無節」。</li>
+    <li><strong>防病總則</strong>：「恬惔虛無，真氣從之，精神內守」——情志調養重於藥物，心理健康係身體健康嘅基礎。</li>
+    <li><strong>生命節律</strong>：女子以七為週期、男子以八為週期；腎氣同天癸係關鍵；五臟盛衰直接影響腎精。</li>
+    <li><strong>養生境界</strong>分四等：真人（與道合一）＞至人（超脫世俗）＞聖人（順應世俗而不累）＞賢人（效法規律）。普通人最起碼要做到賢人。</li>
+    <li><strong>養生有道者</strong>「年皆百歲而動作不衰」，關鍵在「德全不危」——身心全面修養，唔受內外邪氣干擾。</li>
+  </ul>
+</section>
+
+<!-- ===== Recall 問題（口語化 + 呼應引導問題） ===== -->
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <!-- Q1 呼應引導問題 1（古今之問） -->
+  <details class="echo">
+    <summary>Q1（呼應「古今之問」）：點解古人可以過百歲都精神，而家啲人五十就衰？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>唔係時代唔同，而係<strong>養生方法唔同</strong>。</p>
+    <p>古人識得「<em>法於陰陽，和於術數，食飲有節，起居有常，不妄作勞</em>」——即係順應自然規律、飲食有節制、作息有規律、唔過度操勞，所以「形與神俱」，活到天年。</p>
+    <p>而家嘅人就「<em>以酒為漿，以妄為常，醉以入房，以欲竭其精，以耗散其真，不知持滿，務快其心，逆於生樂，起居無節</em>」——酗酒、生活反常、房事過度、淨係追求一時快樂、唔識保養精氣。所以五十歲就衰老。</p>
+    <p><strong>一句講晒：</strong>古今壽命差異嘅根源唔係環境，而係<strong>有冇遵守養生規律</strong>。呢個答案直接解答咗章首「到底係時代唔同定係人唔識保養」嘅疑問——係人唔識保養。</p>
+  </details>
+
+  <!-- Q2 呼應引導問題 2（節律之問） -->
+  <details class="echo">
+    <summary>Q2（呼應「節律之問」）：「女七男八」放喺現代仲準唔準？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>原文講嘅節律：</strong></p>
+    <ul>
+      <li>女子「二七」（14 歲）天癸至，月經來潮；「七七」（49 歲）天癸竭，月經斷絕。</li>
+      <li>男子「二八」（16 歲）天癸至，精氣溢瀉；「八八」（64 歲）天癸盡，齒髮去。</li>
+    </ul>
+    <p><strong>現代對照：</strong>女性更年期約 45-55 歲（接近七七 49 歲）；男性精力衰退約 50-65 歲（接近八八 64 歲）——同現代內分泌學觀察<strong>大致吻合</strong>。</p>
+    <p><strong>局限性：</strong></p>
+    <ul>
+      <li>現代營養同醫療令人體發育提前、衰退延後（例如而家女仔 11-12 歲就來月經）。</li>
+      <li>原描述基於古代平均壽命較短嘅觀察。</li>
+      <li>個體差異極大，唔可以機械套用。</li>
+    </ul>
+    <p><strong>啟示：</strong>應該當「女七男八」係<strong>參考框架</strong>而唔係絕對標準。佢嘅價值在於提醒我哋：人體有自然節律，唔同年齡階段有唔同嘅保養重點（例如女子三十五歲開始陽明脈衰，就要開始注重面部保養同氣血調理）。</p>
+  </details>
+
+  <!-- Q3 呼應引導問題 3（境界之問） -->
+  <details class="echo">
+    <summary>Q3（呼應「境界之問」）：真人、至人、聖人、賢人，有咩分別？普通人做到邊層？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>四個層次嘅分別，主要喺「同世俗嘅關係」同「精神修養深度」：</strong></p>
+    <ul>
+      <li><strong>真人</strong>＝完全超越天地時空，與道合一（理論最高，近乎神話理想）。</li>
+      <li><strong>至人</strong>＝離世離俗修煉，超脫但未完全（似出家、隱修者）。</li>
+      <li><strong>聖人</strong>＝生活喺世俗但唔被世俗勞累——「外不勞形於事，內無思想之患」（最現實嘅高階目標）。</li>
+      <li><strong>賢人</strong>＝效法規律、追隨前人（入門級：識順應自然，但境界未圓滿）。</li>
+    </ul>
+    <p><strong>普通人嘅目標：</strong>唔使追求真人、至人（嗰啲係理想模型）。最起碼要做到<strong>賢人</strong>——識得順應四時陰陽、規律作息；然後努力向<strong>聖人</strong>層次邁進——做到「外不勞形、內無思想之患」，即係工作上唔過勞、心理上唔內耗。</p>
+    <p><strong>一句講晒：</strong>由外在模仿（賢人）→ 內心超脫（真人），係一條遞進嘅修養階梯。</p>
+  </details>
+
+  <!-- Q4 延伸 -->
+  <details>
+    <summary>Q4（延伸）：「恬惔虛無，真氣從之，精神內守」點解係防病總原則？</summary>
+    <p>呢三句係講<strong>情志調養</strong>：</p>
+    <ul>
+      <li>「恬惔虛無」＝心情清靜、少慾望、無雜念妄想。</li>
+      <li>「真氣從之」＝真氣（人體正氣）自然順暢運行。</li>
+      <li>「精神內守」＝精神收攝喺內，唔外散。</li>
+    </ul>
+    <p>中醫認為<strong>七情（喜怒憂思悲恐驚）過度會直接傷臟腑</strong>。例如大怒傷肝、過喜傷心、思慮過度傷脾。所以保持心情平靜，真氣先至會順暢，疾病就無從發生——呢個係「治未病」嘅心理層面，比食藥更根本。</p>
+  </details>
+
+  <!-- Q5 延伸 -->
+  <details>
+    <summary>Q5（延伸）：「腎者主水，受五臟六腑之精而藏之」有咩臨床意義？</summary>
+    <p>腎係「先天之本」，貯藏五臟六腑嘅精氣。呢句話講出一個重要關係：<strong>五臟盛則精氣有來源、腎氣充盈；五臟衰則精氣來源斷絕、腎氣亦衰。</strong></p>
+    <p>臨床上，補腎往往需要兼顧其他臟腑嘅調理，唔可以孤立淨係補腎。例如脾胃虚弱（後天之本）嘅人，食咗補腎藥都吸收唔到。呢個就係中醫「<strong>整體觀</strong>」嘅體現：臟腑之間互相關聯，唔可以頭痛醫頭。</p>
+  </details>
+
+  <!-- Q6 延伸：德全不危 -->
+  <details>
+    <summary>Q6（延伸）：「德全不危」淨係講緊身體健康咁簡單？定係包括埋心理同道德層面？</summary>
+    <p>「德全不危」唔單止講身體健康，而係一個<strong>身心道德全面</strong>嘅概念：</p>
+    <ul>
+      <li>「德」= 對養生之道嘅全面領會同實踐（包括順應自然、情志調養、行為節制）。</li>
+      <li>「全」= 全面、完整，唔偏廢任何一方面。</li>
+      <li>「不危」= 唔受內外邪氣干擾危害。</li>
+    </ul>
+    <p>所以「德全不危」實際上係中醫「<strong>形神合一</strong>」觀念嘅體現——身體健康（形）、精神安寧（神）、行為合道（德）三者缺一不可。呢個同現代「<strong>生物-心理-社會</strong>」醫學模式嘅整體健康觀不謀而合：健康唔係淨係冇病，而係身、心、社會適應能力都處於良好狀態。</p>
+  </details>
+
+  <!-- Q7 延伸：現代實踐 -->
+  <details>
+    <summary>Q7（延伸）：喺現代社會，具體點樣先做到「食飲有節，起居有常」？</summary>
+    <p><strong>「食飲有節」嘅現代實踐：</strong></p>
+    <ul>
+      <li>定時定量，唔暴飲暴食；七八分飽，留有餘地。</li>
+      <li>少加工食品、少糖少鹽；多時令食材。</li>
+      <li>飲酒節制（原文已經將「以酒為漿」列為反面教材）。</li>
+    </ul>
+    <p><strong>「起居有常」嘅現代實踐：</strong></p>
+    <ul>
+      <li>固定作息時間，盡量喺晚上 11 點前瞓（中醫認為子時養膽）。</li>
+      <li>唔熬夜打機、刷手機——藍光會干擾褪黑激素分泌。</li>
+      <li>日頭適度活動，夜晚收心準備休息。</li>
+      <li>唔過度操勞，亦唔過度安逸（久坐同過勞一樣傷身）。</li>
+    </ul>
+    <p><strong>重點：</strong>呢啲唔係死板規矩，而係令生活節律同自然節律（晝夜、四時）同步。現代人最大嘅問題，正正係生活完全脫離自然節律——日頭唔曬太陽、夜晚唔願瞓、一年四季都喺冷氣房——呢個就係「逆於生樂」嘅現代版。</p>
+  </details>
+
+  <!-- Q8 批判性：古今對話 -->
+  <details>
+    <summary>Q8（批判性）：《上古天真論》嘅養生觀，同現代預防醫學有咩異同？可以點樣互補？</summary>
+    <p><strong>相同之處：</strong></p>
+    <ul>
+      <li>兩者都強調「預防勝於治療」——中醫叫「治未病」，現代醫學叫一級預防（primary prevention）。</li>
+      <li>兩者都重視生活方式：飲食、作息、運動、心理。</li>
+      <li>兩者都承認「情志／心理」對身體健康有直接影響（現代叫心身醫學、壓力管理）。</li>
+    </ul>
+    <p><strong>唔同之處：</strong></p>
+    <ul>
+      <li>《內經》將養生提升到「<strong>道德修養</strong>」同「<strong>精神境界</strong>」層次（真人、至人、聖人、賢人），現代醫學較少觸及呢個層面。</li>
+      <li>《內經》強調「<strong>順應自然</strong>」（法於陰陽），現代醫學較強調「<strong>主動干预</strong>」（疫苗、篩查、藥物）。</li>
+      <li>《內經》嘅「女七男八」節律係宏觀框架，現代醫學嘅數據更精細但往往缺乏整體觀。</li>
+    </ul>
+    <p><strong>互補可能：</strong>現代醫學可以提供精準嘅生理指標同干预手段（例如血脂、血糖監測）；《內經》可以提供整體嘅生活哲學同心性修養框架——兩者結合，先至係完整嘅健康管理。<em>記住：唔好將兩者對立，而係要融會貫通。</em></p>
+  </details>
+
+</section>
+
+<footer>
+  素問・上古天真論篇第一｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_01_上古天真論.txt</code> 分割）<br>
+  原文一字不改（含重出段落），僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  // 雙重 Highlight 聯動：hover 一邊，同 class 嘅另一邊同步高亮
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（由 inject_highlight_listener.py 插入，請勿手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>
