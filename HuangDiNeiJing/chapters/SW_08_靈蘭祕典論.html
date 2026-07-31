@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・靈蘭祕典論篇第八</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0 auto; padding:24px;
+       max-width:840px;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .summary table{border-collapse:collapse; margin:10px 0; font-size:0.88em; width:100%;}
+  .summary th, .summary td{border:1px solid var(--border); padding:5px 7px; text-align:center;}
+  .summary th{background:var(--accent); color:#fff;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（postMessage listener 配套，嚴禁手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>靈蘭祕典論篇第八</h1>
+  <div class="subtitle">素問・卷八｜十二臟腑官職・心為君主・主明則安</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇係《素問》中最出名嘅<strong>臟腑功能總論</strong>。篇名「靈蘭祕典」——「靈臺蘭室」係古代帝王珍藏典籍嘅地方，黃帝聽完岐伯講呢套道理後，覺得極之珍貴，要擇吉日藏喺靈蘭之室流傳後世。全篇用一個絕妙嘅<strong>朝廷比喻</strong>：將人體十二臟腑比喻成朝廷十二個官職——<strong>心係君主、肺係宰相、肝係將軍、膽係中正官……</strong>。核心道理只有一個：<strong>主明則下安，主不明則十二官危</strong>——心（君主）正常，成個身體就安定；心有問題，所有器官都會出事。</p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>官職比喻之問：</strong>點解心係「君主」、肺係「相傅」、肝係「將軍」？古人點樣決定邊個臟腑做邊個官？呢個比喻純粹係文學修辭，定係有實際醫理？</li>
+      <li><strong>心為君主之問：</strong>「心者，君主之官，神明出焉」——點解心係君主而唔係腦？「神明」係咪即係現代講嘅意識、思維？中醫嘅「心」同現代醫學嘅心臟有咩分別？</li>
+      <li><strong>主明則安之問：</strong>「主明則下安，主不明則十二官危」——君主（心）正常，成個身體就安；君主有問題，所有器官都危險。呢個「主從關係」對我哋養生治病有咩啟示？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>心為君主・主明則安（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>臟腑官職（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>十二官協調・養生大法（藍）</span>
+</div>
+
+<!-- ===== 第一段：十二官職 ===== -->
+<section class="passage">
+  <div class="passage-title">一、十二臟腑官職：人體即朝廷</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝問：我想聽你講下人體六臟六腑呢十二個器官嘅責任分工，高低貴賤係點樣嘅呢？岐伯答：你問得真詳細呀！請讓我講下呢個問題。</p>
+      <p><mark class="k2">心，主宰全身，係君主之官</mark>，人嘅精神意識思維活動都由此而出。</p>
+      <p><mark class="k2">肺，係相傅之官</mark>，好似宰相輔佐住君主，因主一身之氣而調節全身活動。</p>
+      <p><mark class="k2">肝，主怒，好似將軍咁樣勇武，稱為將軍之官</mark>，謀略由此而出。</p>
+      <p><mark class="k2">膽，係中正之官</mark>，決斷由此而出。膻中，維護住心而接受其命令，係臣使之官，心志嘅喜樂靠它傳佈出來。</p>
+      <p><mark class="k2">脾同胃司飲食嘅受納同布化，係倉廩之官</mark>，五味嘅陰陽靠佢哋消化、吸收同運輸。</p>
+      <p><mark class="k2">大腸係傳道之官</mark>，傳送食物糟粕變為糞便排出體外。<mark class="k2">小腸係受盛之官</mark>，承受胃中下行嘅食物而進一步分化清濁。</p>
+      <p><mark class="k2">腎，係作強之官</mark>，能夠令人發揮強力而產生各種伎巧。</p>
+      <p><mark class="k2">三焦，係決瀆之官</mark>，能夠通行水道。<mark class="k2">膀胱係州都之官</mark>，蓄藏津液，通過氣化作用方能排出尿液。<span class="page-num">（原檔頁碼：19）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：十二官職嘅完整對照表</strong>
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">臟腑</th><th style="padding:5px 7px;">官職</th><th style="padding:5px 7px;">職能</th></tr>
+        <tr><td style="padding:5px 7px;">心</td><td style="padding:5px 7px;">君主</td><td style="padding:5px 7px;">神明（精神意識思維）</td></tr>
+        <tr><td style="padding:5px 7px;">肺</td><td style="padding:5px 7px;">相傅（宰相）</td><td style="padding:5px 7px;">治節（調節一身之氣）</td></tr>
+        <tr><td style="padding:5px 7px;">肝</td><td style="padding:5px 7px;">將軍</td><td style="padding:5px 7px;">謀慮（策略思考）</td></tr>
+        <tr><td style="padding:5px 7px;">膽</td><td style="padding:5px 7px;">中正</td><td style="padding:5px 7px;">決斷（判斷決定）</td></tr>
+        <tr><td style="padding:5px 7px;">膻中（心包）</td><td style="padding:5px 7px;">臣使</td><td style="padding:5px 7px;">喜樂（傳達情緒）</td></tr>
+        <tr><td style="padding:5px 7px;">脾胃</td><td style="padding:5px 7px;">倉廩</td><td style="padding:5px 7px;">五味（消化吸收）</td></tr>
+        <tr><td style="padding:5px 7px;">大腸</td><td style="padding:5px 7px;">傳道</td><td style="padding:5px 7px;">變化（排出糟粕）</td></tr>
+        <tr><td style="padding:5px 7px;">小腸</td><td style="padding:5px 7px;">受盛</td><td style="padding:5px 7px;">化物（分清別濁）</td></tr>
+        <tr><td style="padding:5px 7px;">腎</td><td style="padding:5px 7px;">作強</td><td style="padding:5px 7px;">伎巧（力量、創造）</td></tr>
+        <tr><td style="padding:5px 7px;">三焦</td><td style="padding:5px 7px;">決瀆</td><td style="padding:5px 7px;">水道（水液代謝）</td></tr>
+        <tr><td style="padding:5px 7px;">膀胱</td><td style="padding:5px 7px;">州都</td><td style="padding:5px 7px;">津液（儲存、氣化排尿）</td></tr>
+      </table>
+      <em>注意：呢度講嘅「十二臟」包括六臟（心肝脾肺腎＋心包）同六腑（膽胃大腸小腸三焦膀胱）。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k2">心者，君主之官也，神明出焉。肺者，相傅之官，治節出焉。肝者，將軍之官，謀慮出焉。膽者，中正之官，決斷出焉。膻中者，臣使之官，喜樂出焉。脾胃者，食廩之官，五味出焉。大腸者，傳道之官，變化出焉。小腸者，受盛之官，化物出焉。腎者，作強之官，伎巧出焉。三焦者，決瀆之官，水道出焉。膀胱者，州都之官，津液藏焉，氣化則能出矣。</mark></p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：主明則安 ===== -->
+<section class="passage">
+  <div class="passage-title">二、主明則下安：養生治天下嘅總綱</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k1">以上呢十二官，雖然有分工，但佢哋嘅作用應該協調而唔能相互脫節。</mark></p>
+      <p><strong>所以君主如果明智順達，下屬亦都會安定正常。</strong>用呢個道理嚟養生，就可以令人長壽，終生唔會發生危殆；用嚟治理天下，就會令國家昌盛繁榮。</p>
+      <p><strong>君主如果唔明智順達，包括佢本身在內嘅十二官就都要發生危險</strong>，各器官發揮正常作用嘅途徑閉塞不通，形體就要受到嚴重傷害。喺呢種情況下，談養生續命係唔可能嘅，只會招致災殃，縮短壽命。同樣，以君主之昏聵不明嚟治理天下，政權就危險難保，<mark class="k1">千萬要警惕再警惕呀！</mark></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「主明則下安」嘅深層含義</strong>
+      「主」＝心（君主之官）；「下」＝其他十一個器官。<em>呢個揭示咗中醫一個核心觀念：<strong>心主神明</strong>——心理狀態直接影響身體健康。</em>
+      <ul>
+        <li><strong>主明</strong>＝心境平和、神志清明→各器官功能協調→健康長壽。</li>
+        <li><strong>主不明</strong>＝情志失調、心神不寧→各器官功能紊亂→百病叢生。</li>
+      </ul>
+      呢個同現代「心身醫學」完全吻合——長期壓力、焦慮、抑鬱會導致心血管病、消化不良、免疫力下降等全身性問題。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k1">凡此十二官者，不得相失也。故主明則下安，以此養生則壽，歿世不殆，以爲天下則大昌。主不明則十二官危，使道閉塞而不通，形乃大傷，以此養生則殃，以爲天下者，其宗大危，戒之戒之。</mark></p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：至道在微 + 藏於靈蘭 ===== -->
+<section class="passage">
+  <div class="passage-title">三、至道在微：珍藏於靈蘭之室</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>至深嘅道理係微渺難測嘅，其變化亦都無窮無盡，邊個能清楚知道佢嘅本源！實在係好困難呀！有學問嘅人勤勤懇懇探討研究，但邊個能知道佢嘅要妙之處！</p>
+      <p>嗰啲道理闇昧難明，好似被遮蔽住咁，點能了解到佢嘅精華係咩！<mark class="k3">嗰啲似有若無嘅數量，產生於毫釐，亦都起於更小嘅度量，只不過將佢哋千萬倍地積累擴大，推衍增益，先至演變成形形色色嘅世界。</mark></p>
+      <p>黃帝話：好啊！我聽到精純明徹嘅道理，呢個真係大聖人建立事業嘅基礎。對於呢個宣暢明白嘅宏大理論，如果唔專心修省而擇吉祥日子，唔敢接受。黃帝於是擇吉日良兆，將呢啲道理珍藏喺靈臺蘭室，以便流傳後世。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「恍惚之數，生於毫釐」嘅哲學</strong>
+      呢段講述<strong>由微到顯</strong>嘅道理——巨大嘅事物都係由極微小嘅嘢累積而成。<em>呢個同現代科學嘅「還原論」異曲同工：一切物質由原子組成，原子由更小嘅粒子組成。變化雖然無窮，但起點只有「毫釐」。</em>呢個亦呼應返《陰陽離合論》「其要一也」——複雜現象嘅底層，道理係簡單嘅。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>至道在微，變化無窮，孰知其原。窘乎哉，消者瞿瞿，孰知其要。閔閔之當，孰者爲良。</p>
+      <p><mark class="k3">恍惚之數，生於毫釐，毫釐之數，起於度量，千之萬之，可以益大，推之大之，其形乃制。</mark></p>
+      <p>黃帝曰：善哉，餘聞精光之道，大聖之業，而宣明大道，非齊戒擇吉日不敢受也。黃帝乃擇吉日良兆，而藏靈蘭之室，以傳保焉。</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>十二官職</strong>：心＝君主（神明）、肺＝相傅（治節）、肝＝將軍（謀慮）、膽＝中正（決斷）、膻中＝臣使（喜樂）、脾胃＝倉廩（五味）、大腸＝傳道（變化）、小腸＝受盛（化物）、腎＝作強（伎巧）、三焦＝決瀆（水道）、膀胱＝州都（津液）。</li>
+    <li><strong>分工協調</strong>：十二官雖有分工，但作用必須協調，唔能相互脫節。</li>
+    <li><strong>主明則安</strong>：心（君主）正常→成個身體安定→養生則壽，治天下則昌。</li>
+    <li><strong>主不明則危</strong>：心有問題→十二官危險→使道閉塞→形體大傷。</li>
+    <li><strong>至道在微</strong>：深刻道理微渺難測，巨大事物由毫釐累積而成。</li>
+    <li><strong>心主神明</strong>：中醫嘅「心」唔單止係心臟，更包括精神意識思維——心身醫學嘅先驅思想。</li>
+  </ul>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「官職比喻之問」）：點解心係君主、肺係宰相、肝係將軍？比喻定係實際醫理？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>呢個比喻<strong>唔係純粹文學修辭，而係基於臨床觀察嘅功能總結</strong>。</p>
+    <ul>
+      <li><strong>心＝君主</strong>：心主神明，主宰全身——好似君主主宰國家。心臟停止跳動，人即刻死亡。</li>
+      <li><strong>肺＝相傅</strong>：肺主一身之氣，調節全身——好似宰相輔佐君主治理全國。</li>
+      <li><strong>肝＝將軍</strong>：肝主怒、主謀慮——大怒傷肝，好似將軍勇武易怒。</li>
+    </ul>
+    <p><em>比喻嘅巧妙之處在於：用朝廷結構說明器官嘅<strong>主從關係同功能分工</strong>。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「心為君主之問」）：點解心係君主而唔係腦？中醫嘅「心」同現代心臟有咩分別？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>中醫嘅「心」<strong>唔等同於現代解剖學嘅心臟</strong>。</p>
+    <ul>
+      <li><strong>中醫嘅「心」</strong>包括：① 心臟（主血脈）；② 大腦功能（主神明——精神意識思維）。</li>
+      <li><strong>「神明」</strong>≈現代講嘅意識、思維、情志——中醫將呢啲功能歸於「心」而唔係「腦」。</li>
+    </ul>
+    <p><strong>點解唔係腦？</strong>古代中醫觀察到「心血不足則失眠健忘」「痰迷心竅則神志不清」——精神症狀同心嘅功能密切相關。<em>呢個係功能系統嘅劃分，唔係解剖定位。所以中醫嘅「心」≈ 心臟＋部分大腦功能。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「主明則安之問」）：「主明則下安」對養生治病有咩啟示？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>「主明則下安」揭示咗<strong>心理狀態直接影響身體健康</strong>呢個核心道理。</p>
+    <p><strong>養生啟示：</strong></p>
+    <ul>
+      <li><strong>養心為先</strong>：保持心境平和、神志清明，係養生嘅第一要務。</li>
+      <li><strong>情志調攝</strong>：唔好長期處於焦慮、憤怒、抑鬱狀態——呢啲會令「主不明」，進而影響全身。</li>
+    </ul>
+    <p><strong>治病啟示：</strong>治療身體疾病時，要注意調理病人嘅情志——例如失眠、消化唔好，可能根源係心理壓力。<em>「主明則下安」可以話係中醫「心身醫學」嘅綱領。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：「肝者將軍之官，謀慮出焉」——肝點解同謀慮有關？唔係應該腦負責思考？</summary>
+    <p><strong>中醫嘅「肝」包括：</strong>① 肝臟（解毒、藏血）；② 部分神經系統功能（主疏洩、主怒）。</p>
+    <p><strong>「謀慮出焉」嘅理解：</strong></p>
+    <ul>
+      <li>肝主疏洩——氣機舒暢先至可以清晰思考。肝氣鬱結則思維遲鈍、優柔寡斷。</li>
+      <li>「怒傷肝」——大怒時人會失去理性，無法謀慮。</li>
+      <li>臨床觀察：肝鬱嘅人確實容易猶豫不決、思慮過度。</li>
+    </ul>
+    <p><strong>現代對照：</strong>肝功能嚴重受損（肝性腦病）會出現意識障礙、判斷力下降——「肝主謀慮」並非無根據。</p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「膽者中正之官，決斷出焉」——膽汁分泌同決斷力有關？</summary>
+    <p><strong>中醫嘅「膽」唔止係膽囊：</strong></p>
+    <ul>
+      <li>膽主決斷——勇氣、果斷嘅精神狀態。</li>
+      <li>「膽大」「膽小」嘅講法反映呢個觀念。</li>
+    </ul>
+    <p><strong>現代對照：</strong></p>
+    <ul>
+      <li>「膽」嘅概念同<strong>應激反應</strong>有關——面對危險時，腎上腺素分泌（中醫歸於膽氣）。</li>
+      <li>膽氣虛嘅人容易驚恐、猶豫不決（類似焦慮症）。</li>
+    </ul>
+    <p><em>注意：中醫嘅「膽」係功能系統，唔等同於解剖學嘅膽囊。</em></p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「腎者作強之官，伎巧出焉」——作強、伎巧係咩意思？</summary>
+    <p><strong>「作強」＝發揮強力、精力充沛；「伎巧」＝技巧、創造力。</strong></p>
+    <ul>
+      <li>腎藏精——精係人體生長發育、生殖嘅根本物質。</li>
+      <li>腎氣充足→精力充沛、思維敏捷、創造力強。</li>
+      <li>腎氣不足→疲勞、記憶力下降、性功能減退。</li>
+    </ul>
+    <p><strong>現代對照：</strong>腎上腺分泌嘅激素（皮質醇、腎上腺素）確實影響精力同應激能力。<em>「腎主伎巧」可能包含咗對內分泌系統嘅早期認識。</em></p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「三焦者決瀆之官，水道出焉」——三焦到底係咩器官？</summary>
+    <p><strong>三焦係中醫特有嘅概念，無對應嘅現代解剖器官。</strong></p>
+    <ul>
+      <li><strong>上焦</strong>＝胸腔（心肺）→如霧，主佈散氣血。</li>
+      <li><strong>中焦</strong>＝上腹部（脾胃）→如漚，主消化腐熟。</li>
+      <li><strong>下焦</strong>＝下腹部（肝腎大小腸膀胱）→如瀆，主排泄廢物。</li>
+    </ul>
+    <p><strong>「決瀆」＝疏通水道。</strong>三焦係水液代謝嘅通道——類似現代醫學嘅淋巴系統＋組織間隙。<em>三焦有問題會水腫——所以係「水道出焉」。</em></p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《靈蘭祕典論》用朝廷比喻臟腑，呢種比喻喺現代醫學睇嚟係咪過時？有咩價值？</summary>
+    <p><strong>比喻嘅局限：</strong></p>
+    <ul>
+      <li>過分強調「心為君主」嘅主從關係，可能忽略器官之間嘅平等協作。</li>
+      <li>官職名稱（君主、將軍）帶有封建色彩，現代人可能覺得唔科學。</li>
+    </ul>
+    <p><strong>比喻嘅價值：</strong></p>
+    <ul>
+      <li><strong>系統思維嘅典範</strong>：用整體觀看待人體，強調器官協調——呢個係中醫有別於現代還原論醫學嘅精髓。</li>
+      <li><strong>功能描述準確</strong>：心主神明（心血管同腦功能嘅關係）、肺主治節（呼吸調節全身）、肝主謀慮（肝功能同情緒嘅關係）——呢啲描述喺現代醫學都得到部分證實。</li>
+      <li><strong>心身醫學先驅</strong>：「主明則下安」準確描述咗心理狀態對全身健康嘅影響——呢個係現代心身醫學嘅核心觀念。</li>
+    </ul>
+    <p><em>結論：比喻形式可能過時，但背後嘅系統思維同心身一體觀念，喺現代依然有重大價值。</em></p>
+  </details>
+
+</section>
+
+<footer>
+  素問・靈蘭祕典論篇第八｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_08_靈蘭祕典論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（postMessage 溝通，嚴禁手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・陰陽離合論篇第六</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0 auto; padding:24px;
+       max-width:840px;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .summary table{border-collapse:collapse; margin:10px 0; font-size:0.88em; width:100%;}
+  .summary th, .summary td{border:1px solid var(--border); padding:5px 7px; text-align:center;}
+  .summary th{background:var(--accent); color:#fff;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（postMessage listener 配套，嚴禁手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>陰陽離合論篇第六</h1>
+  <div class="subtitle">素問・卷六｜三陰三陽・開闔樞・經脈根結</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>上一篇《陰陽應象大論》講陰陽嘅「<strong>大原則</strong>」；呢一篇《陰陽離合論》就將陰陽落實到人體經脈系統——<strong>三陰三陽點樣分（離）、點樣合（合）</strong>。篇名「離合」係全篇樞紐：六經（太陽、陽明、少陽、太陰、少陰、厥陰）雖然分開各有功能，但合埋一齊又係一個統一嘅整體。核心問題有三個：① 陰陽可以推演到無窮，點解「<strong>其要一也</strong>」？② <strong>「開、闔、樞」</strong>到底係乜嘢運作模式？③ 三陰三陽嘅「根結」（起點同終點）點樣形成一個完整循環？</p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>「其要一也」之問：</strong>岐伯話陰陽「數之可十，推之可百……萬之大不可勝數，然其要一也」——陰陽可以無限分拆，但核心要點只得一個。呢個「一」到底係咩？對我哋理解複雜現象有咩啟發？</li>
+      <li><strong>開闔樞之問：</strong>「太陽為開，陽明為闔，少陽為樞」——開、闔、樞係三種乜嘢運作？點解三陽要分工做呢三個動作？三陰嘅開闔樞又同三陽有咩唔同？</li>
+      <li><strong>根結循環之問：</strong>每條經脈都有「根」（起點穴）同「結」（終點穴），例如太陽根於至陰、結於命門——呢個「根結」系統點樣令人體成為一個完整循環？同「離合」有咩關係？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>陰陽統一性・其要一也（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>三陽開闔樞（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>三陰開闔樞（藍）</span>
+</div>
+
+<!-- ===== 第一段：陰陽之要一也 ===== -->
+<section class="passage">
+  <div class="passage-title">一、陰陽數之可萬，然其要一也</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝問：我聽說天屬陽，地屬陰，日屬陽，月屬陰。大月小月合起來三百六十天成一年，人體亦都同呢個相應。但而家聽講人體嘅三陰三陽，同天地陰陽之數唔符合，呢個係咩道理？</p>
+      <p>岐伯答：天地陰陽嘅範圍極之廣泛，喺具體運用時，經過推演可以由十到百、由百到千、由千到萬，再演繹下去甚至數不盡，<strong>但係佢總嘅原則仍然唔外乎對立統一嘅陰陽道理</strong>。</p>
+      <p>天地之間，萬物初生。未長出地面嘅，叫做居於陰處，稱為<strong>陰中之陰</strong>；已經長出地面嘅，叫做<strong>陰中之陽</strong>。有陽氣萬物先生長，有陰氣萬物先成形。所以萬物嘅發生因春氣溫暖，盛長因夏氣炎熱，收成因秋氣清涼，閉藏因冬氣寒冷。如果四時陰陽失序、氣候無常，天地間生長收藏嘅變化就會失去正常。<mark class="k1">呢種陰陽變化嘅道理，喺人體嚟講，亦都有一定規律，並且可以推測而知。</mark></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「其要一也」嘅「一」係咩？</strong>
+      「一」就係<strong>對立統一嘅陰陽道理</strong>。呢個係《內經》嘅核心哲學：無論現象幾複雜、分類幾多（三陰三陽、五臟六腑、十二經脈），底層邏輯都係「陰陽對立統一」。<em>呢個同《道德經》「道生一，一生二，二生三，三生萬物」異曲同工——變化係無限嘅，但根本規律只有一個。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>黃帝問曰：餘聞天爲陽，地爲陰，日爲陽，月爲陰。大小月三百六十日成一歲，人亦應之。今三陰三陽不應陰陽，其故何也？</p>
+      <p>岐伯對曰：陰陽者，數之可十，推之可百，數之可千，推之可萬，萬之大不可勝數，<mark class="k1">然其要一也</mark>。</p>
+      <p>天覆地載，萬物方生。未出地者，命曰陰處，名曰陰中之陰；則出地者，命曰陰中之陽。陽予之正，陰爲之主。故生因春，長因夏，收因秋，藏因冬。夫常則天地四塞。陰陽之變，其在人者，亦數之可數。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：三陽之離合 ===== -->
+<section class="passage">
+  <div class="passage-title">二、三陽之離合：太陽為開，陽明為闔，少陽為樞</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝話：我願意聽你講下三陰三陽嘅離合情況。</p>
+      <p>岐伯話：聖人面向南方站立，前方叫做廣明，後方叫做太沖。行於太沖部位嘅經脈叫做<strong>少陰</strong>；喺少陰經上面嘅經脈叫做<strong>太陽</strong>。太陽經嘅下端起於足小趾外側嘅至陰穴，上端結於命門，因為太陽係少陰之表，所以稱為<strong>陰中之陽</strong>。</p>
+      <p>再以人身上下而言，上半身屬陽，稱為廣明；廣明之下稱為太陰。太陰前面嘅經脈叫做<strong>陽明</strong>，陽明經嘅下端起於足大趾側次指之端嘅厲兌穴，因陽明係太陰之表，故稱為<strong>陰中之陽</strong>。</p>
+      <p>厥陰為裏，少陽為表，故厥陰經之表為<strong>少陽</strong>經。少陽經下端起於竅陰穴，因少陽居厥陰之表，故稱為<strong>陰中之少陽</strong>。</p>
+      <p><strong>因此，三陽經嘅離合，分開嚟講：</strong><mark class="k2">太陽主表為開，陽明主裏為闔，少陽介於表裏之間為樞</mark>。但三者之間唔係各自為政，而係相互緊密聯繫住嘅，所以合埋一齊稱為<strong>一陽</strong>。<span class="page-num">（原檔頁碼：16）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「開、闔、樞」嘅生動比喻</strong>
+      古人用<strong>門嘅結構</strong>嚟比喻三陽嘅功能分工：
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">三陽</th><th style="padding:5px 7px;">功能</th><th style="padding:5px 7px;">門嘅比喻</th><th style="padding:5px 7px;">病理表現</th></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">太陽</td><td style="padding:5px 7px;">為開</td><td style="padding:5px 7px;">門扇（對外開合）</td><td style="padding:5px 7px;">開太過＝自汗、發熱；開唔到＝無汗、惡寒</td></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">陽明</td><td style="padding:5px 7px;">為闔</td><td style="padding:5px 7px;">門框（向內收斂）</td><td style="padding:5px 7px;">闔太過＝便秘、腹滿；闔唔到＝腹瀉</td></tr>
+        <tr><td style="padding:5px 7px; text-align:center;">少陽</td><td style="padding:5px 7px;">為樞</td><td style="padding:5px 7px;">門樞（轉動樞紐）</td><td style="padding:5px 7px;">樞唔利＝往來寒熱、胸脅苦滿</td></tr>
+      </table>
+      <em>太陽主一身之表，抵禦外邪；陽明主裏，受納消化；少陽主半表半裏，轉輸樞紐。三者缺一不可。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>帝曰：願聞三陰三陽之離合也。</p>
+      <p>岐伯曰：聖人南面而立，前曰廣明，後曰太沖。太沖之地，名曰少陰；少陰之上，名曰太陽。太陽根起於至陰，結於命門，名曰陰中之陽。</p>
+      <p>中身而上名曰廣明，廣明之下名曰太陰，太陰之前，名曰陽明。陽明根起於厲兌，名曰陰中之陽。</p>
+      <p>厥陰之表，名曰少陽。少陽根起於竅陰，名曰陰中之少陽。</p>
+      <p>是故三陽之離合也：<mark class="k2">太陽爲開，陽明爲闔，少陽爲樞</mark>。三經者，不得相失也，搏而勿浮，命曰一陽。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：三陰之離合 ===== -->
+<section class="passage">
+  <div class="passage-title">三、三陰之離合：太陰為開，厥陰為闔，少陰為樞</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝話：願意再聽你講下三陰嘅離合情況。</p>
+      <p>岐伯話：喺外嘅為陽，喺內嘅為陰。所以喺裏嘅經脈稱為陰經，行於少陰前面嘅稱為<strong>太陰</strong>。太陰經嘅根起於足大趾之端嘅隱白穴，稱為<strong>陰中之陰</strong>。</p>
+      <p>太陰嘅後面，稱為<strong>少陰</strong>，少陰經嘅根起於足心嘅湧泉穴，稱為<strong>陰中之少陰</strong>。</p>
+      <p>少陰嘅前面，稱為<strong>厥陰</strong>，厥陰經嘅根起於足大趾之端嘅大敦穴，由於兩陰相合而無陽，厥陰又位於最裏，所以稱之為<strong>陰之絕陰</strong>。</p>
+      <p><strong>因此，三陰經之離合，分開嚟講：</strong><mark class="k3">太陰為三陰之表為開，厥陰為主陰之裏為闔，少陰位於太、厥表裏之間為樞</mark>。但三者之間唔能各自為政，而係相互協調緊密聯繫住嘅，所以合埋一齊稱為<strong>一陰</strong>。</p>
+      <p>陰陽之氣，運行不息，遞相傳注於全身，氣運於裏，形立於表，<mark class="k1">呢個就係陰陽離合、表裏相成嘅緣故</mark>。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「陰之絕陰」——厥陰點解咁特殊？</strong>
+      「絕陰」＝純陰無陽、陰氣到此盡絕。厥陰（肝經、心包經）位於人體最深層，係兩陰交盡之處。<em>但注意：厥陰雖然叫「絕陰」，唔係話完全無陽氣——而係指陰氣到極點、陽氣初生之處（「陰極生陽」）。呢個同《陰陽應象大論》「重寒則熱」嘅物極必反道理一致。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>帝曰：願聞三陰？</p>
+      <p>岐伯曰：外者爲陽，內者爲陰。然則中爲陰，其衝在下，名曰太陰，太陰根起於隱白，名曰陰中之陰。</p>
+      <p>太陰之後，名曰少陰，少陰根起於湧泉，名曰陰中之少陰。</p>
+      <p>少陰之前，名曰厥陰，厥陰根起於大敦，陰之絕陽，名曰陰之絕陰。</p>
+      <p>是故三陰之離合也，<mark class="k3">太陰爲開，厥陰爲闔，少陰爲樞</mark>。三經者不得相失也，搏而勿沉，名曰一陰。</p>
+      <p>陰陽(雩重)(雩重)，積傳爲一週，氣裏形表，而爲相成也。</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>其要一也</strong>：陰陽可以推演到無窮（十、百、千、萬），但根本原則只有一個——對立統一嘅陰陽道理。</li>
+    <li><strong>三陽離合</strong>：太陽（根於至陰）為開、陽明（根於厲兌）為闔、少陽（根於竅陰）為樞；搏而勿浮，合稱「一陽」。</li>
+    <li><strong>三陰離合</strong>：太陰（根於隱白）為開、厥陰（根於大敦）為闔、少陰（根於湧泉）為樞；搏而勿沉，合稱「一陰」。</li>
+    <li><strong>根結系統</strong>：每條經脈都有「根」（足部起點穴）同「結」（頭部或軀幹終點），形成由足到頭嘅完整循環。</li>
+    <li><strong>離合相成</strong>：「離」＝六經各有分工；「合」＝合為統一整體。氣運於裏，形立於表，表裏相成。</li>
+    <li><strong>陰之絕陰</strong>：厥陰位於兩陰交盡之處，係陰極陽生之位，反映「物極必反」嘅規律。</li>
+  </ul>
+  <table>
+    <tr><th>類別</th><th>第一（開）</th><th>第二（闔）</th><th>第三（樞）</th></tr>
+    <tr><td><strong>三陽</strong></td><td>太陽（根至陰）</td><td>陽明（根厲兌）</td><td>少陽（根竅陰）</td></tr>
+    <tr><td><strong>三陰</strong></td><td>太陰（根隱白）</td><td>厥陰（根大敦）</td><td>少陰（根湧泉）</td></tr>
+  </table>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「其要一也之問」）：陰陽可以無限分拆，但「其要一也」，呢個「一」到底係咩？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>「一」就係<strong>對立統一嘅陰陽道理</strong>——任何事物都有陰陽兩面，互相對立又互相依存。</p>
+    <p><strong>點解可以分到無限但又要點得一？</strong>因為分類係「現象層面」嘅（三陰三陽、五臟六腑、十二經脈……可以不斷細分），但「規律層面」只有一個——就係陰陽對立統一。好似數學：數字有無限個，但「加減乘除」嘅運算規律係有限嘅。</p>
+    <p><strong>對理解複雜現象嘅啟發：</strong>面對複雜嘅症狀或現象，唔好被表象迷惑，要搵到底層嘅「一」。<em>例如：頭痛、失眠、消化唔好——睇落係三個唔同問題，但底層可能都係「肝陽上亢」呢個「一」。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「開闔樞之問」）：開、闔、樞係三種乜嘢運作？三陰三陽嘅開闔樞有咩唔同？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>「開、闔、樞」借<strong>門嘅結構</strong>嚟比喻經脈系統嘅三種功能分工：</p>
+    <ul>
+      <li><strong>開（門扇）</strong>＝對外開合、主表、主佈散。太陽主表抵禦外邪；太陰主四肢肌肉嘅濡養。</li>
+      <li><strong>闔（門框）</strong>＝向內收斂、主裏、主受納。陽明主受納消化；厥陰主藏血。</li>
+      <li><strong>樞（門樞）</strong>＝轉動樞紐、主表裏之間。少陽主半表半裏轉輸；少陰主心腎水火交接。</li>
+    </ul>
+    <p><strong>三陰三陽嘅分別：</strong>三陽嘅開闔樞對應「表、裏、半表半裏」；三陰嘅開闔樞對應「陰中之層次」。三陽「搏而勿浮」（有力但不浮越），三陰「搏而勿沉」（有力但不沉伏）。<em>呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「根結循環之問」）：「根結」系統點樣形成完整循環？同「離合」有咩關係？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>「根」＝經脈喺足部嘅起點穴；「結」＝經脈喺頭部或軀幹嘅終點。</p>
+    <p><strong>六經根結一覽：</strong></p>
+    <ul>
+      <li>太陽：根於至陰（足小趾）→ 結於命門（目）</li>
+      <li>陽明：根於厲兌（足次趾）→ 結於額角</li>
+      <li>少陽：根於竅陰（足四趾）→ 結於耳</li>
+      <li>太陰：根於隱白（足大趾內側）</li>
+      <li>少陰：根於湧泉（足心）</li>
+      <li>厥陰：根於大敦（足大趾外側）</li>
+    </ul>
+    <p><strong>同離合嘅關係：</strong>「離」＝每條經各有自己嘅根結路線；「合」＝六經根結互相連接，形成由足到頭、由表入裏嘅完整循環。<em>「氣裏形表，而為相成」——氣行於內（裏），形立於外（表），表裏相成，就係離合嘅最終結果。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：點解三陽叫「一陽」、三陰叫「一陰」？「搏而勿浮」「搏而勿沉」係咩意思？</summary>
+    <p><strong>「一陽」「一陰」嘅含義：</strong>三陽經雖然分開各有功能（開闔樞），但合埋一齊係一個協調嘅整體，所以叫「一陽」；三陰經同理叫「一陰」。<em>呢個呼應返「其要一也」——分得開但要合得埋。</em></p>
+    <p><strong>「搏而勿浮」「搏而勿沉」：</strong></p>
+    <ul>
+      <li><strong>搏</strong>＝脈氣有力、充實。</li>
+      <li><strong>勿浮</strong>（三陽）＝陽氣雖然主表、向外，但唔可以浮越散失。</li>
+      <li><strong>勿沉</strong>（三陰）＝陰氣雖然主裏、向內，但唔可以沉伏郁結。</li>
+    </ul>
+    <p><strong>臨床意義：</strong>三陽病多見「浮」（陽氣外越、自汗發熱）；三陰病多見「沉」（陰氣鬱結、手腳冰冷）。治療就係要令陽氣「勿浮」、陰氣「勿沉」，恢復平衡。</p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「聖人南面而立」——點解要面向南方？呢個方位有咩醫學含義？</summary>
+    <p><strong>方位嘅陰陽屬性：</strong></p>
+    <ul>
+      <li><strong>南</strong>＝陽（向陽、溫暖）→ 前方叫「廣明」（光明廣大）</li>
+      <li><strong>北</strong>＝陰（背陰、清涼）→ 後方叫「太沖」</li>
+    </ul>
+    <p><strong>醫學含義：</strong>人體嘅陰陽分佈同方位對應——<em>胸前（向南）屬陽，背部（向北）屬陰</em>。呢個同《金匱真言論》「背為陽，腹為陰」嘅講法有微妙差異，反映《內經》唔同篇章對陰陽分部嘅多角度論述。</p>
+    <p><strong>實際應用：</strong>針灸取穴、氣功導引都會考慮方位。例如面向南方練功，順應「向陽」嘅自然規律。</p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「厥陰為陰之絕陰」——絕陰係咪即係完全無陽氣？同「陰極生陽」有冇矛盾？</summary>
+    <p><strong>唔矛盾，而係一體兩面。</strong></p>
+    <p><strong>「絕陰」嘅正確理解：</strong></p>
+    <ul>
+      <li><strong>靜態</strong>：厥陰位於兩陰交盡之處，陰氣到此最盛、最純（所以叫「絕陰」）。</li>
+      <li><strong>動態</strong>：陰極則陽生——正因為陰到極點，所以係陽氣初生嘅地方（肝為「罷極之本」，主生發）。</li>
+    </ul>
+    <p><strong>同「陰極生陽」嘅關係：</strong>厥陰就係「陰極生陽」嘅具體位置。好似冬至——晝最短夜最長（陰極），但由呢一刻開始白天開始變長（陽生）。<em>所以「絕陰」唔係死亡嘅陰，而係「陰盡陽生」嘅轉折點。</em></p>
+    <p><strong>臨床意義：</strong>厥陰病（如厥陰肝病）往往表現寒熱錯雜（上熱下寒），正正反映「陰陽轉折」嘅特點。</p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「氣裏形表，而為相成」——氣同形、裏同表，點樣相輔相成？</summary>
+    <p><strong>「氣裏形表」嘅含義：</strong></p>
+    <ul>
+      <li><strong>氣</strong>＝無形嘅功能活動（運行、溫煦、推動）→ 主「裏」</li>
+      <li><strong>形</strong>＝有形嘅實體結構（臟腑、筋骨、皮肉）→ 立「表」</li>
+    </ul>
+    <p><strong>相成嘅道理：</strong>氣運行於內，推動形體嘅功能；形立於外，保護同承載氣嘅運行。<em>兩者互相依賴——無氣則形枯，無形則氣散。</em></p>
+    <p><strong>同離合嘅關係：</strong>「離」產生咗表裏嘅分別（氣裡形表）；「合」令表裏相輔相成、形成完整循環。呢個係全篇嘅總結：分開睇各有功能，合埋睇係統一整體。</p>
+    <p><strong>現代對照：</strong>好似「軟件」（氣）同「硬件」（形）——軟件運行喺硬件入面，硬件承載住軟件，兩者缺一不可。</p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《陰陽離合論》嘅「開闔樞」理論，同上一篇《陰陽應象大論》嘅「陰陽總綱」係咩關係？兩篇點樣互相補充？</summary>
+    <p><strong>兩篇嘅層次關係：</strong></p>
+    <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+      <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">項目</th><th style="padding:5px 7px;">《陰陽應象大論》（SW_05）</th><th style="padding:5px 7px;">《陰陽離合論》（SW_06）</th></tr>
+      <tr><td style="padding:5px 7px;">層次</td><td style="padding:5px 7px;">哲學總綱（宏觀）</td><td style="padding:5px 7px;">經脈系統（微觀落實）</td></tr>
+      <tr><td style="padding:5px 7px;">重點</td><td style="padding:5px 7px;">陰陽係天地之道、治病求本</td><td style="padding:5px 7px;">三陰三陽嘅<strong>具體結構同運作</strong></td></tr>
+      <tr><td style="padding:5px 7px;">新概念</td><td style="padding:5px 7px;">壯火少火、五行對應、陽病治陰</td><td style="padding:5px 7px;"><strong>開闔樞、根結、離合</strong></td></tr>
+      <tr><td style="padding:5px 7px;">臨床價值</td><td style="padding:5px 7px;">辨證論治嘅總原則</td><td style="padding:5px 7px;"><strong>六經辨證</strong>嘅結構基礎</td></tr>
+    </table>
+    <p><strong>互補關係：</strong></p>
+    <ul>
+      <li>SW_05 講「點解」要分陰陽（哲學道理）；SW_06 講「點樣」分陰陽（具體方法）。</li>
+      <li>SW_05 嘅「治病求本」喺 SW_06 落實為「辨六經、明開闔樞」。</li>
+      <li>兩者結合＝由抽象哲學到具體臨床嘅完整橋樑。</li>
+    </ul>
+    <p><strong>啟示：</strong>《內經》嘅篇章編排有邏輯層次——先講大原則，再講具體結構。呢個同現代教科書「由總論到各論」嘅編排異曲同工。</p>
+  </details>
+
+</section>
+
+<footer>
+  素問・陰陽離合論篇第六｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_06_陰陽離合論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（postMessage 溝通，嚴禁手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・陰陽別論篇第七</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0 auto; padding:24px;
+       max-width:840px;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .summary table{border-collapse:collapse; margin:10px 0; font-size:0.88em; width:100%;}
+  .summary th, .summary td{border:1px solid var(--border); padding:5px 7px; text-align:center;}
+  .summary th{background:var(--accent); color:#fff;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（postMessage listener 配套，嚴禁手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>陰陽別論篇第七</h1>
+  <div class="subtitle">素問・卷七｜脈分陰陽・真臟脈・生陽死陰・各經發病預後</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇係《素問》早期嘅<strong>脈診專章</strong>。篇名「陰陽別論」嘅「別」＝辨別——辨別脈象嘅陰陽，從而判斷病變所在同死生預後。內容分四大塊：① <strong>脈分陰陽</strong>（陽脈＝有胃氣，陰脈＝真臟脈無胃氣）；② <strong>各經發病</strong>（二陽發心脾、三陽發寒熱、一陽發少氣）；③ <strong>生陽死陰</strong>（五行相生傳變則生，相剋傳變則死）；④ <strong>各種脈象預後</strong>（邊條經脈搏擊太過，幾日死）。全篇圍繞一個核心：<strong>脈象嘅陰陽，點樣決定疾病嘅吉凶生死？</strong></p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>「知陽知陰」之問：</strong>岐伯話「知陽者知陰，知陰者知陽」——點解識得陽脈就自然識得陰脈？陰脈同陽脈係咪一體兩面？呢個對我哋學脈診有咩啟發？</li>
+      <li><strong>真臟脈之問：</strong>「所謂陰者，真臟也。見則為敗，敗必死也」——真臟脈即係「無胃氣嘅脈」，點解無咗胃氣就一定死？胃氣到底係咩咁重要？</li>
+      <li><strong>生陽死陰之問：</strong>「肝之心謂之生陽，心之肺謂之死陰」——肝病傳心叫「生陽」，心病傳肺叫「死陰」。點解有啲傳變會生、有啲會死？背後嘅五行邏輯係咩？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>脈分陰陽・知陽知陰（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>各經發病・真臟脈（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>生陽死陰・五行傳變（藍）</span>
+</div>
+
+<!-- ===== 第一段：脈分陰陽 ===== -->
+<section class="passage">
+  <div class="passage-title">一、脈有陰陽：知陽者知陰，五五二十五陽</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝問：人有四經、十二從，呢個係咩意思？岐伯答：四經係指同四時相應嘅正常脈象；十二從係指同十二個月相應嘅十二經脈。</p>
+      <p><mark class="k1">脈有陰有陽，能瞭解咩係陽脈，就能知道咩係陰脈；能瞭解咩係陰脈，就能知道咩係陽脈。</mark>陽脈有五種（春微弦、夏微鉤、長夏微緩、秋微毛、冬微石），五時各有五臟嘅陽脈，所以五時配合五臟，則為二十五種陽脈。</p>
+      <p>所謂陰脈，就係脈無胃氣，稱為<strong>真臟脈</strong>。真臟脈係胃氣已經敗壞嘅象徵，敗象已見，就可以斷其必死。所謂陽脈，就係指<strong>有胃氣之脈</strong>。辨別陽脈，就可以知道病變嘅所在；辨別真臟脈，就可以知道死亡嘅時期。</p>
+      <p>三陽經脈嘅診察部位喺結喉兩旁嘅人迎穴，三陰經脈嘅診察部位喺手魚際之後嘅寸口。健康狀態下，人迎與寸口嘅脈象係一致嘅。<mark class="k1">臨證時應謹慎而熟練地辨別陰脈與陽脈，就不致疑惑不絕。</mark></p>
+      <p>所謂陰陽者：去者為陰，至者為陽；靜者為陰，動者為陽；遲者為陰，數者為陽。<span class="page-num">（原檔頁碼：17-18）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「胃氣」係中醫脈診嘅核心</strong>
+      「胃氣」＝脾胃產生嘅穀氣（營養之氣），係維持生命嘅根本。<em>有胃氣嘅脈象＝從容和緩、有力而不僵硬；無胃氣（真臟脈）＝僵硬、斷絕、如一線孤懸。</em>中醫認為「有胃氣則生，無胃氣則死」——即使有病，只要胃氣尚存，就有恢復嘅希望；胃氣一旦敗絕，就無藥可醫。呢個揭示咗脾胃喺中醫學嘅特殊地位（「後天之本」）。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>黃帝問曰：人有四經，十二從，何謂？岐伯對曰：四經應四時；十二從應十二月；十二月應十二脈。</p>
+      <p><mark class="k1">脈有陰陽，知陽者知陰，知陰者知陽</mark>。凡陽有五，五五二十五陽。所謂陰者，真髒也。見則爲敗，敗必死也。所謂陽者，胃脘之陽也。別於陽者，知病處也，別於陰者，知生死之期。</p>
+      <p>三陽在頭，三陰在手，所謂一也。謹熟陰陽，無與衆謀。所謂陰陽者，去者爲陰，至者爲陽，靜者爲陰，動者爲陽，遲者爲陰，數者爲陽。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：各經發病 ===== -->
+<section class="passage">
+  <div class="passage-title">二、各經發病：二陽發心脾、三陽發寒熱、一陽發少氣</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k2">胃腸有病（二陽），則可影響心脾</mark>，病人往往有難以告人嘅隱情，如果係女子就會月經不調甚至經閉。若病久傳變，或者形體逐漸消瘦成為「風消」，或者呼吸短促、氣息上逆成為「息賁」，就不可治療。</p>
+      <p><mark class="k2">太陽經發病（三陽），多有寒熱症狀</mark>，或者下部發生癰腫，或者兩足痿弱無力而逆冷，腿肚痠痛。若病久傳化，或為皮膚乾燥而不潤澤，或變為頹疝。</p>
+      <p><mark class="k2">少陽經發病（一陽），生發之氣即減少</mark>，或易患咳嗽，或易患泄瀉。若病久傳變，或為心虛掣痛，或為飲食不下、阻塞不通。</p>
+      <p>陽明與厥陰發病，主病驚駭、背痛、常常噯氣呵欠，名曰<strong>風厥</strong>。少陰和少陽發病，腹部作脹、心下滿悶、時欲嘆氣。太陽和太陰發病，則為半身不遂嘅<strong>偏枯</strong>症，或者四肢不能舉動。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「二陽之病發心脾」嘅臨床意義</strong>
+      「二陽」＝足陽明胃經 + 手陽明大腸經。胃腸有病點解會影響心脾？<em>因為胃係氣血生化之源——胃氣不足，則心血失養（失眠、心悸）、脾失健運（月經不調）。</em>呢個揭示咗「胃腸－心－脾」嘅密切關係，現代醫學亦發現胃腸功能失調同情緒（心）、內分泌（脾主統血）有關。女子經閉嘅一個重要原因就係胃腸虛弱、氣血不足。
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>曰：<mark class="k2">二陽之病發心脾</mark>，有不得隱曲，女子不月；其傳爲風消，其傳爲息賁者，死不治。</p>
+      <p>曰：<mark class="k2">三陽爲病發寒熱</mark>，下爲癰腫，及爲痿厥，腨(疒肙)；其傳爲索澤，其傳爲(疒頹)疝。</p>
+      <p>曰：<mark class="k2">一陽發病，少氣，善咳，善泄</mark>；其傳爲心掣，其傳爲隔。</p>
+      <p>二陽一陰發病，主驚駭、背痛、善噫、善欠，名曰風厥。二陰一陽發病，善脹、心滿善氣。三陰三陽發病，爲偏枯萎易，四肢不舉。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：生陽死陰 ===== -->
+<section class="passage">
+  <div class="passage-title">三、生陽死陰：五行傳變定吉凶</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>屬於<strong>死陰</strong>嘅病，不過三日就要死；屬於<strong>生陽</strong>嘅病，不過四天就會痊癒。</p>
+      <p>所謂生陽、死陰嘅具體例子：</p>
+      <p><mark class="k3">肝病傳心，為木生火，得其生氣，叫做「生陽」</mark>——病情向好轉。</p>
+      <p><mark class="k3">心病傳肺，為火剋金，金被火消亡，叫做「死陰」</mark>——病情惡化。</p>
+      <p><mark class="k3">肺病傳腎，以飲傳陰，無陽之候，叫做「重陰」</mark>。</p>
+      <p><mark class="k3">腎病傳脾，水反侮土，叫做「闢陰」，係不治之死症</mark>。<span class="page-num">（原檔頁碼：17-18）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「生陽死陰」嘅五行邏輯</strong>
+      傳變吉凶取決於<strong>五行生剋關係</strong>：
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">傳變</th><th style="padding:5px 7px;">五行關係</th><th style="padding:5px 7px;">名稱</th><th style="padding:5px 7px;">吉凶</th></tr>
+        <tr><td style="padding:5px 7px;">肝→心</td><td style="padding:5px 7px;">木生火（相生）</td><td style="padding:5px 7px;">生陽</td><td style="padding:5px 7px;">吉（向好）</td></tr>
+        <tr><td style="padding:5px 7px;">心→肺</td><td style="padding:5px 7px;">火剋金（相剋）</td><td style="padding:5px 7px;">死陰</td><td style="padding:5px 7px;">凶（惡化）</td></tr>
+        <tr><td style="padding:5px 7px;">肺→腎</td><td style="padding:5px 7px;">金生水（陰上加陰）</td><td style="padding:5px 7px;">重陰</td><td style="padding:5px 7px;">凶（陰盛陽衰）</td></tr>
+        <tr><td style="padding:5px 7px;">腎→脾</td><td style="padding:5px 7px;">水反侮土（反向剋制）</td><td style="padding:5px 7px;">闢陰</td><td style="padding:5px 7px;">大凶（不治）</td></tr>
+      </table>
+      <em>規律：順五行相生嘅傳變＝吉；逆五行相剋嘅傳變＝凶。呢個係中醫「五臟傳變」理論嘅基礎。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>死陰之屬，不過三日而死，生陽之屬，不過四日而死（當為「生」）。</p>
+      <p>所謂生陽死陰者，<mark class="k3">肝之心謂之生陽，心之肺謂之死陰，肺之腎謂之重陰，腎之脾謂之闢陰，死不治</mark>。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第四段：結陽結陰 + 脈象預後 ===== -->
+<section class="passage">
+  <div class="passage-title">四、結陽結陰與脈象預後：各種「結」證同死期判斷</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><strong>邪氣鬱結於陽經，則四肢浮腫</strong>（四肢為諸陽之本）；<strong>邪氣鬱結於陰經，則大便下血</strong>（陰絡傷則血下溢），初結一升，再結二升，三結三升。</p>
+      <p>陰經陽經都有邪氣鬱結，而偏重於陰經嘅，就會發生<strong>石水</strong>之病，少腹腫脹。邪氣鬱結於二陽（胃、大腸），則腸胃俱熱，多為<strong>消渴</strong>之症；鬱結於三陽（膀胱、小腸），則多為上下不通嘅<strong>隔症</strong>；鬱結於三陰（脾、肺），多為水腫膨脹嘅<strong>水病</strong>；鬱結於一陰一陽（厥陰和少陽），多為<strong>喉痹</strong>之病。</p>
+      <p><strong>脈象與預後：</strong>陰脈搏動有力，與陽脈有明顯區別，係懷孕嘅現象；陰陽脈（尺脈、寸脈）俱虛而患痢疾嘅，係死症；陽脈加倍於陰脈，當有汗出；陰脈虛而陽脈搏擊，火迫血行，喺婦人為<strong>血崩</strong>。</p>
+      <p>三陰之脈俱搏擊於指下，大約到二十天半夜時死亡；二陰之脈俱搏，大約到十三天傍晚時死亡；一陰之脈俱搏而鼓動過甚，三天就要死亡；三陰三陽之脈俱搏，心腹脹滿，大小便不通，則五日死；二陽之脈俱搏，患有溫病嘅，無法治療，不過十日就要死。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「結」證嘅現代理解</strong>
+      「結」＝邪氣鬱結、阻塞不通。陽經鬱結→四肢腫（淋巴回流不暢）；陰經鬱結→便血（腸道血管損傷）；陰陽俱結→腹水（石水）。<em>呢啲都係氣血津液運行障礙嘅表現——「通則不痛，痛則不通」，結就係「不通」嘅極端表現。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>結陽者，腫四支。結陰者，便血一升，再結二升，三結三升。陰陽結斜，多陰少陽曰石水，少腹腫。二陽結，謂之消。三陽結，謂之隔。三陰結，謂之水。一陰一陽結，謂之喉痹。</p>
+      <p>陰搏陽別，謂之有子。陰陽虛，腸澼死。陽加於陰，謂之汗。陰虛陽搏，謂之崩。</p>
+      <p>三陰俱搏，二十日夜半死；二陰俱搏，十三日夕時死；一陰俱搏，十日死；三陽搏且鼓，三日死；三陰三陽俱搏，心腹滿，發盡不得隱曲，五日死；二陽俱搏，其病溫，死不治，不過十日死。</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>脈分陰陽</strong>：陽脈＝有胃氣（和緩從容）；陰脈（真臟脈）＝無胃氣（僵硬斷絕）。知陽即知陰，兩者一體兩面。</li>
+    <li><strong>五五二十五陽</strong>：五時（春夏長夏秋冬）×五臟＝二十五種正常陽脈。</li>
+    <li><strong>各經發病</strong>：二陽（胃腸）發心脾、三陽（太陽）發寒熱、一陽（少陽）發少氣咳泄。</li>
+    <li><strong>生陽死陰</strong>：順五行相生傳變＝吉（肝→心：木生火）；逆五行相剋傳變＝凶（心→肺：火剋金）。</li>
+    <li><strong>四種傳變</strong>：生陽（向好）、死陰（惡化）、重陰（陰盛陽衰）、闢陰（不治死症）。</li>
+    <li><strong>結證規律</strong>：結陽→四肢腫；結陰→便血；陰陽俱結→石水（腹水）；各經鬱結各有特定病證。</li>
+    <li><strong>脈象預後</strong>：各經脈俱搏擊太過，有明確死期（三陰二十日死、二陰十三日死等）。</li>
+  </ul>
+  <table>
+    <tr><th>脈象</th><th>臨床意義</th></tr>
+    <tr><td><strong>陰搏陽別</strong></td><td>懷孕（妊娠脈）</td></tr>
+    <tr><td><strong>陰陽俱虛</strong></td><td>痢疾死症</td></tr>
+    <tr><td><strong>陽加於陰</strong></td><td>出汗</td></tr>
+    <tr><td><strong>陰虛陽搏</strong></td><td>婦人血崩</td></tr>
+  </table>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「知陽知陰之問」）：點解識得陽脈就自然識得陰脈？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong>因為陰脈同陽脈係<strong>一體兩面</strong>——陽脈嘅「反面」就係陰脈。</p>
+    <ul>
+      <li><strong>陽脈</strong>＝有胃氣、從容和緩、有力而不浮越。</li>
+      <li><strong>陰脈（真臟脈）</strong>＝無胃氣、僵硬斷絕、如一線孤懸。</li>
+    </ul>
+    <p>知道咩係「正常」（陽），就自然知道咩係「異常」（陰）；反之亦然。<em>呢個同現代醫學「先識正常解剖，先至識病理變化」嘅邏輯一樣。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「真臟脈之問」）：點解無咗胃氣就一定死？胃氣有幾重要？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>胃氣＝脾胃產生嘅穀氣（營養之氣），係維持生命嘅根本。</p>
+    <p><strong>胃氣嘅重要性：</strong></p>
+    <ul>
+      <li><strong>後天之本</strong>：人出生後所有營養都靠脾胃運化。</li>
+      <li><strong>脈象嘅基礎</strong>：有胃氣嘅脈＝從容和緩（表示正氣尚存）；無胃氣嘅脈＝僵硬斷絕（表示正氣已絕）。</li>
+      <li><strong>恢復嘅希望</strong>：「有胃氣則生，無胃氣則死」——即使重病，只要胃氣尚存就有恢復希望。</li>
+    </ul>
+    <p><strong>臨床意義：</strong>所以中醫治病非常重視「保胃氣」——用藥唔可以太寒涼損傷脾胃，要「顧護中州」。<em>呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「生陽死陰之問」）：點解肝病傳心生、心病傳肺死？背後嘅五行邏輯係咩？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>傳變吉凶取決於<strong>五行生剋關係</strong>。</p>
+    <ul>
+      <li><strong>肝→心</strong>（木生火）：相生關係，病邪順住生嘅方向傳，臟腑得到「生氣」，所以叫「生陽」＝吉。</li>
+      <li><strong>心→肺</strong>（火剋金）：相剋關係，病邪逆住剋嘅方向傳，被剋嘅臟腑受損，所以叫「死陰」＝凶。</li>
+    </ul>
+    <p><strong>五行邏輯：</strong>相生＝資助、培補（木→火→土→金→水→木）；相剋＝抑制、損傷（木→土→水→火→金→木）。<em>順生逆剋——順住相生方向傳就好轉，逆住相剋方向傳就惡化。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：「四經十二從」嘅「四經」係邊四條？同四時點樣對應？</summary>
+    <p><strong>「四經」嘅含義：</strong>四經係指同四時（春、夏、秋、冬）相應嘅四組脈象（或四條主要經脈）。</p>
+    <p><strong>四時對應：</strong></p>
+    <ul>
+      <li><strong>春</strong>＝弦脈（肝）：如琴弦，端直以長。</li>
+      <li><strong>夏</strong>＝鉤脈（心）：來盛去衰，如鉤。</li>
+      <li><strong>秋</strong>＝毛脈（肺）：輕虛以浮，如按毛。</li>
+      <li><strong>冬</strong>＝石脈（腎）：沉以搏，如石沉水。</li>
+    </ul>
+    <p><strong>十二從</strong>＝十二月對應十二經脈。呢個反映《內經》「天人相應」嘅思想——脈象同季節、月份密切相關。</p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「二陽之病發心脾，女子不月」——胃腸病點解會令女子經閉？</summary>
+    <p><strong>病理鏈：</strong>胃腸虛弱 → 氣血生化不足 → 血海空虛 → 月經不調甚至經閉。</p>
+    <p><strong>詳細機制：</strong></p>
+    <ul>
+      <li>胃係「水穀之海」，主受納腐熟；脾主運化，為氣血生化之源。</li>
+      <li>女子月經需要充足嘅氣血——胃腸有病，氣血不足，月經就會失調。</li>
+      <li>「有不得隱曲」＝有難以啟齒嘅情志因素（憂思傷脾），進一步影響月經。</li>
+    </ul>
+    <p><strong>現代對照：</strong>神經性厭食症、嚴重胃腸病嘅女性確實會出現繼發性閉經——因為營養不足，身體為咗保命而關閉生殖功能。<em>呢個同「二陽發心脾，女子不月」嘅描述完全吻合。</em></p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「陰搏陽別，謂之有子」——點解呢種脈象表示懷孕？</summary>
+    <p><strong>妊娠脈嘅特點：</strong>陰脈（尺脈）搏動有力，同陽脈（寸脈）有明顯區別——尺脈明顯滑數有力。</p>
+    <p><strong>機制：</strong></p>
+    <ul>
+      <li>懷孕後，胎兒需要充足氣血滋養，母體血容量增加。</li>
+      <li>尺脈候腎（腎主生殖），妊娠時腎氣旺盛，所以尺脈搏動明顯。</li>
+      <li>「滑脈」係妊娠嘅典型脈象——「如盤走珠」，往來流利。</li>
+    </ul>
+    <p><strong>注意：</strong>喺古代無驗孕棒，脈診係判斷懷孕嘅重要方法。但滑脈亦見於痰濕、食積，需要結合其他症狀（停經、噁心等）綜合判斷。</p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「結陽腫四肢，結陰便血」——點解鬱結會有呢啲特定症狀？</summary>
+    <p><strong>結陽腫四肢嘅原因：</strong></p>
+    <ul>
+      <li>四肢為「諸陽之本」——陽經起於四肢。</li>
+      <li>邪氣鬱結於陽經，陽氣不能正常運行，津液停聚→四肢浮腫。</li>
+    </ul>
+    <p><strong>結陰便血嘅原因：</strong></p>
+    <ul>
+      <li>陰經屬裏，絡於臟腑（尤其腸道）。</li>
+      <li>邪氣鬱結於陰經，損傷陰絡（腸道血管）→ 血液外溢→便血。</li>
+      <li>「初結一升，再結二升，三結三升」——鬱結越深，出血越多。</li>
+    </ul>
+    <p><strong>現代對照：</strong>心力衰竭引起四肢水腫（結陽）；腸道炎症、痔瘡引起便血（結陰）——機制雖然唔同，但「阻塞不通」嘅邏輯相通。</p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《陰陽別論》嘅死期判斷（如「三陰二十日死」），喺現代醫學睇嚟係咪可信？點樣理性看待？</summary>
+    <p><strong>歷史語境：</strong>古代無現代醫療手段（抗生素、ICU、呼吸機），重病嘅死亡率極高，脈象異常確實係預後不良嘅可靠指標。</p>
+    <p><strong>具體死期嘅可信度：</strong></p>
+    <ul>
+      <li><strong>趨勢判斷可信</strong>：真臟脈（無胃氣）確實預示極差預後——現代醫學中，嚴重心律失常、休克脈象同樣預示危險。</li>
+      <li><strong>具體日數不可死守</strong>：「二十日死」「十三日死」太過精確，古代可能基於有限觀察嘅統計，現代唔可以死板套用。</li>
+    </ul>
+    <p><strong>理性看待：</strong></p>
+    <ul>
+      <li>核心原則（有胃氣則生、無胃氣則死）依然有效。</li>
+      <li>具體數字要結合現代醫學判斷，唔可以迷信。</li>
+      <li><em>呢篇反映咗古代醫生對預後判斷嘅努力——即使數字唔精確，但「辨脈象定吉凶」嘅思路值得借鑒。</em></li>
+    </ul>
+  </details>
+
+</section>
+
+<footer>
+  素問・陰陽別論篇第七｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_07_陰陽別論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（postMessage 溝通，嚴禁手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>
