@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>《黃帝內經 · 素問》前五篇論證地圖</title>
+<title>《黃帝內經 · 素問》前十章論證地圖</title>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
 <script>
   mermaid.initialize({ startOnLoad: true, theme: 'base' });
@@ -150,12 +150,12 @@
 <body>
 
 <header>
-  <h1>《黃帝內經 · 素問》前五篇論證地圖</h1>
+  <h1>《黃帝內經 · 素問》前十章論證地圖</h1>
   <div class="subtitle">主張 → 分論點 → 證據 三層結構｜含章節承接與呼應關係</div>
 </header>
 
 <div class="intro">
-  <strong>點用呢張圖：</strong>下圖以「人與天地陰陽相應」為全書總綱，將 SW_01 至 SW_05 五篇嘅核心主張按承接順序排列，再連去各篇嘅關鍵證據（原文原則）。圖下面嘅文字表格補充講解章節之間嘅呼應關係同邏輯層次。
+  <strong>點用呢張圖：</strong>下圖以「人與天地陰陽相應」為全書總綱，將 SW_01 至 SW_10 十篇嘅核心主張按承接順序排列，再連去各篇嘅關鍵證據（原文原則）。圖下面嘅文字表格補充講解章節之間嘅呼應關係同邏輯層次。
 </div>
 
 <section>
@@ -172,12 +172,17 @@ graph TD
     %% ===== 總綱層 =====
     ROOT["全書總綱<br/>人與天地陰陽相應<br/>養生治病之本"]
 
-    %% ===== 分論點層（5 章核心） =====
+    %% ===== 分論點層（10 章核心） =====
     SW01["SW_01 上古天真論<br/>養生總則與四境界"]
     SW02["SW_02 四氣調神大論<br/>四時養生大法"]
     SW03["SW_03 生氣通天論<br/>陽氣主導與陰陽平衡"]
     SW04["SW_04 金匱真言論<br/>五行對應系統"]
     SW05["SW_05 陰陽應象大論<br/>陰陽總綱與治病大法"]
+    SW06["SW_06 陰陽離合論<br/>三陰三陽・開闔樞"]
+    SW07["SW_07 陰陽別論<br/>脈分陰陽・真臟脈・死生"]
+    SW08["SW_08 靈蘭祕典論<br/>十二臟腑官職・心為君主"]
+    SW09["SW_09 六節髒象論<br/>天度氣數・五運六氣・臟象"]
+    SW10["SW_10 五臟生成<br/>五臟相合・色脈合參"]
 
     %% ===== 證據層（各篇關鍵原則／原文） =====
     E01a["法於陰陽，和於術數"]
@@ -202,12 +207,40 @@ graph TD
     E05c["五志相勝：悲勝怒·恐勝喜"]
     E05d["陽病治陰，陰病治陽"]
 
+    E06a["太陽為開，陽明為闔，少陽為樞"]
+    E06b["太陰為開，厥陰為闔，少陰為樞"]
+    E06c["陰陽之變，數之可十，推之可百"]
+
+    E07a["脈有陰陽：知陽者知陰"]
+    E07b["二陽之病發心脾，謂之風消"]
+    E07c["生陽死陰：五行傳變定吉凶"]
+
+    E08a["心者，君主之官，神明出焉"]
+    E08b["主明則下安，主不明則十二官危"]
+    E08c["至道在微，變化無窮"]
+
+    E09a["六六之節，九九制會"]
+    E09b["五日謂之候，三候謂之氣"]
+    E09c["心其華在面，通於夏氣"]
+    E09d["凡十一臟，取決於膽"]
+
+    E10a["心合脈，其榮色，其主腎"]
+    E10b["多食鹹，則脈凝泣而變色"]
+    E10c["青如翠羽者生，青如草茲者死"]
+    E10d["人臥血歸於肝，肝受血而能視"]
+    E10e["能合脈色，可以萬全"]
+
     %% ===== 總綱 → 分論點（實線） =====
     ROOT --> SW01
     ROOT --> SW02
     ROOT --> SW03
     ROOT --> SW04
     ROOT --> SW05
+    ROOT --> SW06
+    ROOT --> SW07
+    ROOT --> SW08
+    ROOT --> SW09
+    ROOT --> SW10
 
     %% ===== 分論點 → 證據（實線） =====
     SW01 --> E01a
@@ -227,13 +260,36 @@ graph TD
     SW05 --> E05b
     SW05 --> E05c
     SW05 --> E05d
+    SW06 --> E06a
+    SW06 --> E06b
+    SW06 --> E06c
+    SW07 --> E07a
+    SW07 --> E07b
+    SW07 --> E07c
+    SW08 --> E08a
+    SW08 --> E08b
+    SW08 --> E08c
+    SW09 --> E09a
+    SW09 --> E09b
+    SW09 --> E09c
+    SW09 --> E09d
+    SW10 --> E10a
+    SW10 --> E10b
+    SW10 --> E10c
+    SW10 --> E10d
+    SW10 --> E10e
 
     %% ===== 章節承接（虛線，橫向呼應） =====
     SW01 -. "總則落實到四季" .-> SW02
     SW02 -. "四時需陽氣通天支撐" .-> SW03
     SW03 -. "陰陽平衡擴展為五行" .-> SW04
     SW04 -. "五行抽象回陰陽總綱" .-> SW05
-    SW05 -. "治病大法呼應養生總則" .-> SW01
+    SW05 -. "陰陽總綱落實到經脈系統" .-> SW06
+    SW06 -. "三陰三陽推導出脈診綱領" .-> SW07
+    SW07 -. "脈診需要臟腑功能定位" .-> SW08
+    SW08 -. "十二官結合天人節律" .-> SW09
+    SW09 -. "臟象落實到臨床望聞切" .-> SW10
+    SW10 -. "色脈合參呼應養生總則" .-> SW01
 
     %% ===== 樣式 =====
     classDef root fill:#8b4513,color:#fff,stroke:#5c2e0c,stroke-width:2px,font-weight:bold;
@@ -241,12 +297,12 @@ graph TD
     classDef evidence fill:#fdf6e3,color:#5c4a1e,stroke:#c9a96e,stroke-width:1px;
 
     class ROOT root;
-    class SW01,SW02,SW03,SW04,SW05 chapter;
-    class E01a,E01b,E01c,E02a,E02b,E02c,E02d,E03a,E03b,E03c,E04a,E04b,E04c,E05a,E05b,E05c,E05d evidence;
+    class SW01,SW02,SW03,SW04,SW05,SW06,SW07,SW08,SW09,SW10 chapter;
+    class E01a,E01b,E01c,E02a,E02b,E02c,E02d,E03a,E03b,E03c,E04a,E04b,E04c,E05a,E05b,E05c,E05d,E06a,E06b,E06c,E07a,E07b,E07c,E08a,E08b,E08c,E09a,E09b,E09c,E09d,E10a,E10b,E10c,E10d,E10e evidence;
   </div>
 
   <div class="note">
-    <strong>睇圖貼士：</strong>實線係「從屬關係」（總綱→分論點→證據），虛線係「承接關係」（前章為後章理論基礎）。留意 SW_05 最後用虛線返去 SW_01，形成「養生—治病」嘅理論閉環，呢個結構反映《內經》並非零散醫論，而係一個有機嘅理論體系。
+    <strong>睇圖貼士：</strong>實線係「從屬關係」（總綱→分論點→證據），虛線係「承接關係」（前章為後章理論基礎）。留意 SW_10 最後用虛線返去 SW_01，形成「養生—診法」嘅理論閉環——呢個結構反映《內經》並非零散醫論，而係一個有機嘅理論體系。
   </div>
 </section>
 
@@ -288,16 +344,46 @@ graph TD
       </tr>
       <tr>
         <td><span class="ch-label">SW_05</span>陰陽應象大論</td>
+        <td><span class="ch-label">SW_06</span>陰陽離合論</td>
+        <td>總綱 → 經脈</td>
+        <td>SW_05 嘅陰陽總綱，喺 SW_06 落實為「三陰三陽」嘅經脈系統——太陽／陽明／少陽、太陰／厥陰／少陰，抽象嘅陰陽落實到具體嘅人身結構。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_06</span>陰陽離合論</td>
+        <td><span class="ch-label">SW_07</span>陰陽別論</td>
+        <td>經脈 → 脈診</td>
+        <td>SW_06 嘅三陰三陽理論，喺 SW_07 應用到脈診——脈分陰陽，並以「真臟脈」判斷死生；理論走向臨床。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_07</span>陰陽別論</td>
+        <td><span class="ch-label">SW_08</span>靈蘭祕典論</td>
+        <td>脈診 → 官職</td>
+        <td>SW_07 嘅脈診需要臟腑定位，SW_08 用「十二官」比喻臟腑功能（心為君主、肝為將軍），建立臟腑之間嘅從屬關係。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_08</span>靈蘭祕典論</td>
+        <td><span class="ch-label">SW_09</span>六節髒象論</td>
+        <td>官職 → 天人</td>
+        <td>SW_08 嘅十二官理論，喺 SW_09 結合「天度氣數」同「五運六氣」，將臟腑功能嵌入宇宙節律——「人體係宇宙節律嘅縮影」。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_09</span>六節髒象論</td>
+        <td><span class="ch-label">SW_10</span>五臟生成</td>
+        <td>天人 → 臨床</td>
+        <td>SW_09 嘅臟象理論，喺 SW_10 落實到臨床——「五臟相合」「五色生死望診」「五決脈診」，由理論走向「色脈合參」嘅診法。</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_10</span>五臟生成</td>
         <td><span class="ch-label">SW_01</span>上古天真論</td>
-        <td>醫治 → 養生（閉環）</td>
-        <td>SW_05「陽病治陰，陰病治陽」嘅治病大法，呼應 SW_01「聖人不治已病治未病」，形成「養生—治病」嘅理論閉環：最高明嘅醫術，其實就係養生。</td>
+        <td>診法 → 養生（閉環）</td>
+        <td>SW_10「能合脈色，可以萬全」嘅診法境界，呼應 SW_01「聖人治未病」——最高明嘅診斷唔係醫已病，而係透過望色切脈預見未病，形成「養生—診法」嘅理論閉環。</td>
       </tr>
     </tbody>
   </table>
 </section>
 
 <section>
-  <h2>三、五篇嘅邏輯層次總覽</h2>
+  <h2>三、十篇嘅邏輯層次總覽</h2>
   <table class="relation-table">
     <thead>
       <tr>
@@ -338,16 +424,46 @@ graph TD
         <td>陰陽係萬象之本，治病以陰陽為綱</td>
         <td>天地之道；壯火食氣；五志相勝；陽病治陰，陰病治陽</td>
       </tr>
+      <tr>
+        <td><span class="ch-label">SW_06</span>陰陽離合論</td>
+        <td>經脈結構</td>
+        <td>陰陽落實到三陰三陽經脈系統，開闔樞分工</td>
+        <td>太陽為開，陽明為闔，少陽為樞；太陰為開，厥陰為闔，少陰為樞</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_07</span>陰陽別論</td>
+        <td>脈診綱領</td>
+        <td>脈象分陰陽，真臟脈現則主死</td>
+        <td>脈有陰陽；二陽發病謂之風消；生陽死陰五行傳變</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_08</span>靈蘭祕典論</td>
+        <td>臟腑官職</td>
+        <td>十二臟腑如朝廷官職，心為君主，主明則安</td>
+        <td>心君主神明；主明則下安，主不明則十二官危；至道在微</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_09</span>六節髒象論</td>
+        <td>天人系統</td>
+        <td>人體係宇宙節律縮影，五運六氣主時，臟象應四時</td>
+        <td>六六之節，九九制會；五日謂之候；心其華在面通夏氣；十一臟取決於膽</td>
+      </tr>
+      <tr>
+        <td><span class="ch-label">SW_10</span>五臟生成</td>
+        <td>診法合參</td>
+        <td>五臟相合五味五色，望色切脈合參先至萬全</td>
+        <td>心合脈其主腎；多食鹹則脈凝泣；青如翠羽者生；人臥血歸於肝；能合脈色可以萬全</td>
+      </tr>
     </tbody>
   </table>
 
   <div class="note">
-    <strong>層次解讀：</strong>五篇形成「總綱（SW_01）→ 時間應用（SW_02）→ 生理機理（SW_03）→ 系統對應（SW_04）→ 宇宙總綱＋治病（SW_05）」嘅螺旋上升結構。SW_05 表面上係最後一篇，但佢嘅「陰陽總綱」反而係對 SW_01「法於陰陽」嘅終極解釋，呢個正係《內經》理論「首尾呼應」嘅精妙之處。
+    <strong>層次解讀：</strong>前十篇形成「總綱（SW_01）→ 時間應用（SW_02）→ 生理機理（SW_03）→ 系統對應（SW_04）→ 宇宙總綱＋治病（SW_05）→ 經脈結構（SW_06）→ 脈診綱領（SW_07）→ 臟腑官職（SW_08）→ 天人系統（SW_09）→ 診法合參（SW_10）」嘅螺旋上升結構。SW_05 嘅「陰陽總綱」係對 SW_01「法於陰陽」嘅終極解釋；SW_10「能合脈色，可以萬全」嘅診法境界，又呼應返 SW_01「治未病」——由養生到診法再返到養生，形成完整嘅理論閉環。
   </div>
 </section>
 
 <footer>
-  《黃帝內經 · 素問》前五篇論證地圖｜STAGE-2 階段 3 任務 A 輸出<br/>
+  《黃帝內經 · 素問》前十章論證地圖｜STAGE-2 階段 3 任務 A 輸出（SW_10 擴展版）<br/>
   <a href="questions.html">下一頁：跨章綜合問題 →</a>
 </footer>
 
