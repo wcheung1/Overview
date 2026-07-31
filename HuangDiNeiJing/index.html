@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>《黃帝內經 · 素問》前五篇閱讀系統</title>
+<title>《黃帝內經 · 素問》前十章閱讀系統</title>
 <style>
   :root {
     --bg: #fafaf7;
@@ -286,12 +286,12 @@
   <div style="display:flex; align-items:center; gap:0.8rem;">
     <button class="mobile-toggle" onclick="toggleSidebar()">☰ 目錄</button>
     <div class="topbar-title">
-      《黃帝內經 · 素問》前五篇閱讀系統
+      《黃帝內經 · 素問》前十章閱讀系統
       <small>STAGE-2 階段 4｜Vanilla HTML/CSS/JS｜無外部依賴</small>
     </div>
   </div>
   <div class="topbar-controls">
-    <div class="progress-display">已讀進度：<strong id="progress-text">0 / 8</strong></div>
+    <div class="progress-display">已讀進度：<strong id="progress-text">0 / 10</strong></div>
     <button class="toggle-btn" id="highlight-toggle" onclick="toggleHighlight()" title="隱藏／顯示內文 Highlight">
       <span class="toggle-dot"></span>
       <span id="highlight-label">Highlight：開</span>
@@ -413,6 +413,26 @@
         </div>
         <div class="read-checkbox-wrap">
           <input type="checkbox" class="read-checkbox" data-key="SW_08" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_08 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+      <a class="nav-item" data-target="chapters/SW_09_六節髒象論.html" data-key="SW_09" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_09</span>
+          <span class="nav-item-title">天度氣數・五運六氣・臟象脈診</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_09" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_09 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+      <a class="nav-item" data-target="chapters/SW_10_五臟生成.html" data-key="SW_10" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_10</span>
+          <span class="nav-item-title">五臟相合・五味所傷・色脈合參</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_10" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_10 已讀">
           <span class="read-checkbox-label">已讀</span>
         </div>
       </a>
