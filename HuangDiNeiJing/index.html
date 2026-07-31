@@ -291,7 +291,7 @@
     </div>
   </div>
   <div class="topbar-controls">
-    <div class="progress-display">已讀進度：<strong id="progress-text">0 / 5</strong></div>
+    <div class="progress-display">已讀進度：<strong id="progress-text">0 / 8</strong></div>
     <button class="toggle-btn" id="highlight-toggle" onclick="toggleHighlight()" title="隱藏／顯示內文 Highlight">
       <span class="toggle-dot"></span>
       <span id="highlight-label">Highlight：開</span>
@@ -385,6 +385,37 @@
           <span class="read-checkbox-label">已讀</span>
         </div>
       </a>
+
+      <a class="nav-item" data-target="chapters/SW_06_陰陽離合論.html" data-key="SW_06" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_06</span>
+          <span class="nav-item-title">三陰三陽・開闔樞・經脈根結</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_06" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_06 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+      <a class="nav-item" data-target="chapters/SW_07_陰陽別論.html" data-key="SW_07" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_07</span>
+          <span class="nav-item-title">脈分陰陽・真臟脈・生陽死陰</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_07" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_07 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+      <a class="nav-item" data-target="chapters/SW_08_靈蘭祕典論.html" data-key="SW_08" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_08</span>
+          <span class="nav-item-title">十二臟腑官職・心為君主・主明則安</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_08" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_08 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
     </div>
 
     <button class="reset-btn" onclick="resetProgress()">清除所有已讀記錄</button>
@@ -401,7 +432,7 @@
 <script>
   // ===== 讀取狀態管理（localStorage）=====
   const STORAGE_PREFIX = 'hdnj_read_';
-  const CHAPTER_KEYS = ['SW_01', 'SW_02', 'SW_03', 'SW_04', 'SW_05'];
+  const CHAPTER_KEYS = ['SW_01', 'SW_02', 'SW_03', 'SW_04', 'SW_05', 'SW_06', 'SW_07', 'SW_08'];
 
   function getReadState(key) {
     return localStorage.getItem(STORAGE_PREFIX + key) === '1';
@@ -426,7 +457,7 @@
   function updateProgressDisplay() {
     let count = 0;
     CHAPTER_KEYS.forEach(k => { if (getReadState(k)) count++; });
-    document.getElementById('progress-text').textContent = count + ' / 5';
+    document.getElementById('progress-text').textContent = count + ' / ' + CHAPTER_KEYS.length;
   }
 
   function resetProgress() {
