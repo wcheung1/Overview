@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・五臟生成篇第十</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0 auto; padding:24px;
+       max-width:840px;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .summary table{border-collapse:collapse; margin:10px 0; font-size:0.88em; width:100%;}
+  .summary th, .summary td{border:1px solid var(--border); padding:5px 7px; text-align:center;}
+  .summary th{background:var(--accent); color:#fff;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（postMessage listener 配套，嚴禁手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>五臟生成篇第十</h1>
+  <div class="subtitle">素問・卷十｜五臟相合・五味所傷・五色望診・五決脈診</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇係《素問》中關於<strong>五臟系統對應關係</strong>嘅完整論述，承接 SW_09《六節臟象論》嘅臟象理論，進一步展開五臟同五體（脈皮筋肉骨）、五味、五色之間嘅相合相制關係。全篇分三大部分：第一部分講<strong>五臟相合與五味所傷</strong>——心合脈、肺合皮、肝合筋、脾合肉、腎合骨，每臟各有「其主」（相剋之臟），過食五味則傷對應之體。第二部分講<strong>五色生死望診</strong>——面色嘅青黃赤白黑，有「死色」同「生色」之分，並以「縞裹」（白絹包裹）比喻健康面色嘅含蓄潤澤。第三部分講<strong>血歸於肝與五決脈診</strong>——「人臥血歸於肝，肝受血而能視」，並以五色配五脈判斷五痹（心痹、肺痹、肝痹、厥疝、腎痹）。核心道理：<strong>望聞問切四診合參，先可以萬無一失</strong>。</p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>五臟相合之問：</strong>點解心合脈、肺合皮、肝合筋、脾合肉、腎合骨？呢個「相合」係咪純粹五行配對？「其主腎也」——心嘅主宰係腎（水剋火），呢種「相剋為主」嘅關係對養生有咩啟示？</li>
+      <li><strong>五味所傷之問：</strong>「多食鹹則脈凝泣、多食苦則皮槁毛拔」——點解偏食某一種味會傷特定嘅組織？呢個係咪真係有生理基礎？現代人偏食問題嚴重，呢套理論對我哋嘅飲食指導仲有冇用？</li>
+      <li><strong>五色望診之問：</strong>「青如翠羽者生，青如草茲者死」——點解同樣係青色，一個主生一個主死？分別喺邊？「縞裹朱」「縞裹紅」呢種「白絹裹住顏色」嘅比喻，點解係健康面色嘅標準？中醫望診究竟望咩？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>五臟相合・五味所傷（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>五色生死望診（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>血歸於肝・五決脈診（藍）</span>
+</div>
+
+<!-- ===== 第一段：五臟相合 + 五味所傷 ===== -->
+<section class="passage">
+  <div class="passage-title">一、五臟相合與五味所傷：相剋為主</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p><mark class="k1">心合於脈，其榮華表現於面色，其主宰係腎</mark>（腎水剋心火）。<mark class="k1">肺合於皮，其榮華表現於毫毛，其主宰係心</mark>（心火剋肺金）。<mark class="k1">肝合於筋，其榮華表現於爪甲，其主宰係肺</mark>（肺金剋肝木）。<mark class="k1">脾合於肉，其榮華表現於口唇，其主宰係肝</mark>（肝木剋脾土）。<mark class="k1">腎合於骨，其榮華表現於頭髮，其主宰係脾</mark>（脾土剋腎水）。</p>
+      <p>所以，<mark class="k1">過食鹹味，就會令血脈凝澀不通，面色發生變化</mark>；過食苦味，就會令皮膚枯槁、毫毛脫落；過食辛味，就會令筋脈拘急、爪甲枯乾；過食酸味，就會令肌肉粗厚皺縮、口唇掀起；過食甘味，就會令骨骼疼痛、頭髮脫落——呢啲就係偏食五味所造成嘅損害。</p>
+      <p>所以心欲得苦味，肺欲得辛味，肝欲得酸味，脾欲得甘味，腎欲得鹹味——呢個係五味分別與五臟之氣相合嘅對應關係。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：五臟相合與「其主」對照表</strong>
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">臟</th><th style="padding:5px 7px;">相合（體）</th><th style="padding:5px 7px;">其榮（華）</th><th style="padding:5px 7px;">其主（剋者）</th><th style="padding:5px 7px;">所欲味</th><th style="padding:5px 7px;">過食所傷</th></tr>
+        <tr><td style="padding:5px 7px;">心（火）</td><td style="padding:5px 7px;">脈</td><td style="padding:5px 7px;">面色</td><td style="padding:5px 7px;">腎（水）</td><td style="padding:5px 7px;">苦</td><td style="padding:5px 7px;">鹹→脈凝泣變色</td></tr>
+        <tr><td style="padding:5px 7px;">肺（金）</td><td style="padding:5px 7px;">皮</td><td style="padding:5px 7px;">毫毛</td><td style="padding:5px 7px;">心（火）</td><td style="padding:5px 7px;">辛</td><td style="padding:5px 7px;">苦→皮槁毛拔</td></tr>
+        <tr><td style="padding:5px 7px;">肝（木）</td><td style="padding:5px 7px;">筋</td><td style="padding:5px 7px;">爪甲</td><td style="padding:5px 7px;">肺（金）</td><td style="padding:5px 7px;">酸</td><td style="padding:5px 7px;">辛→筋急爪枯</td></tr>
+        <tr><td style="padding:5px 7px;">脾（土）</td><td style="padding:5px 7px;">肉</td><td style="padding:5px 7px;">口唇</td><td style="padding:5px 7px;">肝（木）</td><td style="padding:5px 7px;">甘</td><td style="padding:5px 7px;">酸→肉胝唇揭</td></tr>
+        <tr><td style="padding:5px 7px;">腎（水）</td><td style="padding:5px 7px;">骨</td><td style="padding:5px 7px;">頭髮</td><td style="padding:5px 7px;">脾（土）</td><td style="padding:5px 7px;">鹹</td><td style="padding:5px 7px;">甘→骨痛髮落</td></tr>
+      </table>
+      <em>注意：「過食所傷」嗰味唔係「所欲味」，而係「所勝之味」（被克者之味）。例如心（火）所勝係肺（金），金之味為辛，但過食鹹（水之味）會反克心火。呢個係五行生克嘅動態平衡。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p><mark class="k1">心之合脈也，其榮色也，其主腎也。肺之合皮也，其榮毛也，其主心也。肝之合筋也，其榮爪也，其主肺也。脾之合肉也，其榮脣也，其主肝也。腎之合骨也，其榮發也，其主脾也。</mark></p>
+      <p><mark class="k1">是故多食鹹，則脈凝泣而變色；多食苦，則皮槁而毛拔；多食辛，則筋急而爪枯；多食酸，則肉胝(月芻)而脣揭；多食甘，則骨痛而發落，此五味之所傷也。</mark>故心欲苦，肺欲辛，肝欲酸，脾欲甘，腎欲鹹，此五味之所合也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：五色生死望診 ===== -->
+<section class="passage">
+  <div class="passage-title">二、五色生死望診：縞裹之象</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>五臟之氣外現於面色：如果面色出現<mark class="k2">青如枯死之草</mark>嘅，係死症；黃如枳實（暗黃無光）嘅，係死症；黑如煙灰嘅，係死症；紅如凝血嘅，係死症；白如枯骨嘅，係死症——呢五種顏色都係死亡之徵。</p>
+      <p>面色<mark class="k2">青如翠鳥羽毛</mark>嘅，主生；紅如雞冠嘅，主生；黃如蟹腹嘅，主生；白如豬油嘅，主生；黑如烏鴉羽毛嘅，主生——呢五種顏色都係有生機嘅表現。</p>
+      <p>心有生機，面色就如以白絹裹住硃砂；肺有生機，面色就如以白絹裹住粉紅絲綢；肝有生機，面色就如以白絹裹住天青色絲綢；脾有生機，面色就如以白絹裹住栝蔞實（橙黃）；腎有生機，面色就如以白絹裹住紫色絲綢。呢啲都係五臟生機外露嘅榮華。</p>
+      <p>色、味同五臟相應：白色同辛味應於肺，赤色同苦味應於心，青色同酸味應於肝，黃色同甘味應於脾，黑色同鹹味應於腎。因五臟外合五體，所以白色應於皮，赤色應於脈，青色應於筋，黃色應於肉，黑色應於骨。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「縞裹」嘅美學與醫理</strong>
+      <p>「縞」＝白色嘅生絹。古人用「縞裹朱」「縞裹紅」嚟形容健康面色——<strong>顏色要潤澤、含蓄、由內而外透出</strong>，而唔係死板、乾枯、暴露嘅。</p>
+      <ul>
+        <li><strong>死色特徵</strong>：枯、暗、無光、死板（如草茲、枳實、煙灰、凝血、枯骨）</li>
+        <li><strong>生色特徵</strong>：潤、亮、有光澤、飽滿（如翠羽、雞冠、蟹腹、豕膏、烏羽）</li>
+        <li><strong>縞裹之意</strong>：健康面色唔係鮮豔刺眼，而係<strong>白潤底色中透出淡淡紅潤</strong>——現代叫「氣色好」。</li>
+      </ul>
+      <em>呢個係中醫望診嘅核心：「有胃氣則生，無胃氣則死」。潤澤＝胃氣充足；枯暗＝胃氣將絕。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>五臟之氣，故色見<mark class="k2">青如草茲者死</mark>，黃如枳實者死，黑如(火臺)者死，赤如衄血者死，白如枯骨者死，此五色之見死也。<mark class="k2">青如翠羽者生</mark>，赤如雞冠者生，黃如蟹腹者生，白如豕膏者生，黑如烏羽者生，此五色之見生也。</p>
+      <p><mark class="k2">生於心，如以縞裹朱。生於肺，如以縞裹紅。生於肝，如以縞裹紺。生於脾，如以縞裹括樓實。生於腎，如以縞裹紫。</mark>此五臟所生之外榮也。</p>
+      <p>色味當五臟，白當肺辛，赤當辛苦，青當肝酸，黃當脾甘，黑當腎鹼。故白當皮，赤當脈，青當筋，黃當肉，黑當骨。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：血歸於肝 + 五決脈診 ===== -->
+<section class="passage">
+  <div class="passage-title">三、血歸於肝與五決脈診：色脈合參</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>各條脈絡都上連於目；各條髓海都屬於腦；各條筋都屬於骨節；各條血都屬於心；各條氣都屬於肺——呢啲係四肢八溪朝夕運行嘅規律。</p>
+      <p><mark class="k3">所以當人睡眠時，血歸藏於肝；肝得到血嘅濡養，就能視物</mark>；足得到血嘅濡養，就能行走；手掌得到血嘅濡養，就能握物；手指得到血嘅濡養，就能拿取。如果啱啱瞓醒就外出受風，血液循環就會凝滯：凝於肌膚嘅，發生痹證；凝於經脈嘅，發生氣血運行滯澀；凝於足部嘅，發生厥冷。呢三種情況都係因為氣血運行唔能返回組織間隙嘅孔穴，所以造成痹厥。</p>
+      <p>全身有大谷十二處，小溪三百五十四處（減除十二臟腑嘅俞穴數目）。呢啲都係衛氣留止嘅地方，亦係邪氣客居之所。治病時，可循住呢啲部位施以針石，祛除邪氣。<span class="page-num">（原檔頁碼：23-24）</span></p>
+      <p>診病嘅根本，要以五決為綱紀。想要了解疾病嘅關鍵，必先確定病變嘅原因。所謂五決，就係五臟之脈。</p>
+      <p><mark class="k3">脈象嘅小、大、滑、澀、浮、沉，可以通過醫生嘅手指加以鑑別；五臟功能表現於外，可以通過相類事物嘅比象加以推測；五臟各自嘅聲音，可以憑意會而識別；五色嘅微小變化，可以用眼睛嚟觀察。診病時，如果能將色、脈兩者合埋一齊分析，就可以萬無一失。</mark></p>
+      <p><mark class="k3">外現赤色，脈來急疾而堅實</mark>——診斷為邪氣積聚於中脘，常妨害飲食，病名叫做心痹。多因外邪侵襲，加上思慮過度令心氣虛弱，邪氣乘虛而入。<mark class="k3">外現白色，脈來急疾而浮</mark>——上虛下實，容易驚駭，病邪積聚於胸中，迫肺作喘，但肺氣本身虛弱，病名叫做肺痹，有寒熱症狀，多因醉後行房誘發。<mark class="k3">外現青色，脈來長而左右搏擊手指</mark>——病邪積聚於心下，支撐脅肋，病名叫做肝痹，多因受寒濕而得，與疝嘅病理相同，症狀有腰痛、足冷、頭痛。<mark class="k3">外現黃色，脈來虛大</mark>——病邪積聚喺腹中，有逆氣產生，病名叫做厥疝，女子亦有呢種情況，多由四肢劇烈活動、汗出當風所誘發。<mark class="k3">外現黑色，尺部脈象堅實而大</mark>——病邪積聚喺小腹同前陰，病名叫做腎痹，多因冷水沐浴後瞓臥受涼引起。</p>
+      <p>大凡觀察五色之奇脈：<mark class="k2">面黃目青、面黃目赤、面黃目白、面黃目黑嘅，都唔會死</mark>（因為面帶黃色＝尚有土氣／胃氣）。<mark class="k2">面青目赤、面赤目白、面青目黑、面黑目白、面赤目青嘅，都係死亡之徵</mark>（因為面無黃色＝土氣已敗）。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：五痹脈診對照表</strong>
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">病名</th><th style="padding:5px 7px;">外色</th><th style="padding:5px 7px;">脈象</th><th style="padding:5px 7px;">病位</th><th style="padding:5px 7px;">誘因</th></tr>
+        <tr><td style="padding:5px 7px;">心痹</td><td style="padding:5px 7px;">赤</td><td style="padding:5px 7px;">喘而堅</td><td style="padding:5px 7px;">中脘</td><td style="padding:5px 7px;">思慮過度＋外邪</td></tr>
+        <tr><td style="padding:5px 7px;">肺痹</td><td style="padding:5px 7px;">白</td><td style="padding:5px 7px;">喘而浮</td><td style="padding:5px 7px;">胸中</td><td style="padding:5px 7px;">醉後行房</td></tr>
+        <tr><td style="padding:5px 7px;">肝痹</td><td style="padding:5px 7px;">青</td><td style="padding:5px 7px;">長而左右彈</td><td style="padding:5px 7px;">心下、脅肋</td><td style="padding:5px 7px;">寒濕</td></tr>
+        <tr><td style="padding:5px 7px;">厥疝</td><td style="padding:5px 7px;">黃</td><td style="padding:5px 7px;">大而虛</td><td style="padding:5px 7px;">腹中</td><td style="padding:5px 7px;">汗出當風</td></tr>
+        <tr><td style="padding:5px 7px;">腎痹</td><td style="padding:5px 7px;">黑</td><td style="padding:5px 7px;">上堅而大</td><td style="padding:5px 7px;">小腹、前陰</td><td style="padding:5px 7px;">冷水沐浴後臥</td></tr>
+      </table>
+      <em>核心原則：「能合脈色，可以萬全」——望色＋切脈，兩者互相印證，先可以準確斷症。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>諸脈者，皆屬於目；諸髓者，皆屬於腦；諸筋者，皆屬於節；諸血者，皆屬於心；諸氣者，皆屬於肺，此四肢八溪之朝夕也。<mark class="k3">故人臥血歸於肝，肝受血而能視，足受血而能步，掌受血而能握，指受血而能攝。</mark>臥出而風吹之，血凝於膚者爲痹，凝於脈者爲泣，凝於足者爲厥。此三者，血行而不得反其空，故爲痹厥也。人有大谷十二分，小溪三百五十四名，少十二俞，此皆衛氣所留止，邪氣之所客也，針石緣而去之。</p>
+      <p>診病之始，五決爲紀。欲知其始，先建其母。所謂五決者，五脈也。</p>
+      <p><mark class="k3">夫脈之小大，滑澀浮沉，可以指別。五臟之象，可以類推。五臟相音，可以意識。五色微診，可以目察。能合脈色，可以萬全。</mark></p>
+      <p><mark class="k3">赤脈之至也，喘而堅。診曰：有積氣在中，時害於食名曰心痹。</mark>得之外疾，思慮而心虛，故邪從之。<mark class="k3">白脈之至也，喘而浮。上虛下實，驚，有積氣在胸中，喘而虛。名曰肺痹。</mark>寒熱，得之醉而使內也。<mark class="k3">青脈之至也。長而左右彈。有積氣在心下，肢胠。名曰肝痹。</mark>得之寒溼，與疝同法。腰痛足清頭痛。<mark class="k3">黃脈之至也，大而虛。有積氣在腹中，有厥氣，名曰厥疝。</mark>女子同法，得之疾使四肢，汗出當風。<mark class="k3">黑脈之至也，上堅而大。有積氣在小腹與陰，名曰腎痹。</mark>得之沐浴，清水而臥。</p>
+      <p><mark class="k2">凡相五色之奇脈，面黃目青，面黃目赤，面黃目白，面黃目黑者，皆不死也。面青目赤，面赤目白，面青目黑，面黑目白，面赤目青，皆死也。</mark></p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>五臟相合</strong>：心合脈（其主腎）、肺合皮（其主心）、肝合筋（其主肺）、脾合肉（其主肝）、腎合骨（其主脾）——「其主」即相剋之臟。</li>
+    <li><strong>五味所傷</strong>：過食鹹傷脈（心）、苦傷皮毛（肺）、辛傷筋爪（肝）、酸傷肉唇（脾）、甘傷骨髮（腎）——偏食任何一味都會打破五行平衡。</li>
+    <li><strong>五色死生</strong>：死色＝枯暗無光（草茲、枳實、煙灰、凝血、枯骨）；生色＝潤澤有光（翠羽、雞冠、蟹腹、豕膏、烏羽）。</li>
+    <li><strong>縞裹之象</strong>：健康面色如白絹裹住顏色——潤澤、含蓄、由內而外透出。</li>
+    <li><strong>血歸於肝</strong>：「人臥血歸於肝，肝受血而能視」——肝藏血，睡眠時血歸肝，醒後各部位得血濡養先可以活動。</li>
+    <li><strong>五決脈診</strong>：赤脈喘堅＝心痹；白脈喘浮＝肺痹；青脈長彈＝肝痹；黃脈大虛＝厥疝；黑脈堅大＝腎痹。</li>
+    <li><strong>色脈合參</strong>：「能合脈色，可以萬全」——望色＋切脈，兩者印證先至萬無一失。</li>
+    <li><strong>面黃不死</strong>：面色帶黃＝有胃氣（土氣）＝有生機；面無黃色＝土氣敗＝死。</li>
+  </ul>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「五臟相合之問」）：點解心合脈、肺合皮？「其主腎也」即係咩？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong></p>
+    <ul>
+      <li><strong>「相合」</strong>＝功能配屬：心主血脈，所以合於脈；肺主一身之氣，氣衛外，所以合於皮；肝主筋，所以合於筋；脾主運化，肌肉賴以充養，所以合於肉；腎主骨生髓，所以合於骨。</li>
+      <li><strong>「其主腎也」</strong>＝腎（水）剋心（火）。每一臟嘅「其主」都係佢嘅相剋之臟——心之主腎（水剋火）、肺之主心（火剋金）、肝之主肺（金剋木）、脾之主肝（木剋土）、腎之主脾（土剋水）。</li>
+    </ul>
+    <p><strong>養生啟示：</strong>相剋＝制約。心火太盛時，需要腎水嚟制約；腎水不足時，心火就會失去控制。所以養心要同時養腎——呢個係「水火既濟」嘅原理。<em>呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「五味所傷之問」）：點解偏食鹹會傷脈？呢套理論喺現代仲有冇用？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong></p>
+    <ul>
+      <li><strong>鹹入腎（水），過食則水盛剋火（心），心主血脈，故脈凝泣</strong>。現代醫學證實：高鈉飲食會導致高血壓、動脈硬化——「脈凝泣」嘅現代版本。</li>
+      <li><strong>苦入心（火），過食則火盛剋金（肺），肺主皮毛，故皮槁毛拔</strong>。</li>
+      <li><strong>甘入脾（土），過食則土盛剋水（腎），腎主骨，故骨痛髮落</strong>。現代醫學證實：過量糖分會導致骨質疏鬆——「骨痛」嘅現代版本。</li>
+    </ul>
+    <p><strong>現代指導意義：</strong>中醫嘅「五味所傷」唔係叫人完全唔食某種味，而係<strong>唔好偏食</strong>。現代人偏食問題嚴重（過甜、過鹹），呢套理論依然適用。<em>呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「五色望診之問」）：「青如翠羽者生，青如草茲者死」——分別喺邊？「縞裹」係咩意思？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong></p>
+    <ul>
+      <li><strong>翠羽（生）</strong>＝潤澤、明亮、有光澤嘅青色；<strong>草茲（死）</strong>＝枯暗、無光、死板嘅青色。分別喺於<strong>有無光澤</strong>。</li>
+      <li><strong>縞裹</strong>＝白色生絹包裹住顏色。比喻健康面色應該係<strong>白潤底色中透出淡淡紅潤</strong>，而唔係鮮豔刺眼或死灰無光。</li>
+    </ul>
+    <p><strong>中醫望診究竟望咩？</strong>主要望三樣：<strong>氣（光澤）、色（青黃赤白黑）、神（精神狀態）</strong>。有氣有神＝有胃氣＝生；無氣無神＝胃氣敗＝死。<em>呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：「人臥血歸於肝」——點解瞓覺時血會歸肝？呢個對現代人嘅睡眠有咩啟示？</summary>
+    <p><strong>中醫原理：</strong>肝藏血。活動時，血分佈全身供各部位使用；睡眠時，身體需求減少，血回流肝臟儲藏同解毒。</p>
+    <p><strong>「肝受血而能視」：</strong>肝開竅於目，肝血足則視力好。長期熬夜、睡眠不足會導致肝血不足——眼乾、視力模糊、面色蒼白。</p>
+    <p><strong>現代對照：</strong>肝臟確實係夜間（尤其 1-3 點，中醫嘅肝經當令時間）進行主要嘅修復同解毒工作。熬夜會加重肝臟負擔——「人臥血歸於肝」並非虛言。</p>
+    <p><em>啟示：瞓得夠、瞓得準（子時 23:00 前入睡），係養肝血嘅第一要務。</em></p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「大谷十二分，小溪三百五十四名」——呢啲係咪即係穴位？</summary>
+    <p><strong>大谷</strong>＝較大嘅關節間隙或肌肉豐厚處，共 12 處（對應十二經脈）。</p>
+    <p><strong>小溪</strong>＝較小嘅關節間隙或肌肉淺溝，共 354 處。加上 12 個俞穴（臟腑背俞），總數約 366，接近一年 365 日嘅天度。</p>
+    <p><strong>與穴位嘅關係：</strong>呢度嘅「大谷」「小溪」唔完全等同於現代針灸嘅「穴位」，而係更廣義嘅「氣血匯聚點」。後世針灸學將之具體化、系統化為 361 個標準經穴。</p>
+    <p><em>注意：呢個數字（354+12=366）同 SW_09「三百六十五節」嘅概念互相呼應——再次體現「天人相應」嘅數字對應。</em></p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「五決」同 SW_09 嘅「人迎寸口脈診」有咩分別？</summary>
+    <p><strong>SW_09 人迎寸口脈診：</strong>雙手診脈——人迎（頸）候陽，寸口（手腕）候陰。根據兩者大小倍數判斷陰陽盛衰。</p>
+    <p><strong>SW_10 五決脈診：</strong>單一寸口脈，根據脈象嘅<strong>形態</strong>（喘堅、喘浮、長彈、大虛、堅大）配合面色（赤白青黃黑）判斷具體臟腑病變（心痹、肺痹、肝痹、厥疝、腎痹）。</p>
+    <p><strong>分別：</strong>SW_09 偏重陰陽盛衰嘅宏觀判斷；SW_10 偏重具體臟腑病變嘅微觀辨證。兩者互補。</p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「面黃目青……皆不死；面青目赤……皆死」——點解面黃就唔死？</summary>
+    <p><strong>核心觀念：</strong>黃色＝土氣＝胃氣。脾胃為後天之本，氣血生化之源。<strong>只要仲有胃氣，就仲有生機</strong>。</p>
+    <p><strong>面黃</strong>＝脾胃功能尚存，即使其他顏色異常（目青、目赤、目白、目黑），只要面色帶黃，就表示胃氣未敗，預後較好。</p>
+    <p><strong>面無黃色</strong>（面青、面赤、面黑、面白）＝胃氣已敗，後天之本崩潰，預後極差。</p>
+    <p><em>呢個同《素問・平人絕穀篇》「有胃氣則生，無胃氣則死」嘅原理一致——胃氣係判斷預後嘅金標準。</em></p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《五臟生成》篇用五行機械配對五臟、五味、五色、五體，呢種「五元對應」係咪過於牽強？</summary>
+    <p><strong>批評：</strong></p>
+    <ul>
+      <li><strong>強制配對</strong>：將五味、五色、五體全部塞入五臟框架，部分對應顯得勉強（例如「酸傷肉」嘅生理機制唔明確）。</li>
+      <li><strong>循環論證</strong>：先假設五行對應，再用對應關係「解釋」現象——如果現象唔符，就話「相剋」「相生」調整。</li>
+      <li><strong>忽略個體差異</strong>：每個人體質唔同，機械套用五行配對可能誤診。</li>
+    </ul>
+    <p><strong>辯護：</strong></p>
+    <ul>
+      <li><strong>部分對應確有依據</strong>：過鹹傷血管（高鈉→高血壓）、過甘傷骨（高糖→骨質疏鬆）——呢啲現代醫學已證實。</li>
+      <li><strong>系統性優勢</strong>：五行模型提供一個<strong>整體框架</strong>，提醒醫生關注器官之間嘅相互關係，而唔係孤立睇單一症狀。</li>
+      <li><strong>臨床驗證</strong>：經過二千年實踐，呢套模型喺辨證論治方面確實有效——即使理論解釋未必完全準確，臨床效果係實在嘅。</li>
+    </ul>
+    <p><em>結論：五行對應係一種<strong>啟發式模型</strong>（heuristic model），唔係精確嘅科學定律。佢嘅價值在於提供整體思維框架，但臨床應用時要結合實際，唔好死板套用。</em></p>
+  </details>
+
+</section>
+
+<footer>
+  素問・五臟生成篇第十｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_10_五臟生成.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（postMessage 溝通，嚴禁手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>

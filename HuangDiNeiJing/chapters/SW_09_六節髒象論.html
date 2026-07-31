@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素問・六節髒象論篇第九</title>
+<style>
+  :root{
+    --bg:#faf8f3; --ink:#2c2620; --muted:#6b5d4f;
+    --baihua:#1a4d3a; --baihua-bg:#e8f3ed; --baihua-border:#2a6b53;
+    --wenyan:#5b3a29; --wenyan-bg:#f5ebe0; --wenyan-border:#7a4a35;
+    --accent:#8b4513; --border:#d4c4a8;
+    --hl1:#fff3b0; --hl1-d:#c9a800;
+    --hl2:#c8e6c9; --hl2-d:#2e7d32;
+    --hl3:#bbdefb; --hl3-d:#1565c0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+       background:var(--bg); color:var(--ink); line-height:1.95; margin:0 auto; padding:24px;
+       max-width:840px;}
+  header{text-align:center; border-bottom:2px double var(--accent); padding-bottom:16px; margin-bottom:24px;}
+  header h1{font-size:1.7em; color:var(--accent); margin:0 0 4px; letter-spacing:2px;}
+  header .subtitle{color:var(--muted); font-size:0.9em;}
+  .intro{background:#fff; border-left:4px solid var(--accent); padding:18px 22px; margin-bottom:28px; border-radius:0 6px 6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .intro h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .intro p{margin:0 0 14px;}
+  .guide-q{background:linear-gradient(135deg,#fff8e1,#fffde7); padding:14px 18px; border-radius:6px; margin:0; border:1px solid #ffe082;}
+  .guide-q strong{color:var(--accent); display:block; margin-bottom:8px; font-size:1.02em;}
+  .guide-q ol{margin:0; padding-left:24px;}
+  .guide-q li{margin:6px 0;}
+  .passage{background:#fff; border:1px solid var(--border); border-radius:10px; margin-bottom:26px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  .passage-title{background:linear-gradient(90deg,var(--accent),#a0522d); color:#fff; padding:11px 18px; font-weight:bold; font-size:1.08em; letter-spacing:1px;}
+  .passage-body{padding:0 22px 22px;}
+  .baihua-main{background:var(--baihua-bg); border-left:5px solid var(--baihua-border); padding:18px 20px; margin:18px 0; border-radius:0 8px 8px 0;}
+  .baihua-main .label{display:inline-block; background:var(--baihua); color:#fff; font-size:0.78em; padding:3px 10px; border-radius:3px; margin-bottom:10px; font-weight:bold;}
+  .baihua-main p{margin:10px 0; text-indent:2em; font-size:1.02em;}
+  .wenyan-ref{background:var(--wenyan-bg); border-left:3px solid var(--wenyan-border); padding:14px 18px; margin:14px 0 18px; border-radius:0 6px 6px 0; opacity:0.92;}
+  .wenyan-ref .label{display:inline-block; background:var(--wenyan); color:#fff; font-size:0.75em; padding:2px 8px; border-radius:3px; margin-bottom:8px;}
+  .wenyan-ref p{margin:6px 0; text-indent:2em; font-size:0.95em; color:#4a3828;}
+  .note{background:#f0e6d2; border-left:4px solid var(--accent); margin:12px 0; padding:12px 16px; border-radius:0 6px 6px 0; font-size:0.93em;}
+  .note strong{color:var(--accent); display:block; margin-bottom:4px;}
+  mark{padding:0 3px; border-radius:2px; font-weight:600;}
+  mark.k1{background:var(--hl1); border-bottom:2px solid var(--hl1-d);}
+  mark.k2{background:var(--hl2); border-bottom:2px solid var(--hl2-d);}
+  mark.k3{background:var(--hl3); border-bottom:2px solid var(--hl3-d);}
+  mark.k1:hover{box-shadow:0 0 0 2px var(--hl1-d);}
+  mark.k2:hover{box-shadow:0 0 0 2px var(--hl2-d);}
+  mark.k3:hover{box-shadow:0 0 0 2px var(--hl3-d);}
+  .page-num{color:var(--muted); font-size:0.8em; opacity:0.55; font-style:italic;}
+  .legend{background:#fff; border:1px dashed var(--border); padding:10px 16px; border-radius:6px; margin:16px 0; font-size:0.85em; color:var(--muted);}
+  .legend span{display:inline-block; margin-right:16px;}
+  .legend .swatch{display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:4px; border-radius:2px; border-bottom:2px solid;}
+  .summary{background:#fff; border:2px solid var(--accent); border-radius:8px; padding:18px 22px; margin:28px 0;}
+  .summary h2{font-size:1.15em; color:var(--accent); margin:0 0 10px;}
+  .summary ul{margin:0; padding-left:22px;}
+  .summary li{margin:6px 0;}
+  .summary table{border-collapse:collapse; margin:10px 0; font-size:0.88em; width:100%;}
+  .summary th, .summary td{border:1px solid var(--border); padding:5px 7px; text-align:center;}
+  .summary th{background:var(--accent); color:#fff;}
+  .recall{background:#fff; border:2px dashed var(--accent); border-radius:8px; padding:18px 22px; margin-top:22px;}
+  .recall h2{font-size:1.15em; color:var(--accent); margin:0 0 6px;}
+  .recall .hint{color:var(--muted); font-size:0.85em; margin:0 0 12px;}
+  .recall details{background:#f9f5ec; padding:12px 16px; margin:10px 0; border-radius:6px; cursor:pointer; border-left:3px solid var(--accent);}
+  .recall details.echo{background:#fff8e1; border-left:3px solid #ffa000;}
+  .recall summary{font-weight:bold; color:var(--ink);}
+  .recall details[open] summary{color:var(--accent);}
+  .recall details.echo summary{color:#e65100;}
+  .recall .echo-tag{display:inline-block; background:#ffa000; color:#fff; font-size:0.7em; padding:1px 6px; border-radius:3px; margin-left:8px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:32px; padding-top:16px; border-top:1px solid var(--border);}
+  footer code{background:#f0e6d2; padding:1px 5px; border-radius:3px; font-size:0.95em;}
+
+/* ===== Highlight toggle（postMessage listener 配套，嚴禁手動改）===== */
+body.hide-highlight mark {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>六節髒象論篇第九</h1>
+  <div class="subtitle">素問・卷九｜天度氣數・五運六氣・臟象脈診</div>
+</header>
+
+<section class="intro">
+  <h2>導讀</h2>
+  <p>呢一篇係《素問》中最重要嘅<strong>天人相應理論</strong>嘅總綱，由三大部分組成：第一部分講「<strong>六六之節、九九制會</strong>」——天體以六個六十甲子（360 日）為一年嘅節度，人體以九九極數配合天道，建立「天度」（日月運行）同「氣數」（萬物化生）嘅宇宙觀。第二部分講「<strong>五運六氣</strong>」——五日為候、三候為氣、六氣為時、四時為歲，五行之氣依次更替主時，有太過、不及、平氣之分，反常則病。第三部分講「<strong>臟象</strong>」——五臟對應五行四季（心通夏氣、肺通秋氣、腎通冬氣、肝通春氣、脾通土氣），十一臟取決於膽，並以人迎脈、寸口脈判斷陰陽盛衰。全篇核心只有一個：<strong>人體係宇宙節律嘅縮影</strong>。</p>
+  <div class="guide-q">
+    <strong>讀之前，請先諗住呢三條問題：</strong>
+    <ol>
+      <li><strong>天度氣數之問：</strong>「六六之節」同「九九制會」係咩意思？點解古人要用數字「六」同「九」嚟對應天地？「三百六十五節」係咪真係指人體有 365 個關節／穴位？天度同氣數有咩分別？</li>
+      <li><strong>五運六氣之問：</strong>「五日謂之候，三候謂之氣，六氣謂之時，四時謂之歲」——呢套由細到嘅時間劃分，背後嘅邏輯係咩？「不知年之所加，氣之盛衰，不可以為工」——點解唔識運氣學說就做唔到醫生？太過同不及會點樣影響人體？</li>
+      <li><strong>臟象之問：</strong>「臟象」即係「五臟喺人體外部嘅表現」——心其華在面、通於夏氣；腎其華在發、通於冬氣……呢啲對應係咪真係有生理基礎？「凡十一臟取決於膽」——點解十一個臟腑要由膽統領？</li>
+    </ol>
+  </div>
+</section>
+
+<div class="legend">
+  <strong>Highlight 對照說明：</strong>
+  <span><span class="swatch" style="background:var(--hl1); border-color:var(--hl1-d);"></span>天度氣數・六六九九制會（黃）</span>
+  <span><span class="swatch" style="background:var(--hl2); border-color:var(--hl2-d);"></span>五運六氣・五行相勝（綠）</span>
+  <span><span class="swatch" style="background:var(--hl3); border-color:var(--hl3-d);"></span>臟象・人迎寸口脈診（藍）</span>
+</div>
+
+<!-- ===== 第一段：六六九九制會 ===== -->
+<section class="passage">
+  <div class="passage-title">一、六六之節・九九制會：天度與氣數</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝問道：我聽說天體嘅運行係以六個甲子構成一年，人則以九九極數嘅變化嚟配合天道嘅準度，而人又有三百六十五穴，與天地相應，呢啲說法已經聽到好耐，但唔知係咩道理？</p>
+      <p>岐伯答：你提嘅問題好高明呀！請讓我就此問題談談看法。<mark class="k1">六六之節同九九制會，係用嚟確定天度同氣數嘅。天度，係計算日月行程嘅；氣數，係標誌萬物化生之用嘅。</mark></p>
+      <p>天屬陽，地屬陰；日屬陽，月屬陰。佢哋嘅運行有一定嘅部位同秩序，其環周都有一定嘅道路。每一晝夜，<mark class="k1">日行一度，月行十三度有餘</mark>，所以大月、小月合起嚟三百六十五天成一年，由於月份嘅不足，節氣有盈餘，於是產生咗閏月。確定歲首冬至並以此為開始，用圭表嘅日影推正中氣嘅時間，隨住日月嘅運行推算節氣嘅盈餘，直到歲尾，整個天度嘅變化就可以完全計算出嚟。</p>
+      <p>黃帝說：我已經明白天度，仲想知道氣數係點樣同天度配合嘅？</p>
+      <p>岐伯說：<mark class="k1">天以六六為節制，地以九九之數配合天道嘅準度，天有十干，代表十日，十干循環六次而成一個周甲，周甲重複六次而一年終了，呢個係三百六十日嘅計算方法。</mark></p>
+      <p>自古以嚟，都以通於天氣而為生命嘅根本，而呢個根本不外天之陰陽。地嘅九州、人嘅九竅，都與天氣相通。天衍生五行，而陰陽有依盛衰消長而各分為三。三氣合而成天，三氣合而成地，三氣合而成人，三三而合成九氣；喺地分為九野，喺人體分為九臟：形臟四，神臟五，合成九臟，以應天氣。</p>
+    </div>
+
+    <div class="note">
+      <strong>註解：「六六之節」「九九制會」拆解</strong>
+      <ul>
+        <li><strong>六六之節</strong>：「天有十日」（十天干：甲乙丙丁戊己庚辛壬癸），十干循環六次 = 一個「周甲」（60 日），周甲重複六次 = 一年（360 日）。即「6×6×10 = 360」。</li>
+        <li><strong>九九制會</strong>：以「九」為極數——三氣合成天、地、人各三，三三得九。對應人體九竅、九臟（形臟四：胃、大腸、小腸、膀胱；神臟五：心、肝、脾、肺、腎）。</li>
+        <li><strong>天度 vs 氣數</strong>：天度 = 純天文計算（日月運行）；氣數 = 生物學意義（萬物化生嘅節律）。兩者結合 = 宇宙時間表。</li>
+      </ul>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>黃帝問曰：餘聞以六六之節，以成一歲，人以九九制會，計人亦有三百六十五節，以爲天地，久矣。不知其所謂也？</p>
+      <p>岐伯對曰：昭乎哉問也，請遂言之！<mark class="k1">夫六六之節，九九制會者，所以正天之度，氣之數也。天度者，所以制日月之行也，氣數者，所以紀化生之用也。</mark></p>
+      <p>天爲陽，地爲陰；日爲陽，月爲陰；行有分紀，周有道理。<mark class="k1">日行一度，月行十三度而有奇焉。</mark>故大小月三百六十五日而成歲，積氣餘而盈閏矣。立端於始，表正於中，推餘於終，而天度畢矣。</p>
+      <p>帝曰：餘已聞天度矣。願聞氣數，何以合之？</p>
+      <p>岐伯曰：<mark class="k1">天以六六爲節，地以九九制會，天有十日，日六竟而周甲，甲六覆而終歲，三百六十日法也。</mark></p>
+      <p>夫自古通天者，生之本，本於陰陽。其氣九州九竅，皆通乎天氣。故其生五，其氣三。三而成天，三而成地，三而成人，三而三之，合則爲九。九分爲九野，九野爲九髒；故形髒四，神髒五，合爲九髒以應之也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第二段：五運六氣 ===== -->
+<section class="passage">
+  <div class="passage-title">二、五運六氣：候・氣・時・歲與五行相勝</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝說：我已經明白六六九九配合嘅道理，先生話氣嘅盈餘累積成為閏月，我想聽你講下係咩氣？請你嚟啟發我嘅矇昧，解釋我嘅疑惑！岐伯說：呢個係上帝秘而不宣嘅理論，先師傳授俾我嘅。黃帝說：就請全部講俾我聽。</p>
+      <p>岐伯說：<mark class="k2">五日稱為候，三候稱為氣，六氣稱為時，四時稱為歲</mark>，一年四時，各隨其五行嘅配合而分別當旺。木、火、土、金、水五行隨時間嘅變化而遞相承襲，各有當旺之時，到一年終結時，再從頭開始循環。一年分為四時，四時分佈節氣，逐步推移，如環無端；節氣中再分候，都係咁樣推移落去。<mark class="k2">所以話，唔知當年客氣加臨、氣嘅盛衰、虛實嘅起因等情況，就唔可以做個好醫生。</mark></p>
+      <p>黃帝說：五行嘅推移，周而復始，如環無端，佢嘅太過與不及係點樣嘅呢？岐伯說：五行之氣更迭主時，互有勝克，從而有盛衰嘅變化，呢個係正常嘅現象。</p>
+      <p>黃帝問：咩叫做所勝？岐伯說：<mark class="k2">春勝長夏，長夏勝冬，冬勝夏，夏勝秋，秋勝春</mark>，呢個就係時令根據五行規律而互相勝負嘅情況。同時，時令有依其五行之氣嘅屬性嚟分別影響各臟。</p>
+      <p>黃帝問：點樣知道佢哋之間嘅相勝情況呢？岐伯說：首先要推求氣候到來嘅時間，一般從立春開始向下推算。<mark class="k2">如果時令未到而氣候先期嚟過，稱為太過</mark>，某氣太過就會侵侮所不勝之氣，欺凌其所勝之氣，呢個就叫做氣淫；<mark class="k2">時令已到而氣候未到，稱為不及</mark>，某氣不及，則其所勝之氣因缺乏制約而妄行，其所生之氣因缺乏資助而困弱，其所不勝則更會加以侵迫，呢個就叫做氣迫。所謂求其至，就係要根據時令推求氣候到來嘅早晚，要謹慎地等候時令嘅變化，氣候嘅到來係可以預期嘅。如果搞錯咗時令或違反咗時令與氣候相合嘅關係，以致分唔出五行之氣當旺嘅時間，咁當邪氣內擾，病及於人嘅時候，好嘅醫生都唔能控制。</p>
+      <p>黃帝說：五行之氣有不相承襲嘅嗎？岐伯說：天嘅五行之氣，喺四時中嘅分佈唔能冇常規。如果五行之氣唔按規律依次相承，就係反常嘅現象，反常就會使人發生病變：如喺某一時令出現嘅反常氣候，為當旺之氣之所勝者，則其病輕微；若為當旺之氣之所不勝者，則其病深重；而若同時感受其他邪氣，就會造成死亡。<span class="page-num">（原檔頁碼：20）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：五運六氣嘅時間階梯</strong>
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">層級</th><th style="padding:5px 7px;">時間長度</th><th style="padding:5px 7px;">換算</th><th style="padding:5px 7px;">五行配合</th></tr>
+        <tr><td style="padding:5px 7px;">候</td><td style="padding:5px 7px;">5 日</td><td style="padding:5px 7px;">—</td><td style="padding:5px 7px;">最細單位</td></tr>
+        <tr><td style="padding:5px 7px;">氣（節氣）</td><td style="padding:5px 7px;">15 日（3 候）</td><td style="padding:5px 7px;">3×5</td><td style="padding:5px 7px;">廿四節氣之源</td></tr>
+        <tr><td style="padding:5px 7px;">時（季）</td><td style="padding:5px 7px;">90 日（6 氣）</td><td style="padding:5px 7px;">6×15</td><td style="padding:5px 7px;">春夏（長夏）秋冬</td></tr>
+        <tr><td style="padding:5px 7px;">歲（年）</td><td style="padding:5px 7px;">365 日（4 時）</td><td style="padding:5px 7px;">4×90+5</td><td style="padding:5px 7px;">五行輪轉一周</td></tr>
+      </table>
+      <em>核心邏輯：5（候）→ 3（候成氣）→ 6（氣成時）→ 4（時成歲），每個數字都對應五行／三陰三陽嘅劃分。呢個係中醫運氣學說嘅數學骨架。</em>
+    </div>
+
+    <div class="note">
+      <strong>註解：五行相勝（相剋）順序</strong>
+      <ul>
+        <li><strong>春（木）勝長夏（土）</strong>：木剋土</li>
+        <li><strong>長夏（土）勝冬（水）</strong>：土剋水</li>
+        <li><strong>冬（水）勝夏（火）</strong>：水剋火</li>
+        <li><strong>夏（火）勝秋（金）</strong>：火剋金</li>
+        <li><strong>秋（金）勝春（木）</strong>：金剋木</li>
+      </ul>
+      <em>「太過」= 氣先到（氣候跑贏時令），「不及」= 氣遲到（氣候落後時令）。反常氣候致病嘅輕重，取決於「是否當其時」——唔喺當旺時令發病就輕，喺當旺時令發病就重。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>帝曰：餘已聞六六九九之會也，夫子言積氣盈闊，願聞何謂氣？請夫子發矇解惑焉。岐伯曰：此上帝所祕，先師傳之也。帝曰：請遂聞之。</p>
+      <p>岐伯曰：<mark class="k2">五日謂之候，三候謂之氣，六氣謂之時，四時謂之歲</mark>，而各從其主治焉。五運相襲而皆治之，終期之日，週而復始，時立氣布，如環無端，候亦同法。<mark class="k2">故曰不知年之所加，氣之盛衰，虛實之所起，不可以爲工矣。</mark></p>
+      <p>帝曰：五運之始，如環無端，其太過不及如何？岐伯曰：五氣更立，各有所勝，盛虛之變，此其常也。</p>
+      <p>帝曰：何謂所勝？岐伯曰：<mark class="k2">春勝長夏，長夏勝冬，冬勝夏，夏勝秋，秋勝春</mark>，所謂得五行時之勝，各以氣命其髒。</p>
+      <p>帝曰：何以知其勝？岐伯曰：求其至也，皆歸始春，<mark class="k2">未至而至，此謂太過</mark>，則薄所不勝，而乘所勝也。命曰氣淫不分，邪僻內生，工不能禁。<mark class="k2">至而不至，此謂不及</mark>，則所勝妄行，而所生受病，所不勝薄之也，命曰氣迫。所謂求其至者，氣至之時也。謹候其時，氣可與期，失時反候，五治不分，邪僻內生，工不能禁也。</p>
+      <p>帝曰：有不襲乎？岐伯曰：蒼天之氣，不得無常也。氣之不襲是謂非常，非常則變矣。帝曰：非常而變奈何？岐伯曰：變至則病，所勝則微，所不勝則甚。因而重感於邪則死矣，故非其時則微，當其時則甚也。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 第三段：臟象 + 人迎寸口脈 ===== -->
+<section class="passage">
+  <div class="passage-title">三、臟象與人迎寸口脈：五臟應四時</div>
+  <div class="passage-body">
+
+    <div class="baihua-main">
+      <span class="label">白話解讀（主體）</span>
+      <p>黃帝說：好。我聽說由於天地之氣嘅和合而有萬物嘅形體，又由於其變化多端以至萬物形態差異而定有不同嘅名稱。天氣同地氣對萬物嘅生成，邊個多邊個少，可以聽你講一講嗎？</p>
+      <p>岐伯說：問得實在詳細呀！天極其廣闊，唔可測度；地極其博大，亦好難計量。天供給人們以五氣，地供給人們以五味。五氣由鼻吸入，貯藏於心肺，其氣上升，使面部五色明潤，聲音洪亮。五味入於口中，貯藏於腸胃，經消化吸收，五味精微內注五臟以養五臟之氣，臟氣和諧而保有生化機能，津液隨之生成，神氣亦都喺呢個基礎上自然產生。</p>
+      <p>黃帝問：臟象係點樣嘅呢？岐伯說：</p>
+      <p><mark class="k3">心，係生命嘅根本，為神所居之處</mark>，其榮華表現於面部，其充養嘅組織喺血脈，為陽中嘅太陽，與夏氣相通。</p>
+      <p><mark class="k3">肺，係氣嘅根本，為魄所居之處</mark>，其榮華表現喺毫毛，其充養嘅組織喺皮膚，係陽中嘅太陰，與秋氣相通。</p>
+      <p><mark class="k3">腎，主蟄伏，係封藏經氣嘅根本，為精所居之處</mark>，其榮華表現喺頭髮，其充養嘅組織喺骨，為陰中之少陰，與冬氣相通。</p>
+      <p><mark class="k3">肝，係罷極之本，為魂所居之處</mark>，其榮華表現喺爪甲，其充養嘅組織喺筋，可以生養血氣，其味酸，其色蒼青，為陽中之少陽，與春氣相通。</p>
+      <p><mark class="k3">脾、胃、大腸、小腸、三焦、膀胱，係倉廩之本，為營氣所居之處</mark>，佢哋能吸收水穀精微，化生為糟粕，管理飲食五味嘅轉化、吸收同排泄，其榮華喺口唇四旁嘅白肉，其充養嘅組織喺肌肉，其味甘，其色黃，屬於至陰之類，與土氣相通。</p>
+      <p><mark class="k3">以上十一臟功能嘅發揮，都取決於膽氣嘅升發。</mark></p>
+      <p>人迎脈大於平時一倍，病在少陽；大兩倍，病在太陽；大三倍，病在陽明；大四倍以上，為陽氣太過，陰無以通，係為格陽。寸口脈大於平時一倍，病在厥陰；大兩倍，病在少陰；大三倍，病在太陰；大四倍以上，為陰氣太過，陽無以交，係為關陰。若人迎脈與寸口脈俱大於平時四倍以上，為陰陽氣俱盛，不得相榮，係為關格。關格之脈盈盛太過，標誌住陰陽極亢，唔再能夠達於天地陰陽經氣平調嘅勝利狀態，會好快死去。<span class="page-num">（原檔頁碼：21）</span></p>
+    </div>
+
+    <div class="note">
+      <strong>註解：五臟臟象對應總覽表</strong>
+      <table style="border-collapse:collapse; margin:8px 0; font-size:0.9em; width:100%;">
+        <tr style="background:var(--accent); color:#fff;"><th style="padding:5px 7px;">臟</th><th style="padding:5px 7px;">根本</th><th style="padding:5px 7px;">其華在</th><th style="padding:5px 7px;">其充在</th><th style="padding:5px 7px;">陰陽分類</th><th style="padding:5px 7px;">通於</th><th style="padding:5px 7px;">藏神</th></tr>
+        <tr><td style="padding:5px 7px;">心</td><td style="padding:5px 7px;">生之本</td><td style="padding:5px 7px;">面</td><td style="padding:5px 7px;">血脈</td><td style="padding:5px 7px;">陽中太陽</td><td style="padding:5px 7px;">夏氣</td><td style="padding:5px 7px;">神</td></tr>
+        <tr><td style="padding:5px 7px;">肺</td><td style="padding:5px 7px;">氣之本</td><td style="padding:5px 7px;">毛</td><td style="padding:5px 7px;">皮</td><td style="padding:5px 7px;">陽中太陰</td><td style="padding:5px 7px;">秋氣</td><td style="padding:5px 7px;">魄</td></tr>
+        <tr><td style="padding:5px 7px;">腎</td><td style="padding:5px 7px;">封藏之本</td><td style="padding:5px 7px;">發</td><td style="padding:5px 7px;">骨</td><td style="padding:5px 7px;">陰中少陰</td><td style="padding:5px 7px;">冬氣</td><td style="padding:5px 7px;">精</td></tr>
+        <tr><td style="padding:5px 7px;">肝</td><td style="padding:5px 7px;">罷極之本</td><td style="padding:5px 7px;">爪</td><td style="padding:5px 7px;">筋</td><td style="padding:5px 7px;">陽中少陽</td><td style="padding:5px 7px;">春氣</td><td style="padding:5px 7px;">魂</td></tr>
+        <tr><td style="padding:5px 7px;">脾胃等</td><td style="padding:5px 7px;">倉廩之本</td><td style="padding:5px 7px;">唇四白</td><td style="padding:5px 7px;">肌</td><td style="padding:5px 7px;">至陰之類</td><td style="padding:5px 7px;">土氣</td><td style="padding:5px 7px;">營</td></tr>
+      </table>
+      <em>「其華在＝外觀表現；其充在＝充養組織」。臟象即係通過外部表現推測內部臟腑狀態——望診嘅理論基礎。</em>
+    </div>
+
+    <div class="note">
+      <strong>註解：「十一臟取決於膽」嘅爭議</strong>
+      <p>呢句係中醫史上最大爭議之一。主流解釋有兩種：</p>
+      <ul>
+        <li><strong>解釋一：膽主少陽春生之氣</strong>——膽屬木，應春，春為一年生機之始；膽氣升發，十一臟先有生機。較多醫家採用。</li>
+        <li><strong>解釋二：版本問題</strong>——部分學者認為「取決於膽」可能係「取決於膻中」嘅誤抄（因 SW_08《靈蘭祕典論》話「膻中為臣使之官」，亦有統領作用）。</li>
+      </ul>
+      <em>臨床上，膽氣虛者容易驚恐猶豫，亦印證咗膽對情志、決斷嘅影響。</em>
+    </div>
+
+    <div class="wenyan-ref">
+      <span class="label">原文對照（文言）</span>
+      <p>帝曰：善。餘聞氣合而有形，因變以正名。天地之運，陰陽之化，其於萬物孰少孰多，可得聞乎？岐伯曰：悉哉問也，天至廣，不可度，地至大，不可量。大神靈問，請陳其方。草生五色，五色之變，不可勝視，草生五味，五味之美不可勝極，嗜慾不同，各有所通。天食人以五氣，地食人以五味。五氣入鼻，藏於心肺，上使五色修明，音聲能彰；五味入口，藏於腸胃，味有所藏，以養五氣，氣和而生，津液相成，神乃自生。</p>
+      <p>帝曰：髒象何如？岐伯曰：<mark class="k3">心者，生之本，神之變也；其華在面，其充在血脈，爲陽中之太陽，通於夏氣。</mark></p>
+      <p><mark class="k3">肺者，氣之本，魄之處也；其華在毛，其充在皮，爲陽中之太陰，通於秋氣。</mark></p>
+      <p><mark class="k3">腎者，主蟄，封藏之本，精之處也；其華在發，其充在骨，爲陰中之少陰，通於冬氣。</mark></p>
+      <p><mark class="k3">肝者，罷極之本，魂之居也；其華在爪，其充在筋，以生血氣，其味酸，其色蒼，此爲陽中之少陽，通於春氣。</mark></p>
+      <p><mark class="k3">脾、胃、大腸、小腸、三焦、膀胱者，倉廩之本，營之居也，名曰器，能化糟粕，轉味而入出者也，其華在脣四白，其充在肌，其味甘，其色黃，此至陰之類，通於土氣。</mark></p>
+      <p><mark class="k3">凡十一髒，取決於膽也。</mark></p>
+      <p>故人迎一盛病在少陽、二盛病在太陽、三盛病在陽明、四盛已上爲格陽。寸口一盛病在厥陰、二盛病在少陰、三盛病在太陰、四盛已上爲關陰。人迎與寸口俱盛四倍以上爲關格。關格之脈，贏不能極於天地之精氣，則死矣。</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="summary">
+  <h2>本章摘要</h2>
+  <ul>
+    <li><strong>六六之節</strong>：天有十干，十干循環六次＝周甲（60 日），周甲六次＝一年（360 日）。</li>
+    <li><strong>九九制會</strong>：以九為極數，三三合九——天、地、人各分三氣，對應九竅、九臟（形臟四＋神臟五）。</li>
+    <li><strong>天度 vs 氣數</strong>：天度＝天文計算（日月運行）；氣數＝生物節律（萬物化生）。</li>
+    <li><strong>五運六氣時間階梯</strong>：5 日＝候，3 候（15 日）＝氣，6 氣（90 日）＝時，4 時（365 日）＝歲。</li>
+    <li><strong>五行相勝</strong>：春勝長夏（木剋土）→ 長夏勝冬（土剋水）→ 冬勝夏（水剋火）→ 夏勝秋（火剋金）→ 秋勝春（金剋木）。</li>
+    <li><strong>太過與不及</strong>：未至而至＝太過（氣淫）；至而不至＝不及（氣迫）。反常氣候致病，當其時則重，非其時則輕。</li>
+    <li><strong>臟象總綱</strong>：心通夏（其華在面）、肺通秋（其華在毛）、腎通冬（其華在發）、肝通春（其華在爪）、脾通土（其華在唇四白）。</li>
+    <li><strong>十一臟取決於膽</strong>：膽主少陽春生之氣，為十一臟生機之始。</li>
+    <li><strong>人迎寸口脈診</strong>：人迎候陽（一盛少陽、二盛太陽、三盛陽明、四盛格陽）；寸口候陰（一盛厥陰、二盛少陰、三盛太陰、四盛關陰）。兩者俱盛四倍以上＝關格，主死。</li>
+  </ul>
+</section>
+
+<section class="recall">
+  <h2>Recall 問題（撳一下展開答案）</h2>
+  <p class="hint">頭三條會呼應返開頭嗰三條引導問題，等你檢查自己有冇讀通；後五條係引申同批判性問題，幫你深化理解。</p>
+
+  <details class="echo">
+    <summary>Q1（呼應「天度氣數之問」）：「六六之節」同「九九制會」係咩意思？「三百六十五節」係咪真係 365 個關節／穴位？<span class="echo-tag">呼應引導問題 1</span></summary>
+    <p><strong>答案：</strong></p>
+    <ul>
+      <li><strong>六六之節</strong>：天有十干（十日），十干循環 6 次＝一個周甲（60 日），周甲重複 6 次＝一年（360 日）。即「6×6×10 = 360」。</li>
+      <li><strong>九九制會</strong>：以九為極數。三氣合成天、地、人各三，三三得九。對應人體九竅、九臟（形臟四：胃大腸小腸膀胱；神臟五：心肝脾肺腎）。</li>
+      <li><strong>三百六十五節</strong>：呢度嘅「節」唔係解剖學嘅關節，而係古人想像人體與天度相應嘅「節點」——後世針灸學將之具體化為 365 個穴位（但實際經穴總數各家不一，約 361 個）。</li>
+    </ul>
+    <p><em>核心邏輯：用「6」同「9」呢兩個神秘數字建立天地人嘅對應框架——6 代表天道（時間），9 代表人道（空間／結構）。呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q2（呼應「五運六氣之問」）：「五日謂之候……四時謂之歲」嘅邏輯係咩？點解唔識運氣就做唔到醫生？<span class="echo-tag">呼應引導問題 2</span></summary>
+    <p><strong>答案：</strong>時間階梯嘅邏輯：<strong>5（候）→ 3 候成氣 → 6 氣成時 → 4 時成歲</strong>。每個乘數都對應五行（5）或三陰三陽（3、6）。呢個唔係隨意劃分，而係將五行學說嵌入時間結構。</p>
+    <p><strong>點解唔識就做唔到醫生？</strong>因為疾病嘅發生同季節、氣候密切相關——春天多肝病（肝應春）、冬天多腎病（腎應冬）。如果唔識判斷「當年客氣加臨」（即邊種氣當旺、邊種氣反常），就無法預測疾病走向，亦唔知點樣用五行相勝原理嚟推算太過同不及。</p>
+    <p><strong>太過</strong>＝氣候跑贏時令（氣淫），會侵犯所不勝同欺凌所勝；<strong>不及</strong>＝氣候落後時令（氣迫），所勝妄行、所生病、所不勝侵迫。<em>呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details class="echo">
+    <summary>Q3（呼應「臟象之問」）：「臟象」係咩？五臟對應四季有冇生理基礎？「十一臟取決於膽」點解？<span class="echo-tag">呼應引導問題 3</span></summary>
+    <p><strong>答案：</strong>「臟象」＝「臟腑喺體表嘅表現象徵」——<strong>其華在</strong>（外觀榮華處）、<strong>其充在</strong>（充養組織）。</p>
+    <p><strong>對應嘅生理基礎：</strong></p>
+    <ul>
+      <li><strong>心通夏、其華在面</strong>：夏天炎熱、血管擴張，面色紅潤＝心血充足。心血管病人夏天易發作。</li>
+      <li><strong>肺通秋、其華在毛</strong>：秋天乾燥，肺主皮毛。皮膚病、脫髮多同肺氣有關。</li>
+      <li><strong>腎通冬、其華在發</strong>：冬天藏精，腎精足則頭髮烏黑。脫髮、白髮多責之腎虛。</li>
+      <li><strong>肝通春、其華在爪</strong>：春天生發，肝主筋。指甲脆弱、肌肉抽筋多屬肝血不足。</li>
+    </ul>
+    <p><strong>十一臟取決於膽：</strong>膽屬木應春，春為生機之始；膽氣升發，十一臟先有生機。<em>呢個解答咗章首嘅疑問。</em></p>
+  </details>
+
+  <details>
+    <summary>Q4（延伸）：「人迎脈」同「寸口脈」有咩分別？點解一個候陽、一個候陰？</summary>
+    <p><strong>人迎脈</strong>：喺頸部（頸總動脈），屬陽經聚會處，所以候陽氣盛衰。</p>
+    <p><strong>寸口脈</strong>：喺手腕（橈動脈），屬陰經聚會處，所以候陰氣盛衰。</p>
+    <p><strong>關格嘅意義：</strong>人迎同寸口都大四倍以上＝「關格」——陰陽俱盛、互相隔絕，無法交通，預後極差，主死。</p>
+    <p><em>呢個係最早嘅「雙手診脈法」，後世《難經》發展出「獨取寸口」，簡化為單手診脈。</em></p>
+  </details>
+
+  <details>
+    <summary>Q5（延伸）：「天食人以五氣，地食人以五味」——五氣同五味分別係咩？</summary>
+    <p><strong>五氣</strong>：指自然界嘅五種氣候／氣味——臊（木）、焦（火）、香（土）、腥（金）、腐（水）。由鼻吸入，藏於心肺，令面色明潤、聲音洪亮。</p>
+    <p><strong>五味</strong>：酸（木）、苦（火）、甘（土）、辛（金）、鹹（水）。由口入，藏於腸胃，化為精微養五臟之氣。</p>
+    <p><strong>對應關係：</strong>五氣養陽（心肺），五味養陰（腸胃→五臟）。氣和則生，津液相成，神乃自生——呢個係「飲食養生」嘅理論源頭。</p>
+  </details>
+
+  <details>
+    <summary>Q6（延伸）：「肝者，罷極之本」——「罷極」係咩意思？點解肝同疲勞有關？</summary>
+    <p><strong>「罷極」嘅解讀有三種主流：</strong></p>
+    <ul>
+      <li><strong>解讀一：罷＝疲</strong>——「罷極」即「疲極」，肝主筋，疲勞過度傷肝。運動後肌肉酸痛、抽筋都同肝有關。</li>
+      <li><strong>解讀二：罷極＝極限</strong>——肝主管人體耐受極限嘅能力，肝血充足則耐力強。</li>
+      <li><strong>解讀三：罷＝遣散，極＝中極</strong>——肝主疏洩，調節氣機嘅舒展同收斂。</li>
+    </ul>
+    <p><strong>現代對照：</strong>肝臟係人體最大嘅代謝器官同解毒器官，運動時肝糖原分解供能。肝功能差嘅人確實容易疲勞——「肝主疲勞」並非無根據。</p>
+  </details>
+
+  <details>
+    <summary>Q7（延伸）：「五運六氣」學說喺現代臨床有冇實用價值？</summary>
+    <p><strong>支持嘅觀點：</strong></p>
+    <ul>
+      <li><strong>流行病學預測</strong>：部分研究發現傳染病爆發同年份氣候異常有統計相關性（例如暖冬後春天流感高發）。</li>
+      <li><strong>慢性病季節性</strong>：心血管病冬季高發、精神疾病春季高發，同「心通夏、肝通春」有一定呼應。</li>
+      <li><strong>養生時令</strong>：「冬病夏治」「春夏養陽」等理論源自運氣學說，部分確有療效。</li>
+    </ul>
+    <p><strong>質疑嘅觀點：</strong></p>
+    <ul>
+      <li>運氣學說過於複雜，60 年一循環嘅推算缺乏可重複嘅科學驗證。</li>
+      <li>氣候變遷令古代嘅節氣規律未必適用於現代。</li>
+    </ul>
+    <p><em>結論：作為宏觀思維框架有價值，但精確預測個體疾病要謹慎。現代中醫多數將運氣學說當輔助參考，唔會單靠佢斷症。</em></p>
+  </details>
+
+  <details>
+    <summary>Q8（批判性）：《六節臟象論》將人體同宇宙節律強行對應（365 節、九臟應九野），呢種「數字神秘主義」喺現代睇嚟係咪牽強附會？</summary>
+    <p><strong>批評：</strong></p>
+    <ul>
+      <li><strong>數字湊合</strong>：360 日（六六之節）明顯少過實際太陽年（365.25 日），要用「積氣餘盈閏」補救，顯示呢套數字系統本質上係人為建構。</li>
+      <li><strong>九臟應九野</strong>：人體九臟（形臟四＋神臟五）嘅劃分本身就有爭議——點解胃大腸小腸膀胱係「形臟」而唔計三焦？呢個劃分似為咗湊「九」呢個數字。</li>
+      <li><strong>過度對應</strong>：將天體運行直接套落人體，忽略咗個體差異同人體嘅複雜性。</li>
+    </ul>
+    <p><strong>辯護：</strong></p>
+    <ul>
+      <li>呢種「天人相應」唔係字面等同，而係<strong>類比思維</strong>——古人無解剖學同顯微鏡，只能用宏觀規律類推微觀現象。</li>
+      <li><strong>時間醫學</strong>（chronomedicine）已證實生理節律確實存在：皮質醇朝高夜低、褪黑激素夜間分泌、月經週期約 28 日——呢啲都係「人體應天」嘅現代版本。</li>
+      <li>即使數字對應有牽強成分，但<strong>「順應自然節律養生」</strong>呢個核心原則依然有效。</li>
+    </ul>
+    <p><em>結論：數字神秘主義嘅外殼可以批判，但「人體受自然節律影響」呢個內核喺現代醫學得到大量支持。讀古籍要區分「外殼」同「內核」。</em></p>
+  </details>
+
+</section>
+
+<footer>
+  素問・六節髒象論篇第九｜原文來源：<code>01_reference/02_data/book_original.txt</code>（經 <code>04_temp/temp_chapters/SW_09_六節髒象論.txt</code> 分割）<br>
+  原文一字不改，僅作 HTML 排版、白話解讀同註解
+</footer>
+
+<script>
+  (function(){
+    var groups = ['k1','k2','k3'];
+    groups.forEach(function(g){
+      var els = document.querySelectorAll('mark.' + g);
+      els.forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+          els.forEach(function(e){ e.style.boxShadow = '0 0 0 2px currentColor'; e.style.filter = 'brightness(0.95)'; });
+        });
+        el.addEventListener('mouseleave', function(){
+          els.forEach(function(e){ e.style.boxShadow = ''; e.style.filter = ''; });
+        });
+      });
+    });
+  })();
+
+/* ===== Highlight toggle listener（postMessage 溝通，嚴禁手動改）===== */
+window.addEventListener('message', function(ev) {
+  if (ev.data && ev.data.type === 'toggle-highlight') {
+    document.body.classList.toggle('hide-highlight', ev.data.hide);
+  }
+});
+</script>
+
+</body>
+</html>
