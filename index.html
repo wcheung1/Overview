@@ -1,1344 +1,550 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Overview</title>
-
-<!-- SortableJS：處理卡片同分類嘅 drag-and-drop（支援分類之間互拖） -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《黃帝內經 · 素問》前五篇閱讀系統</title>
 <style>
-  :root{
-    --bg:#f6f7f9;
-    --panel:#ffffff;
-    --ink:#1f2430;
-    --ink-soft:#5b6472;
-    --line:#e6e8ee;
-    --accent:#3b5bdb;
-    --accent-ink:#ffffff;
-    --radius:14px;
-    --shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
-    --font: "Segoe UI", system-ui, -apple-system, "PingFang HK", "Microsoft JhengHei", sans-serif;
+  :root {
+    --bg: #fafaf7;
+    --fg: #2c2c2c;
+    --accent: #8b4513;
+    --accent-dark: #5c2e0c;
+    --accent-light: #d4b896;
+    --green: #4a7c59;
+    --green-light: #e8f0ea;
+    --border: #d4c5a9;
+    --card-bg: #ffffff;
+    --sidebar-bg: #f5efe0;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--font);
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
-  a{color:inherit}
-  button{font-family:inherit}
-
-  /* ---------- Top bar ---------- */
-  .topbar{
-    position:sticky; top:0; z-index:40;
-    background:rgba(246,247,249,.85);
-    backdrop-filter:saturate(160%) blur(8px);
-    border-bottom:1px solid var(--line);
-  }
-  .topbar-inner{
-    max-width:1180px; margin:0 auto; padding:12px 20px;
-    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-  }
-  .brand{display:flex; align-items:center; gap:10px; min-width:0;}
-  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);flex:none}
-  #heading{
-    font-size:20px; font-weight:800; letter-spacing:-.01em;
-    padding:2px 6px; border-radius:8px; outline:none; min-width:40px;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:52vw;
-  }
-  #heading[contenteditable="true"]{
-    background:#fff; box-shadow:inset 0 0 0 2px var(--accent); cursor:text;
-    white-space:normal; overflow:visible; text-overflow:clip; max-width:none;
-  }
-  .spacer{flex:1 1 auto}
-
-  .btn{
-    display:inline-flex; align-items:center; gap:6px;
-    border:1px solid var(--line); background:var(--panel); color:var(--ink);
-    padding:8px 12px; border-radius:10px; font-size:13px; font-weight:600;
-    cursor:pointer; white-space:nowrap;
-  }
-  .btn:hover{border-color:#cfd4de}
-  .btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
-  .btn.ghost{background:transparent}
-  .btn:disabled{opacity:.5; cursor:not-allowed}
-  .icon-btn{
-    border:1px solid transparent;background:transparent;cursor:pointer;
-    width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
-    color:var(--ink-soft); font-size:15px; flex:none;
-  }
-  .icon-btn:hover{background:#eef0f4;color:var(--ink)}
-
-  .search-wrap{position:relative; flex:1 1 240px; max-width:360px; display:none}
-  .search-wrap.on{display:block}
-  #search{
-    width:100%; padding:8px 12px 8px 34px; border-radius:10px;
-    border:1px solid var(--line); background:#fff; font-size:14px; outline:none;
-  }
-  #search:focus{border-color:var(--accent)}
-  .search-ic{position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--ink-soft)}
-
-  .who{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
-  .who img{width:24px;height:24px;border-radius:50%}
-
-  /* ---------- Layout ---------- */
-  main{max-width:1180px; margin:0 auto; padding:22px 20px 80px}
-  #board.double{ column-count:2; column-gap:20px; }
-  #board.single{ column-count:1; }
-  @media (max-width:767px){
-    #board{ column-count:1 !important; }
-    #board.force-double{ column-count:2 !important; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: "Noto Serif TC", "Source Han Serif", "PingFang TC", "Microsoft JhengHei", serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    display: flex;
+    flex-direction: column;
   }
 
-  .cat{
-    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
-    box-shadow:var(--shadow); margin:0 0 18px; overflow:hidden;
-    break-inside:avoid; -webkit-column-break-inside:avoid; page-break-inside:avoid;
+  /* ===== Top Bar ===== */
+  .topbar {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    z-index: 10;
   }
-  .cat-head{
-    display:flex; align-items:center; gap:10px; padding:12px 14px;
-    border-bottom:1px solid var(--line);
+  .topbar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
   }
-  .cat-color{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(0,0,0,.08)}
-  .cat-name{
-    font-weight:700; font-size:15px; padding:2px 6px; border-radius:7px; outline:none; min-width:20px;
+  .topbar-title small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.85;
+    display: block;
+    letter-spacing: 0.05em;
+    margin-top: 0.1rem;
   }
-  .cat-name[contenteditable="true"]{background:#fff;box-shadow:inset 0 0 0 2px var(--accent)}
-  .cat-count{font-size:12px;color:var(--ink-soft)}
-  .cat-tools{margin-left:auto;display:flex;align-items:center;gap:2px}
-  .drag-handle{cursor:grab;color:var(--ink-soft)}
-  .drag-handle:active{cursor:grabbing}
-  .chev{transition:transform .18s ease}
-  .cat.collapsed .chev{transform:rotate(-90deg)}
-  .cat.collapsed .cards{display:none}
-  input[type="color"].swatch{
-    -webkit-appearance:none;appearance:none;border:none;background:none;
-    width:26px;height:26px;padding:0;border-radius:6px;cursor:pointer;overflow:hidden;
+  .topbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
-  input[type="color"].swatch::-webkit-color-swatch-wrapper{padding:0}
-  input[type="color"].swatch::-webkit-color-swatch{border:1px solid rgba(0,0,0,.12);border-radius:6px}
-
-  .cards{padding:12px; display:flex; flex-direction:column; gap:10px; min-height:8px}
-
-  .card{
-    border-radius:11px; padding:12px 14px; border:1px solid rgba(0,0,0,.06);
-    position:relative; cursor:pointer; transition:transform .06s ease, box-shadow .12s ease;
+  .progress-display {
+    font-size: 0.88rem;
+    background: rgba(255,255,255,0.15);
+    padding: 0.35rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.25);
   }
-  .card:hover{box-shadow:0 4px 14px rgba(16,24,40,.10)}
-  .card:active{transform:translateY(1px)}
-  .card .c-titlerow{display:flex; align-items:center}
-  .card .c-title{font-weight:700; font-size:14.5px; padding:1px 3px; border-radius:6px; outline:none}
-  .card .c-desc{font-size:13px; color:#3d4453; padding:1px 3px; border-radius:6px; outline:none; white-space:pre-wrap; word-break:break-word}
-  .card [contenteditable="true"]{background:#fff;box-shadow:inset 0 0 0 2px var(--accent);cursor:text}
-  .card .c-url{
-    display:none; margin-top:8px; width:100%; font-size:12px; color:var(--ink-soft);
-    padding:6px 8px; border:1px dashed rgba(0,0,0,.18); border-radius:8px; background:rgba(255,255,255,.55); outline:none;
+  .progress-display strong { color: #ffd; }
+  .toggle-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
   }
-  .admin .card .c-url{display:block}
-  .card .c-del{
-    display:none; position:absolute; top:8px; right:8px;
-    width:24px;height:24px;border-radius:7px;border:none;background:rgba(255,255,255,.75);
-    color:#b42318;cursor:pointer;align-items:center;justify-content:center;font-size:13px;
+  .toggle-btn:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.7);
   }
-  .admin .card:hover .c-del{display:inline-flex}
-  .card .c-handle{display:none}
-  .admin .card .c-handle{
-    display:inline-flex; position:absolute; top:8px; right:38px; color:var(--ink-soft);
-    cursor:grab; font-size:13px;
+  .toggle-btn.off {
+    background: rgba(0,0,0,0.25);
+    border-color: rgba(255,255,255,0.2);
+    opacity: 0.75;
   }
-  .card-hint{font-size:11px;color:var(--ink-soft);margin-top:6px;display:none}
-  .admin .card-hint{display:block}
-  .c-badge{
-    display:inline-block; font-size:10px; font-weight:700; letter-spacing:.02em;
-    background:rgba(0,0,0,.16); color:#fff; padding:1px 6px; border-radius:999px;
-    margin-right:6px; vertical-align:middle;
+  .toggle-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffd54f;
+    box-shadow: 0 0 4px rgba(255,213,79,0.8);
   }
-  .c-actions{display:none; gap:6px; margin-top:8px}
-  .admin .c-actions{display:flex}
-  .c-actions .mini{
-    font-size:12px; font-weight:600; cursor:pointer;
-    border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.7);
-    color:var(--ink); padding:5px 9px; border-radius:8px;
-  }
-  .c-actions .mini:hover{background:#fff}
-
-  .cat-foot{padding:0 12px 12px; display:none}
-  .admin .cat-foot{display:block}
-  .add-card{
-    width:100%; border:1px dashed var(--line); background:transparent; color:var(--ink-soft);
-    padding:9px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;
-  }
-  .add-card:hover{border-color:var(--accent);color:var(--accent)}
-
-  .sortable-ghost{opacity:.4}
-  .sortable-chosen{box-shadow:0 8px 24px rgba(16,24,40,.16)}
-
-  .empty{
-    text-align:center; color:var(--ink-soft); padding:60px 20px;
-    border:1px dashed var(--line); border-radius:var(--radius); background:var(--panel);
+  .toggle-btn.off .toggle-dot {
+    background: #888;
+    box-shadow: none;
   }
 
-  /* admin-only elements hidden for guests */
-  .admin-only{display:none}
-  .admin .admin-only{display:inline-flex}
-
-  /* ---------- Toast ---------- */
-  #toast{
-    position:fixed; right:18px; bottom:18px; z-index:60;
-    background:#101828; color:#fff; padding:10px 14px; border-radius:10px;
-    font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,.2);
-    opacity:0; transform:translateY(8px); transition:opacity .2s, transform .2s; pointer-events:none;
+  /* ===== Main Layout ===== */
+  .main-layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
   }
-  #toast.show{opacity:1; transform:translateY(0)}
 
-  /* ---------- Modal ---------- */
-  .modal-back{
-    position:fixed; inset:0; background:rgba(16,24,40,.45); z-index:70;
-    display:none; align-items:center; justify-content:center; padding:20px;
+  /* ===== Sidebar ===== */
+  .sidebar {
+    width: 300px;
+    min-width: 300px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 1rem 0;
   }
-  .modal-back.on{display:flex}
-  .modal{
-    background:#fff; border-radius:16px; max-width:440px; width:100%;
-    padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.3);
+  .sidebar-section {
+    margin-bottom: 1rem;
   }
-  .modal h3{margin:0 0 8px; font-size:17px}
-  .modal.wide{max-width:560px}
-  .name-input{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:14px; outline:none}
-  .name-input:focus{border-color:var(--accent)}
-  .pages-list{display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow:auto}
-  .page-row{display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--line); border-radius:10px}
-  .page-row .p-name{font-weight:600; font-size:14px}
-  .page-row .p-id{font-size:11px; color:var(--ink-soft)}
-  .page-row .p-spacer{flex:1}
-  .page-row .mini{font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--ink); padding:5px 10px; border-radius:8px}
-  .page-row .mini:hover{border-color:#cfd4de}
-  .page-row .mini.danger{color:#b42318;border-color:#f3c1bb}
-  .pages-empty{color:var(--ink-soft); font-size:14px; padding:24px 4px; text-align:center}
-  .help-body{font-size:14px; color:var(--ink); max-height:56vh; overflow:auto}
-  .help-body h4{margin:16px 0 6px; font-size:14px; color:var(--accent)}
-  .help-body ul{margin:0 0 4px; padding-left:20px}
-  .help-body li{margin:5px 0; line-height:1.5}
-  .help-body kbd{background:#f0f2f6; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:0 5px; font-size:12px; font-family:inherit}
-  .help-switch{display:flex; align-items:center; gap:8px; margin-top:14px; font-size:12.5px; color:var(--ink-soft)}
-  .help-switch input{width:16px;height:16px}
-  .modal p{margin:0 0 18px; color:var(--ink-soft); font-size:14px}
-  .modal-actions{display:flex; flex-direction:column; gap:8px}
-  .modal-actions .btn{justify-content:center}
+  .sidebar-section-title {
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.3rem 1.2rem;
+    margin-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+    color: var(--fg);
+  }
+  .nav-item:hover {
+    background: var(--green-light);
+    border-left-color: var(--green);
+  }
+  .nav-item.active {
+    background: var(--green-light);
+    border-left-color: var(--accent);
+    font-weight: 600;
+  }
+  .nav-item-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .nav-item-code {
+    font-family: "Consolas", monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    background: rgba(139,69,19,0.1);
+    padding: 0.05rem 0.35rem;
+    border-radius: 2px;
+    margin-right: 0.3rem;
+  }
+  .nav-item-title {
+    font-size: 0.92rem;
+    color: var(--fg);
+    display: block;
+    line-height: 1.4;
+  }
+  .nav-item-subtitle {
+    font-size: 0.78rem;
+    color: #888;
+    display: block;
+    margin-top: 0.1rem;
+  }
+  .nav-item.active .nav-item-title { color: var(--accent-dark); }
 
-  .mode-note{font-size:12px;color:#8a5a00;background:#fff7e6;border:1px solid #ffe1a8;
-    padding:6px 10px;border-radius:8px;display:none}
-  .mode-note.on{display:inline-block}
+  /* Read checkbox */
+  .read-checkbox {
+    margin-top: 0.2rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--green);
+  }
+  .read-checkbox-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #999;
+  }
+  .read-checkbox-label {
+    margin-top: 0.1rem;
+    font-size: 0.65rem;
+    line-height: 1;
+  }
 
-  @media (max-width:767px){
-    #heading{max-width:44vw}
-    .who .email{display:none}
+  /* Nav items without checkbox (map/questions) */
+  .nav-item.no-checkbox .read-checkbox-wrap { display: none; }
+
+  /* ===== Content Area ===== */
+  .content-area {
+    flex: 1;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+  }
+  #content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+  .loading-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 0.95rem;
+    z-index: 5;
+  }
+  .loading-overlay.show { display: flex; }
+
+  /* ===== Mobile ===== */
+  .mobile-toggle {
+    display: none;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 768px) {
+    .sidebar {
+      position: absolute;
+      left: -300px;
+      top: 0;
+      bottom: 0;
+      z-index: 20;
+      transition: left 0.25s;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    }
+    .sidebar.open { left: 0; }
+    .mobile-toggle { display: block; }
+    .topbar-title { font-size: 1rem; }
+    .topbar-title small { display: none; }
+  }
+
+  /* ===== Reset Progress Button ===== */
+  .reset-btn {
+    display: block;
+    margin: 1rem auto 0.5rem;
+    padding: 0.3rem 0.8rem;
+    background: transparent;
+    border: 1px dashed #c9a96e;
+    color: #b03a2e;
+    font-size: 0.78rem;
+    cursor: pointer;
+    border-radius: 3px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover {
+    background: #fdf5f4;
+    border-style: solid;
   }
 </style>
 </head>
 <body>
 
+<!-- ===== Top Bar ===== -->
 <div class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <button class="icon-btn" id="backBtn" title="返回主頁" style="display:none">←</button>
-      <span class="dot"></span>
-      <div id="heading" title="編輯模式下雙擊可改標題">Overview</div>
+  <div style="display:flex; align-items:center; gap:0.8rem;">
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰ 目錄</button>
+    <div class="topbar-title">
+      《黃帝內經 · 素問》前五篇閱讀系統
+      <small>STAGE-2 階段 4｜Vanilla HTML/CSS/JS｜無外部依賴</small>
     </div>
-
-    <div class="spacer"></div>
-
-    <div class="search-wrap" id="searchWrap">
-      <span class="search-ic">🔍</span>
-      <input id="search" type="text" placeholder="搜尋卡片…（Ctrl / ⌘ + F）" autocomplete="off" />
-    </div>
-
-    <button class="icon-btn" id="searchToggle" title="搜尋 (Ctrl/⌘+F)">🔍</button>
-    <button class="btn ghost" id="layoutBtn" title="切換單排 / 雙排">▤ 單排</button>
-    <button class="btn ghost" id="previewBtn" title="扮訪客預覽（唔使登出）" style="display:none">👁 訪客預覽</button>
-    <button class="btn ghost admin-only" id="pagesBtn" title="子頁面總覽">🗂 頁面</button>
-
-    <button class="btn admin-only" id="addCatBtn">＋ 分類</button>
-    <button class="btn ghost" id="exportBtn">匯出</button>
-    <button class="btn ghost" id="importBtn">匯入</button>
-    <input type="file" id="importFile" accept="application/json" style="display:none" />
-
-    <button class="icon-btn" id="helpBtn" title="使用說明">？</button>
-
-    <span class="mode-note" id="modeNote">本機示範模式</span>
-
-    <span class="who" id="who"></span>
-    <button class="btn primary" id="loginBtn">Google 登入</button>
-    <button class="btn ghost" id="logoutBtn" style="display:none">登出</button>
+  </div>
+  <div class="topbar-controls">
+    <div class="progress-display">已讀進度：<strong id="progress-text">0 / 8</strong></div>
+    <button class="toggle-btn" id="highlight-toggle" onclick="toggleHighlight()" title="隱藏／顯示內文 Highlight">
+      <span class="toggle-dot"></span>
+      <span id="highlight-label">Highlight：開</span>
+    </button>
   </div>
 </div>
 
-<main>
-  <div id="board" class="single"></div>
-</main>
+<!-- ===== Main Layout ===== -->
+<div class="main-layout">
 
-<div id="toast">已儲存</div>
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
 
-<!-- 刪除分類 modal -->
-<div class="modal-back" id="delModal">
-  <div class="modal">
-    <h3>刪除分類「<span id="delCatName"></span>」</h3>
-    <p>入面嘅卡片點處理？</p>
-    <div class="modal-actions">
-      <button class="btn" id="delKeepCards">保留卡片 → 移去「未分類」</button>
-      <button class="btn" id="delAllCards" style="color:#b42318;border-color:#f3c1bb">連卡片一齊刪除</button>
-      <button class="btn ghost" id="delCancel">取消</button>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">全書導覽</div>
+      <a class="nav-item no-checkbox active" data-target="00-map.html" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">MAP</span>
+          <span class="nav-item-title">全書論證地圖</span>
+          <span class="nav-item-subtitle">主張 → 分論點 → 證據</span>
+        </div>
+      </a>
+      <a class="nav-item no-checkbox" data-target="questions.html" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">Q&A</span>
+          <span class="nav-item-title">跨章綜合問題</span>
+          <span class="nav-item-subtitle">10 題（含 3 條批判性）</span>
+        </div>
+      </a>
     </div>
-  </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">章節閱讀</div>
+
+      <a class="nav-item" data-target="chapters/SW_01_上古天真論.html" data-key="SW_01" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_01</span>
+          <span class="nav-item-title">養生總則與生命境界</span>
+          <span class="nav-item-subtitle">上古天真論｜法於陰陽·四境界</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_01" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_01 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_02_四氣調神大論.html" data-key="SW_02" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_02</span>
+          <span class="nav-item-title">四季養生大法</span>
+          <span class="nav-item-subtitle">四氣調神大論｜春夏養陽·治未病</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_02" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_02 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_03_生氣通天論.html" data-key="SW_03" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_03</span>
+          <span class="nav-item-title">陽氣與陰陽平衡</span>
+          <span class="nav-item-subtitle">生氣通天論｜陽氣若天·四邪五味</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_03" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_03 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_04_金匱真言論.html" data-key="SW_04" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_04</span>
+          <span class="nav-item-title">五行對應系統</span>
+          <span class="nav-item-subtitle">金匱真言論｜八風·五臟對應表</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_04" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_04 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_05_陰陽應象大論.html" data-key="SW_05" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_05</span>
+          <span class="nav-item-title">陰陽總綱與治病大法</span>
+          <span class="nav-item-subtitle">陰陽應象大論｜壯火少火·五志相勝</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_05" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_05 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+
+      <a class="nav-item" data-target="chapters/SW_06_陰陽離合論.html" data-key="SW_06" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_06</span>
+          <span class="nav-item-title">三陰三陽・開闔樞・經脈根結</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_06" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_06 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+      <a class="nav-item" data-target="chapters/SW_07_陰陽別論.html" data-key="SW_07" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_07</span>
+          <span class="nav-item-title">脈分陰陽・真臟脈・生陽死陰</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_07" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_07 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+      <a class="nav-item" data-target="chapters/SW_08_靈蘭祕典論.html" data-key="SW_08" onclick="loadContent(this)">
+        <div class="nav-item-content">
+          <span class="nav-item-code">SW_08</span>
+          <span class="nav-item-title">十二臟腑官職・心為君主・主明則安</span>
+        </div>
+        <div class="read-checkbox-wrap">
+          <input type="checkbox" class="read-checkbox" data-key="SW_08" onclick="event.stopPropagation(); saveReadState(this)" aria-label="標記 SW_08 已讀">
+          <span class="read-checkbox-label">已讀</span>
+        </div>
+      </a>
+    </div>
+
+    <button class="reset-btn" onclick="resetProgress()">清除所有已讀記錄</button>
+  </nav>
+
+  <!-- Content Area -->
+  <main class="content-area">
+    <div class="loading-overlay" id="loading">載入中…</div>
+    <iframe id="content-frame" src="00-map.html" title="章節內容" onload="onFrameLoad()"></iframe>
+  </main>
+
 </div>
 
-<!-- 刪除卡片 modal -->
-<div class="modal-back" id="cardDelModal">
-  <div class="modal">
-    <h3>刪除卡片</h3>
-    <p>確定刪除「<span id="cardDelName"></span>」？呢個動作冇得復原。</p>
-    <div class="modal-actions">
-      <button class="btn" id="cardDelConfirm" style="color:#b42318;border-color:#f3c1bb">確定刪除</button>
-      <button class="btn ghost" id="cardDelCancel">取消</button>
-    </div>
-  </div>
-</div>
+<script>
+  // ===== 讀取狀態管理（localStorage）=====
+  const STORAGE_PREFIX = 'hdnj_read_';
+  const CHAPTER_KEYS = ['SW_01', 'SW_02', 'SW_03', 'SW_04', 'SW_05', 'SW_06', 'SW_07', 'SW_08'];
 
-<!-- 匯入 modal -->
-<div class="modal-back" id="importModal">
-  <div class="modal">
-    <h3>匯入 JSON</h3>
-    <p>要點樣處理匯入嘅內容？</p>
-    <div class="modal-actions">
-      <button class="btn" id="importReplace">覆蓋（清空後匯入）</button>
-      <button class="btn" id="importMerge">合併（新增分類同卡片）</button>
-      <button class="btn ghost" id="importCancel">取消</button>
-    </div>
-  </div>
-</div>
-
-<!-- 子頁面總覽 dashboard（管理員專用） -->
-<div class="modal-back" id="pagesModal">
-  <div class="modal wide">
-    <h3>子頁面總覽</h3>
-    <p>你所有嘅子頁面（＝同一格式、有卡片功能嘅板）。撳「進入」直接去。</p>
-    <div id="pagesList" class="pages-list"></div>
-    <div class="modal-actions" style="margin-top:14px">
-      <button class="btn ghost" id="pagesClose">關閉</button>
-    </div>
-  </div>
-</div>
-
-<!-- 命名 / 改名 modal -->
-<div class="modal-back" id="nameModal">
-  <div class="modal">
-    <h3 id="nameTitle">改名</h3>
-    <p id="nameHint"></p>
-    <input id="nameInput" type="text" class="name-input" placeholder="輸入名稱…" />
-    <div class="modal-actions" style="margin-top:14px">
-      <button class="btn primary" id="nameOk">確定</button>
-      <button class="btn ghost" id="nameCancel">取消</button>
-    </div>
-  </div>
-</div>
-
-<!-- 使用說明 modal（訪客 / 管理員唔同版本） -->
-<div class="modal-back" id="helpModal">
-  <div class="modal wide">
-    <h3 id="helpTitle">使用說明</h3>
-    <div id="helpBody" class="help-body"></div>
-    <label class="help-switch">
-      <input type="checkbox" id="forceDoubleChk" />
-      <span>喺手機都用雙排顯示（進階：細螢幕會逼到好窄）</span>
-    </label>
-    <div class="modal-actions" style="margin-top:12px">
-      <button class="btn ghost" id="helpClose">明白，關閉</button>
-    </div>
-  </div>
-</div>
-
-<script type="module">
-/* ============================================================
-   1) Firebase 設定
-   ------------------------------------------------------------
-   把下面 firebaseConfig 換成你自己 Firebase 專案嘅設定。
-   API Key 可以直接放喺呢度（見文字說明），保護靠 Security Rules。
-   ADMIN_EMAILS 填你嘅管理員 Gmail（同 Firestore rules 保持一致）。
-
-   如果未填設定（仍係 "PASTE_..."），網頁會自動用「本機示範模式」，
-   資料存喺瀏覽器 localStorage，方便你即刻試玩全部功能。
-   ============================================================ */
-const firebaseConfig = {
-  apiKey: "AIzaSyCjqenwszZuCI19BaHOQErPoHeHSdsdvpA",
-  authDomain: "overview-01.firebaseapp.com",
-  projectId: "overview-01",
-  storageBucket: "overview-01.firebasestorage.app",
-  messagingSenderId: "281677712893",
-  appId: "1:281677712893:web:f261731d80a8d35a091d94"
-};
-
-const ADMIN_EMAILS = [
-  "w.cheung815@gmail.com"   // ← 改成你嘅管理員 Gmail，可以放多個
-];
-
-/* ---------- 子頁面（sub-board）支援 ----------
-   同一個 index.html，靠網址 ?board=xxx 分辨唔同「板」。
-   ?board 冇填 = 主頁(root)；有填 = 一個獨立子頁面，
-   佢一樣有分類 / 卡片 / 拖曳 / 搜尋等全部功能，資料存喺 overview/<xxx>。 */
-const boardId = (new URLSearchParams(location.search).get("board") || "board")
-                  .replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40) || "board";
-const isSubBoard = boardId !== "board";
-const DOC_PATH = { col: "overview", id: boardId };
-const LS_KEY = "overview_data_" + boardId;   // 本機模式：每塊板各自儲存
-
-/* ---------- 判斷模式 ---------- */
-const LOCAL_MODE = firebaseConfig.apiKey.startsWith("PASTE_");
-
-/* ---------- Firebase 動態載入（只喺有設定時） ---------- */
-let fb = null;
-if(!LOCAL_MODE){
-  const appMod  = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js");
-  const authMod = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js");
-  const dbMod   = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js");
-  const app  = appMod.initializeApp(firebaseConfig);
-  const auth = authMod.getAuth(app);
-  const db   = dbMod.getFirestore(app);
-  fb = { authMod, dbMod, auth, db,
-         ref: dbMod.doc(db, DOC_PATH.col, DOC_PATH.id),
-         regRef: dbMod.doc(db, "overview", "__index__"),   // 子頁面總覽登記表
-         boardRef: (id)=> dbMod.doc(db, "overview", id) };
-}
-
-/* ============================================================
-   2) 狀態 / 資料
-   ============================================================ */
-const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
-
-function randomPastel(){
-  const h = Math.floor(Math.random()*360);
-  const s = 62 + Math.floor(Math.random()*10);   // 62-71%
-  const l = 88 + Math.floor(Math.random()*4);    // 88-91%  → 淺色系
-  return hslToHex(h,s,l);
-}
-function hslToHex(h,s,l){
-  s/=100; l/=100;
-  const k=n=>(n+h/30)%12, a=s*Math.min(l,1-l);
-  const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
-  const t=x=>Math.round(255*x).toString(16).padStart(2,"0");
-  return "#"+t(f(0))+t(f(8))+t(f(4));
-}
-function darken(hex, amt=0.45){
-  const n=parseInt(hex.slice(1),16);
-  let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
-  r=Math.round(r*(1-amt)); g=Math.round(g*(1-amt)); b=Math.round(b*(1-amt));
-  return "#"+[r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("");
-}
-
-function seed(){
-  const c1=randomPastel(), c2=randomPastel();
-  return {
-    title:"Overview",
-    categories:[
-      { id:uid(), name:"常用工具", color:c1, collapsed:false, cards:[
-        { id:uid(), title:"Gmail", description:"電郵收發", url:"https://mail.google.com" },
-        { id:uid(), title:"Google Drive", description:"雲端檔案", url:"https://drive.google.com" },
-      ]},
-      { id:uid(), name:"工作", color:c2, collapsed:false, cards:[
-        { id:uid(), title:"GitHub", description:"程式碼倉庫", url:"https://github.com" },
-      ]},
-    ]
-  };
-}
-
-let state = seed();
-let isAdmin = false;
-let previewMode = false;           // 管理員「扮訪客預覽」：唔登出都可以試 click 卡片
-let currentUser = null;
-let searchQuery = "";
-let editing = false;               // 有 contenteditable 打緊字時 = true
-const sortables = [];
-
-/* canEdit()：真正可唔可以編輯 = 係管理員而且唔喺預覽模式。
-   所有「編輯 UI / 行為」都用呢個；後端寫入權限就仍然睇 isAdmin。 */
-function canEdit(){ return isAdmin && !previewMode; }
-
-/* layout 係「本機瀏覽偏好」，存 localStorage，唔寫入共用資料 */
-let layout = safeGet("overview_layout") || "single";
-
-/* 「喺手機都用雙排」隱藏開關（每部瀏覽器記住） */
-let forceDoubleMobile = safeGet("overview_force_double") === "1";
-
-function safeGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
-function safeSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
-
-/* 收合狀態記憶：每部瀏覽器、每塊板各自記住（登出 / 重新整理都仲喺度） */
-const COLLAPSE_KEY = "overview_collapse_" + boardId;
-let collapseMemory = {};
-try{ collapseMemory = JSON.parse(safeGet(COLLAPSE_KEY)) || {}; }catch(e){ collapseMemory = {}; }
-function saveCollapseMemory(){ safeSet(COLLAPSE_KEY, JSON.stringify(collapseMemory)); }
-function effectiveCollapsed(cat){
-  return Object.prototype.hasOwnProperty.call(collapseMemory, cat.id)
-    ? !!collapseMemory[cat.id] : !!cat.collapsed;
-}
-
-/* ============================================================
-   3) 讀 / 寫 後端
-   ============================================================ */
-async function loadData(){
-  if(LOCAL_MODE){
-    const raw = safeGet(LS_KEY);
-    if(raw){ try{ state = JSON.parse(raw) }catch(e){} }
-    else if(isSubBoard){ state = emptyBoard(); }   // 新子頁面：由空白開始
-    return;
+  function getReadState(key) {
+    return localStorage.getItem(STORAGE_PREFIX + key) === '1';
   }
-  try{
-    const snap = await fb.dbMod.getDoc(fb.ref);
-    if(snap.exists()){ state = snap.data(); }
-    else if(isSubBoard){ state = emptyBoard(); await saveData(true); }
-    else { await saveData(true); } // 主頁第一次：寫入種子
-  }catch(e){ console.warn("load fail", e); }
-}
-function emptyBoard(){ return { title:"新頁面", categories:[] }; }
-
-/* ---------- 子頁面登記表（畀 dashboard 用） ---------- */
-const REG_LS = "overview_registry";
-let registry = { pages: [] };
-async function loadRegistry(){
-  if(LOCAL_MODE){
-    try{ registry = JSON.parse(safeGet(REG_LS)) || {pages:[]}; }catch(e){ registry = {pages:[]}; }
-    return;
-  }
-  try{ const s = await fb.dbMod.getDoc(fb.regRef); registry = s.exists()? s.data() : {pages:[]}; }
-  catch(e){ registry = {pages:[]}; }
-  if(!Array.isArray(registry.pages)) registry.pages = [];
-}
-async function saveRegistry(){
-  if(LOCAL_MODE){ safeSet(REG_LS, JSON.stringify(registry)); return; }
-  if(!isAdmin) return;
-  try{ await fb.dbMod.setDoc(fb.regRef, registry); }catch(e){ console.warn("reg save", e); }
-}
-function regUpsert(id, title){
-  const e = registry.pages.find(p=>p.id===id);
-  if(e) e.title = title; else registry.pages.push({id, title});
-}
-function regRemove(id){ registry.pages = registry.pages.filter(p=>p.id!==id); }
-function slugify(s){
-  const base = (s||"").toLowerCase().trim().replace(/[^a-z0-9\u4e00-\u9fff]+/g,"-").replace(/^-+|-+$/g,"");
-  return base || uid();
-}
-function uniqueBoardId(want){
-  const taken = new Set(registry.pages.map(p=>p.id).concat(["board","__index__"]));
-  if(!taken.has(want)) return want;
-  let i=2; while(taken.has(want+"-"+i)) i++;
-  return want+"-"+i;
-}
-
-let isDragging = false;      // 拖曳中 → 唔好被實時更新打斷
-let pendingRemote = null;    // 編輯 / 拖曳期間收到嘅遠端更新，遲啲先套用
-
-let saveTimer=null;
-function save(){
-  pendingRemote = null;      // 我自己改嘢，最新版以我為準
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>saveData(false), 250);
-}
-async function saveData(silent){
-  if(LOCAL_MODE){
-    safeSet(LS_KEY, JSON.stringify(state));
-    if(!silent) toast("已儲存（本機）");
-    return;
-  }
-  if(!isAdmin) return;       // 訪客唔會 save 共用資料
-  try{
-    await fb.dbMod.setDoc(fb.ref, state);
-    if(!silent) toast("已儲存");
-  }catch(e){
-    console.warn("save fail", e);
-    toast("儲存失敗，請檢查權限");
-  }
-}
-
-/* 實時同步：其他人（或你另一部裝置）改咗嘢，即刻反映。
-   編輯 / 拖曳期間會暫存，完成後先套用，避免打斷你。 */
-function startRealtime(){
-  if(LOCAL_MODE) return;
-  fb.dbMod.onSnapshot(fb.ref, snap=>{
-    if(!snap.exists()) return;
-    if(snap.metadata.hasPendingWrites) return;      // 忽略自己嘅寫入回音
-    const incoming = snap.data();
-    if(JSON.stringify(incoming) === JSON.stringify(state)) return;
-    if(editing || isDragging){ pendingRemote = incoming; return; }
-    state = incoming; render();
-  }, err=> console.warn("realtime", err));
-}
-function applyPendingRemote(){
-  if(pendingRemote){ state = pendingRemote; pendingRemote = null; render(); }
-}
-
-/* ============================================================
-   4) 畫面渲染
-   ============================================================ */
-const board = document.getElementById("board");
-const headingEl = document.getElementById("heading");
-
-function orderedCategories(){
-  // 「未分類」永遠排最底
-  const arr = state.categories.slice();
-  arr.sort((a,b)=>{
-    const au=a.isUncat?1:0, bu=b.isUncat?1:0;
-    return au-bu;
-  });
-  return arr;
-}
-
-function matches(card, q){
-  if(!q) return true;
-  const s=(card.title+" "+card.description+" "+(card.url||"")).toLowerCase();
-  return s.includes(q);
-}
-
-function render(){
-  // 標題
-  headingEl.textContent = state.title || "Overview";
-  document.title = state.title || "Overview";
-
-  // 版面 class
-  document.body.classList.toggle("admin", canEdit());
-  applyLayout();
-
-  destroySortables();
-  board.innerHTML = "";
-
-  const q = searchQuery.trim().toLowerCase();
-  const cats = orderedCategories();
-
-  // 搜尋時：只顯示有配對卡片嘅分類，並強制展開
-  let anyShown = false;
-
-  cats.forEach(cat=>{
-    const visibleCards = cat.cards.filter(c=>matches(c,q));
-    if(q && visibleCards.length===0) return; // 搜尋時隱藏無配對分類
-    if(cat.isUncat && cat.cards.length===0 && !q) return; // 空「未分類」唔顯示
-
-    anyShown = true;
-    board.appendChild(buildCategory(cat, visibleCards, q));
-  });
-
-  if(!anyShown){
-    const d=document.createElement("div");
-    d.className="empty";
-    d.textContent = q ? "搵唔到相符嘅卡片。" : (canEdit() ? "仲未有分類，撳右上角「＋ 分類」開始。" : "暫時未有內容。");
-    board.appendChild(d);
+  function setReadState(key, value) {
+    localStorage.setItem(STORAGE_PREFIX + key, value ? '1' : '0');
   }
 
-  if(canEdit() && !q) initSortables();
-}
-
-function buildCategory(cat, visibleCards, q){
-  const collapsed = q ? false : effectiveCollapsed(cat);
-  const wrap=document.createElement("section");
-  wrap.className="cat"+(collapsed?" collapsed":"");
-  wrap.dataset.id=cat.id;
-
-  const textInk = darken(cat.color, 0.55);
-
-  wrap.innerHTML = `
-    <div class="cat-head" style="background:${cat.color}">
-      <span class="icon-btn drag-handle cat-handle admin-only" title="拖曳排序分類">⋮⋮</span>
-      <span class="cat-color" style="background:${cat.color}"></span>
-      <span class="cat-name" style="color:${textInk}" data-role="cat-name">${escapeHtml(cat.name)}</span>
-      <span class="cat-count" style="color:${textInk}">${cat.cards.length}</span>
-      <span class="cat-tools">
-        <input type="color" class="swatch admin-only" value="${toHexInput(cat.color)}" title="更改分類顏色" data-role="cat-color" />
-        ${cat.isUncat ? "" : `<button class="icon-btn admin-only" title="刪除分類" data-role="cat-del">🗑</button>`}
-        <button class="icon-btn" title="展開 / 收起" data-role="collapse"><span class="chev">▾</span></button>
-      </span>
-    </div>
-    <div class="cards" data-cat="${cat.id}"></div>
-    <div class="cat-foot"><button class="add-card" data-role="add-card">＋ 新增卡片</button></div>
-  `;
-
-  const cardsEl = wrap.querySelector(".cards");
-  visibleCards.forEach(card=>{
-    cardsEl.appendChild(buildCard(card, cat));
-  });
-
-  return wrap;
-}
-
-function buildCard(card, cat){
-  const el=document.createElement("div");
-  el.className="card";
-  el.dataset.id=card.id;
-  el.style.background=cat.color;
-
-  const internal = isInternalLink(card.url);
-  el.innerHTML = `
-    <span class="icon-btn c-handle admin-only" title="拖曳移動 / 換分類">⋮⋮</span>
-    <button class="c-del admin-only" title="刪除卡片" data-role="card-del">✕</button>
-    <div class="c-titlerow">
-      ${internal ? `<span class="c-badge">子頁面</span>` : ""}
-      <span class="c-title" data-role="card-title">${escapeHtml(card.title||"")}</span>
-    </div>
-    <div class="c-desc" data-role="card-desc">${escapeHtml(card.description||"")}</div>
-    <input class="c-url admin-only" type="text" placeholder="貼上網址 https://… 或 pages/xxx.html" value="${escapeAttr(card.url||"")}" data-role="card-url" />
-    <div class="c-actions admin-only">
-      <button class="mini" data-role="card-subpage" title="建立一個具備卡片功能嘅子頁面，並自動連結到呢張卡片">🗂 建立子頁面</button>
-      ${card.url ? `<button class="mini" data-role="card-open">${internal ? "進入 →" : "開啟 ↗"}</button>` : ""}
-    </div>
-    <div class="card-hint">雙擊可改內容 · 訪客撳卡片會開啟網址</div>
-  `;
-  return el;
-}
-
-function isInternalLink(url){ return !!url && url.startsWith("?board="); }
-function escapeHtml(s){return (s||"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
-function escapeAttr(s){return (s||"").replace(/"/g,"&quot;")}
-function toHexInput(c){ return /^#([0-9a-f]{6})$/i.test(c)? c : "#dddddd"; }
-
-/* ============================================================
-   5) 版面 / 搜尋 / Toast
-   ============================================================ */
-const layoutBtn=document.getElementById("layoutBtn");
-function isMobile(){ return window.innerWidth < 768; }
-function applyLayout(){
-  const mobile = isMobile();
-  const forceSingle = mobile && !forceDoubleMobile;
-  const eff = forceSingle ? "single" : layout;
-  board.classList.toggle("double", eff==="double");
-  board.classList.toggle("single", eff==="single");
-  board.classList.toggle("force-double", eff==="double");
-  layoutBtn.style.display = forceSingle ? "none" : "inline-flex";
-  layoutBtn.textContent = layout==="double" ? "▥▥ 雙排" : "▤ 單排";
-}
-layoutBtn.addEventListener("click", ()=>{
-  layout = layout==="double" ? "single" : "double";
-  safeSet("overview_layout", layout);
-  applyLayout();
-});
-window.addEventListener("resize", applyLayout);
-
-let toastTimer=null;
-function toast(msg="已儲存"){
-  const t=document.getElementById("toast");
-  t.textContent=msg; t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove("show"),1500);
-}
-
-/* 搜尋 UI */
-const searchWrap=document.getElementById("searchWrap");
-const searchInput=document.getElementById("search");
-const searchToggle=document.getElementById("searchToggle");
-function openSearch(){ searchWrap.classList.add("on"); searchInput.focus(); searchInput.select(); }
-function closeSearch(){ searchWrap.classList.remove("on"); searchQuery=""; searchInput.value=""; render(); }
-searchToggle.addEventListener("click", ()=> searchWrap.classList.contains("on")?closeSearch():openSearch());
-searchInput.addEventListener("input", ()=>{ searchQuery=searchInput.value; render(); });
-searchInput.addEventListener("keydown", e=>{ if(e.key==="Escape") closeSearch(); });
-
-// 攔截原生 Ctrl/⌘+F，改用自製搜尋
-window.addEventListener("keydown", e=>{
-  if((e.ctrlKey||e.metaKey) && (e.key==="f"||e.key==="F")){
-    e.preventDefault();
-    openSearch();
-  }
-});
-
-/* ============================================================
-   6) Drag and drop（SortableJS）
-   ============================================================ */
-function destroySortables(){ while(sortables.length){ try{sortables.pop().destroy()}catch(e){} } }
-function initSortables(){
-  // 分類排序（拖 head 上下，卡片跟住整塊移動）
-  sortables.push(new Sortable(board,{
-    animation:150, handle:".cat-handle", draggable:".cat",
-    ghostClass:"sortable-ghost", chosenClass:"sortable-chosen",
-    onStart:()=>{ isDragging=true; },
-    onEnd:()=>{ isDragging=false; syncOrderFromDOM(); save(); applyPendingRemote(); }
-  }));
-  // 卡片排序 / 跨分類拖曳
-  board.querySelectorAll(".cards").forEach(el=>{
-    sortables.push(new Sortable(el,{
-      group:"cards", animation:150, handle:".c-handle", draggable:".card",
-      ghostClass:"sortable-ghost", chosenClass:"sortable-chosen",
-      onStart:()=>{ isDragging=true; },
-      onEnd:()=>{ isDragging=false; syncOrderFromDOM(); render(); save(); } // render 令卡片顏色跟返新分類
-    }));
-  });
-}
-
-// 由 DOM 現時次序，重建 state
-function syncOrderFromDOM(){
-  const cardById={};
-  state.categories.forEach(c=>c.cards.forEach(cd=>cardById[cd.id]=cd));
-  const catById={};
-  state.categories.forEach(c=>catById[c.id]=c);
-
-  const newCats=[];
-  board.querySelectorAll(".cat").forEach(catEl=>{
-    const cat=catById[catEl.dataset.id];
-    if(!cat) return;
-    const newCards=[];
-    catEl.querySelectorAll(".card").forEach(cardEl=>{
-      const cd=cardById[cardEl.dataset.id];
-      if(cd) newCards.push(cd);
+  // 載入時還原 checkbox 狀態
+  function restoreReadStates() {
+    document.querySelectorAll('.read-checkbox').forEach(cb => {
+      cb.checked = getReadState(cb.dataset.key);
     });
-    cat.cards=newCards;
-    newCats.push(cat);
-  });
-  // 保留冇喺 DOM 出現嘅分類（例如搜尋隱藏咗嘅，通常唔會 drag，穩陣起見補返）
-  state.categories.forEach(c=>{ if(!newCats.includes(c)) newCats.push(c); });
-  state.categories=newCats;
-}
-
-/* ============================================================
-   7) 事件（用委派處理全部互動）
-   ============================================================ */
-board.addEventListener("click", e=>{
-  const catEl=e.target.closest(".cat");
-  const cardEl=e.target.closest(".card");
-  const role=e.target.closest("[data-role]")?.dataset.role;
-
-  // 訪客撳卡片 → 開啟網址
-  if(cardEl && !canEdit()){
-    const card=findCard(cardEl.dataset.id);
-    if(card && card.url){ openCardUrl(card.url); }
-    return;
+    updateProgressDisplay();
   }
 
-  if(!role) return;
-  if(role==="collapse"){
-    const cat=findCat(catEl.dataset.id);
-    const next = !effectiveCollapsed(cat);
-    collapseMemory[cat.id] = next;          // 每部瀏覽器記住（登出後都記得）
-    saveCollapseMemory();
-    if(canEdit()){ cat.collapsed = next; save(); }  // admin 順便更新畀新訪客嘅預設
-    render();
+  function saveReadState(checkbox) {
+    setReadState(checkbox.dataset.key, checkbox.checked);
+    updateProgressDisplay();
   }
-  else if(role==="add-card" && canEdit()){
-    const cat=findCat(catEl.dataset.id);
-    cat.cards.push({id:uid(), title:"新卡片", description:"描述…", url:""});
-    render(); save();
-  }
-  else if(role==="card-del" && canEdit()){
-    openCardDeleteModal(catEl.dataset.id, cardEl.dataset.id);   // 彈確認框
-  }
-  else if(role==="card-subpage" && canEdit()){
-    makeSubpage(cardEl.dataset.id);
-  }
-  else if(role==="card-open" && canEdit()){
-    const card=findCard(cardEl.dataset.id);
-    if(card && card.url) openCardUrl(card.url);
-  }
-  else if(role==="cat-del" && canEdit()){
-    openDeleteModal(catEl.dataset.id);
-  }
-});
 
-function openCardUrl(url){
-  if(isInternalLink(url)){ location.href = "index.html" + url; }  // 子頁面：同頁跳轉
-  else{ window.open(url, "_blank", "noopener"); }                 // 外部：新分頁
-}
-function makeSubpage(cardId){
-  const card=findCard(cardId); if(!card) return;
-  if(card.url && !confirm("呢張卡片已經有網址，確定覆蓋成新子頁面？")) return;
-  askName("建立子頁面", "改個名（可留空，系統會自動命名）。呢個名亦會用喺網址。", card.title==="新卡片"?"":card.title, (name)=>{
-    const title = (name||"").trim() || "新頁面";
-    const id = uniqueBoardId(name ? slugify(name) : uid());
-    card.url = "?board=" + id;
-    if(!card.title || card.title==="新卡片") card.title = title;
-    regUpsert(id, title);
-    saveRegistry();
-    render(); save();
-    toast("已建立子頁面，撳「進入 →」開始編輯");
-  });
-}
-
-// 雙擊 → 進入編輯
-board.addEventListener("dblclick", e=>{
-  if(!canEdit()) return;
-  const t=e.target.closest('[data-role="card-title"],[data-role="card-desc"],[data-role="cat-name"]');
-  if(!t) return;
-  makeEditable(t);
-});
-
-// 顏色即時更新（分類 + 其下所有卡片）
-board.addEventListener("input", e=>{
-  if(e.target.dataset.role==="cat-color" && canEdit()){
-    const catEl=e.target.closest(".cat");
-    const cat=findCat(catEl.dataset.id);
-    cat.color=e.target.value;
-    render();
+  function updateProgressDisplay() {
+    let count = 0;
+    CHAPTER_KEYS.forEach(k => { if (getReadState(k)) count++; });
+    document.getElementById('progress-text').textContent = count + ' / ' + CHAPTER_KEYS.length;
   }
-});
-board.addEventListener("change", e=>{
-  if(e.target.dataset.role==="cat-color" && canEdit()){ save(); }        // 放開色板 → 儲存
-  if(e.target.dataset.role==="card-url" && canEdit()){                    // URL 改完
-    const card=findCard(e.target.closest(".card").dataset.id);
-    if(card){ card.url=e.target.value.trim(); save(); }
-  }
-});
-// URL 點去空白處（blur）都存
-board.addEventListener("focusout", e=>{
-  if(e.target.dataset.role==="card-url" && canEdit()){
-    const card=findCard(e.target.closest(".card").dataset.id);
-    if(card){ card.url=e.target.value.trim(); save(); }
-  }
-});
 
-function makeEditable(el){
-  editing=true;
-  el.setAttribute("contenteditable","true");
-  el.focus();
-  // 游標放到最後
-  const r=document.createRange(); r.selectNodeContents(el); r.collapse(false);
-  const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  function resetProgress() {
+    if (!confirm('確定要清除所有已讀記錄嗎？')) return;
+    CHAPTER_KEYS.forEach(k => localStorage.removeItem(STORAGE_PREFIX + k));
+    document.querySelectorAll('.read-checkbox').forEach(cb => cb.checked = false);
+    updateProgressDisplay();
+  }
 
-  const commit=()=>{
-    el.removeAttribute("contenteditable");
-    el.removeEventListener("blur", commit);
-    el.removeEventListener("keydown", onKey);
-    editing=false;
-    const val=el.textContent.trim();
-    const role=el.dataset.role;
-    if(role==="card-title" || role==="card-desc"){
-      const card=findCard(el.closest(".card").dataset.id);
-      if(card){ if(role==="card-title") card.title=val; else card.description=val; }
-    } else if(role==="cat-name"){
-      const cat=findCat(el.closest(".cat").dataset.id);
-      if(cat) cat.name=val;
+  // ===== 內容載入（iframe 動態切換）=====
+  function loadContent(navItem) {
+    // 切換 active 樣式
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    navItem.classList.add('active');
+
+    // 顯示 loading 並切換 iframe src
+    const target = navItem.dataset.target;
+    if (!target) return;
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('content-frame').src = target;
+
+    // 手機版自動收起側欄
+    if (window.innerWidth <= 768) {
+      document.getElementById('sidebar').classList.remove('open');
     }
-    save();
-    render();
-  };
-  const onKey=(ev)=>{
-    if(ev.key==="Enter" && el.dataset.role!=="card-desc"){ ev.preventDefault(); el.blur(); }
-    if(ev.key==="Escape"){ el.blur(); }
-  };
-  el.addEventListener("blur", commit);
-  el.addEventListener("keydown", onKey);
-}
-
-/* 標題編輯（雙擊） */
-headingEl.addEventListener("dblclick", ()=>{
-  if(!canEdit()) return;
-  editing=true;
-  headingEl.setAttribute("contenteditable","true");
-  headingEl.focus();
-  const r=document.createRange(); r.selectNodeContents(headingEl); r.collapse(false);
-  const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
-  const commit=()=>{
-    headingEl.removeAttribute("contenteditable");
-    headingEl.removeEventListener("blur",commit);
-    editing=false;
-    state.title=headingEl.textContent.trim()||"Overview";
-    document.title=state.title;
-    if(isSubBoard){ regUpsert(boardId, state.title); saveRegistry(); }
-    save();
-  };
-  headingEl.addEventListener("blur", commit);
-  headingEl.addEventListener("keydown", ev=>{ if(ev.key==="Enter"||ev.key==="Escape"){ev.preventDefault(); headingEl.blur();} });
-});
-
-function findCat(id){ return state.categories.find(c=>c.id===id); }
-function findCard(id){
-  for(const c of state.categories){ const f=c.cards.find(x=>x.id===id); if(f) return f; }
-  return null;
-}
-
-/* ---------- 新增分類 ---------- */
-document.getElementById("addCatBtn").addEventListener("click", ()=>{
-  if(!canEdit()) return;
-  // 加喺「未分類」之前
-  const cat={id:uid(), name:"新分類", color:randomPastel(), collapsed:false, cards:[]};
-  const uncatIdx=state.categories.findIndex(c=>c.isUncat);
-  if(uncatIdx===-1) state.categories.push(cat);
-  else state.categories.splice(uncatIdx,0,cat);
-  render(); save();
-});
-
-/* ============================================================
-   命名 / 改名 modal（可重用）
-   ============================================================ */
-const nameModal=document.getElementById("nameModal");
-const nameInput=document.getElementById("nameInput");
-let nameCb=null;
-function askName(title, hint, defVal, cb){
-  document.getElementById("nameTitle").textContent=title;
-  document.getElementById("nameHint").textContent=hint||"";
-  nameInput.value=defVal||"";
-  nameCb=cb;
-  nameModal.classList.add("on");
-  setTimeout(()=>{ nameInput.focus(); nameInput.select(); },30);
-}
-function closeName(){ nameModal.classList.remove("on"); nameCb=null; }
-document.getElementById("nameOk").addEventListener("click", ()=>{
-  const v=nameInput.value; const cb=nameCb; closeName(); if(cb) cb(v);
-});
-document.getElementById("nameCancel").addEventListener("click", closeName);
-nameModal.addEventListener("click", e=>{ if(e.target===nameModal) closeName(); });
-nameInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){ e.preventDefault(); document.getElementById("nameOk").click(); }
-  if(e.key==="Escape"){ closeName(); }
-});
-
-/* ============================================================
-   子頁面總覽 dashboard（管理員專用）
-   ============================================================ */
-const pagesModal=document.getElementById("pagesModal");
-const pagesList=document.getElementById("pagesList");
-document.getElementById("pagesBtn").addEventListener("click", async ()=>{
-  if(!isAdmin) return;
-  await loadRegistry();
-  renderPagesList();
-  pagesModal.classList.add("on");
-});
-document.getElementById("pagesClose").addEventListener("click", ()=> pagesModal.classList.remove("on"));
-pagesModal.addEventListener("click", e=>{ if(e.target===pagesModal) pagesModal.classList.remove("on"); });
-
-function renderPagesList(){
-  pagesList.innerHTML="";
-  if(!registry.pages.length){
-    pagesList.innerHTML=`<div class="pages-empty">仲未有子頁面。喺任何卡片撳「🗂 建立子頁面」就會加入呢度。</div>`;
-    return;
   }
-  registry.pages.forEach(p=>{
-    const row=document.createElement("div");
-    row.className="page-row";
-    row.innerHTML=`
-      <div>
-        <div class="p-name">${escapeHtml(p.title||"未命名")}</div>
-        <div class="p-id">?board=${escapeHtml(p.id)}</div>
-      </div>
-      <div class="p-spacer"></div>
-      <button class="mini" data-act="enter">進入 →</button>
-      <button class="mini" data-act="rename">改名</button>
-      <button class="mini danger" data-act="del">刪除</button>
-    `;
-    row.querySelector('[data-act="enter"]').onclick=()=>{ location.href="index.html?board="+p.id; };
-    row.querySelector('[data-act="rename"]').onclick=()=> renamePage(p);
-    row.querySelector('[data-act="del"]').onclick=()=> deletePage(p);
-    pagesList.appendChild(row);
-  });
-}
-function renamePage(p){
-  askName("改名子頁面", "呢個名會同時改到子頁面自己嘅標題。", p.title, async (name)=>{
-    const t=(name||"").trim(); if(!t) return;
-    p.title=t; regUpsert(p.id, t); await saveRegistry();
-    try{
-      if(LOCAL_MODE){
-        const k="overview_data_"+p.id;
-        let d={}; try{ d=JSON.parse(safeGet(k))||emptyBoard(); }catch(e){ d=emptyBoard(); }
-        d.title=t; safeSet(k, JSON.stringify(d));
-      }else{
-        const s=await fb.dbMod.getDoc(fb.boardRef(p.id));
-        const d=s.exists()?s.data():emptyBoard(); d.title=t;
-        await fb.dbMod.setDoc(fb.boardRef(p.id), d);
-      }
-    }catch(e){ console.warn("rename sync", e); }
-    renderPagesList(); toast("已改名");
-  });
-}
-function deletePage(p){
-  if(!confirm(`刪除子頁面「${p.title||p.id}」？\n入面所有卡片會一齊消失（連去佢嘅卡片會變成死連結，要自己再刪）。`)) return;
-  (async ()=>{
-    regRemove(p.id); await saveRegistry();
-    try{
-      if(LOCAL_MODE){ localStorage.removeItem("overview_data_"+p.id); }
-      else{ await fb.dbMod.deleteDoc(fb.boardRef(p.id)); }
-    }catch(e){ console.warn("del page", e); }
-    renderPagesList(); toast("已刪除子頁面");
-  })();
-}
 
-/* ============================================================
-   使用說明（? icon）— 訪客 / 管理員唔同版本
-   ============================================================ */
-const helpModal=document.getElementById("helpModal");
-const helpBtn=document.getElementById("helpBtn");
-const forceDoubleChk=document.getElementById("forceDoubleChk");
-forceDoubleChk.checked=forceDoubleMobile;
-forceDoubleChk.addEventListener("change", ()=>{
-  forceDoubleMobile=forceDoubleChk.checked;
-  safeSet("overview_force_double", forceDoubleMobile?"1":"0");
-  applyLayout();
-});
-const HELP_GUEST = `
-  <p>歡迎！呢版係一個連結總覽板。你可以咁樣用：</p>
-  <h4>睇 / 搵</h4>
-  <ul>
-    <li><b>撳卡片</b> → 直接去到嗰個連結。</li>
-    <li><b>撳分類個 ▾</b> → 展開或收起，慳位。</li>
-    <li><b>搜尋</b>：撳右上 🔍 或者 <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>F</kbd>，收埋咗嘅卡片都搵得到。</li>
-    <li><b>單排 / 雙排</b>：撳「▤ 單排」切換，雙排一次過睇多啲（手機預設單排）。</li>
-  </ul>
-  <h4>想編輯？</h4>
-  <ul><li>要有管理員 Gmail 先可以改嘢。撳右上「Google 登入」用管理員帳號登入。</li></ul>
-`;
-const HELP_ADMIN = `
-  <p>你已登入做管理員，改乜都會<b>自動儲存</b>（右下角會閃「已儲存」）。</p>
-  <h4>標題 / 卡片</h4>
-  <ul>
-    <li><b>雙擊</b>頂部標題、卡片標題或描述 → 即場改字，撳去空白處就存。</li>
-    <li>卡片入面有<b>網址欄</b>：貼 <kbd>https://…</kbd> 或站內檔案 <kbd>pages/xxx.html</kbd>。</li>
-    <li><b>＋ 新增卡片</b>喺分類底；卡片右上 <b>✕</b> 刪除（會問你確認）。</li>
-    <li>拖卡片左上 <b>⋮⋮</b> → 上下移，或者拖去<b>另一個分類</b>（顏色自動跟新分類）。</li>
-  </ul>
-  <h4>分類</h4>
-  <ul>
-    <li><b>＋ 分類</b>新增；分類標題有<b>色板</b>可改色（卡片跟大分類色，淺色系）。</li>
-    <li>拖分類個 <b>⋮⋮</b> → 排上下，入面卡片跟住郁。</li>
-    <li>刪分類會問你：卡片一齊刪，定係留返去「未分類」。「未分類」永遠喺最底，冇得刪。</li>
-  </ul>
-  <h4>子頁面（好正！）</h4>
-  <ul>
-    <li>任何卡片撳 <b>🗂 建立子頁面</b> → 開一個一模一樣、有卡片功能嘅新頁，可以自己改名。</li>
-    <li>撳 <b>進入 →</b> 入去編輯；左上 <b>←</b> 返主頁。</li>
-    <li>右上 <b>🗂 頁面</b> = 所有子頁面總覽，一撳就跳入去（管理員專用）。</li>
-  </ul>
-  <h4>訪客預覽</h4>
-  <ul>
-    <li>撳右上 <b>👁 訪客預覽</b> → 唔使登出都可以扮訪客，撳卡片會直接開網址、編輯掣全部收起。</li>
-    <li>想改返嘢，撳返轉頭嗰粒 <b>✏️ 返回編輯</b>（藍色掣）即可。右上會顯示「管理員（預覽中）」。</li>
-  </ul>
-  <h4>備份</h4>
-  <ul><li><b>匯出</b>成 JSON 存落電腦；<b>匯入</b>可覆蓋或合併。</li></ul>
-`;
-function openHelp(){
-  document.getElementById("helpTitle").textContent = canEdit() ? "使用說明（管理員）" : "使用說明（訪客）";
-  document.getElementById("helpBody").innerHTML = canEdit() ? HELP_ADMIN : HELP_GUEST;
-  forceDoubleChk.checked = forceDoubleMobile;
-  helpModal.classList.add("on");
-}
-helpBtn.addEventListener("click", openHelp);
-document.getElementById("helpClose").addEventListener("click", ()=> helpModal.classList.remove("on"));
-helpModal.addEventListener("click", e=>{ if(e.target===helpModal) helpModal.classList.remove("on"); });
-
-/* ============================================================
-   刪除卡片 modal（確認先刪，防止手殘）
-   ============================================================ */
-let cardDelTarget=null;
-const cardDelModal=document.getElementById("cardDelModal");
-function openCardDeleteModal(catId, cardId){
-  const card=findCard(cardId); if(!card) return;
-  cardDelTarget={catId, cardId};
-  document.getElementById("cardDelName").textContent = card.title || "（未命名卡片）";
-  cardDelModal.classList.add("on");
-}
-function closeCardDel(){ cardDelModal.classList.remove("on"); cardDelTarget=null; }
-document.getElementById("cardDelCancel").addEventListener("click", closeCardDel);
-cardDelModal.addEventListener("click", e=>{ if(e.target===cardDelModal) closeCardDel(); });
-document.getElementById("cardDelConfirm").addEventListener("click", ()=>{
-  if(cardDelTarget){
-    const cat=findCat(cardDelTarget.catId);
-    if(cat) cat.cards=cat.cards.filter(c=>c.id!==cardDelTarget.cardId);
-    render(); save();
+  // iframe 載入完成後套用當前 Highlight 狀態
+  function onFrameLoad() {
+    document.getElementById('loading').classList.remove('show');
+    applyHighlightState();
   }
-  closeCardDel();
-});
 
-/* ============================================================
-   8) 刪除分類 modal
-   ============================================================ */
-let delTargetId=null;
-const delModal=document.getElementById("delModal");
-function openDeleteModal(id){
-  const cat=findCat(id); if(!cat || cat.isUncat) return;
-  delTargetId=id;
-  document.getElementById("delCatName").textContent=cat.name;
-  delModal.classList.add("on");
-}
-function closeDelModal(){ delModal.classList.remove("on"); delTargetId=null; }
-document.getElementById("delCancel").addEventListener("click", closeDelModal);
-delModal.addEventListener("click", e=>{ if(e.target===delModal) closeDelModal(); });
+  // ===== Highlight 開關掣（postMessage 通知 iframe）=====
+  let highlightOn = true;
 
-document.getElementById("delAllCards").addEventListener("click", ()=>{
-  state.categories=state.categories.filter(c=>c.id!==delTargetId);
-  closeDelModal(); render(); save();
-});
-document.getElementById("delKeepCards").addEventListener("click", ()=>{
-  const cat=findCat(delTargetId);
-  const orphans=cat.cards.slice();
-  state.categories=state.categories.filter(c=>c.id!==delTargetId);
-  moveToUncategorized(orphans);
-  closeDelModal(); render(); save();
-});
-function moveToUncategorized(cards){
-  let uncat=state.categories.find(c=>c.isUncat);
-  if(!uncat){
-    uncat={id:uid(), name:"未分類", color:randomPastel(), collapsed:false, isUncat:true, cards:[]};
-    state.categories.push(uncat);
+  function toggleHighlight() {
+    highlightOn = !highlightOn;
+    updateHighlightButton();
+    applyHighlightState();
   }
-  uncat.cards.push(...cards);
-}
 
-/* ============================================================
-   9) 匯出 / 匯入 JSON
-   ============================================================ */
-document.getElementById("exportBtn").addEventListener("click", ()=>{
-  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=(state.title||"overview").replace(/\s+/g,"_")+".json";
-  a.click(); URL.revokeObjectURL(a.href);
-});
-
-const importModal=document.getElementById("importModal");
-const importFile=document.getElementById("importFile");
-let pendingImport=null;
-document.getElementById("importBtn").addEventListener("click", ()=> importFile.click());
-importFile.addEventListener("change", ()=>{
-  const f=importFile.files[0]; if(!f) return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try{
-      const data=JSON.parse(reader.result);
-      if(!data.categories) throw new Error("格式不符");
-      pendingImport=data;
-      importModal.classList.add("on");
-    }catch(e){ toast("JSON 格式錯誤"); }
-    importFile.value="";
-  };
-  reader.readAsText(f);
-});
-function closeImport(){ importModal.classList.remove("on"); pendingImport=null; }
-document.getElementById("importCancel").addEventListener("click", closeImport);
-importModal.addEventListener("click", e=>{ if(e.target===importModal) closeImport(); });
-
-document.getElementById("importReplace").addEventListener("click", ()=>{
-  if(pendingImport){ state=pendingImport; render(); save(); toast("已覆蓋匯入"); }
-  closeImport();
-});
-document.getElementById("importMerge").addEventListener("click", ()=>{
-  if(pendingImport && Array.isArray(pendingImport.categories)){
-    // 重新編 id，避免撞 key
-    pendingImport.categories.forEach(cat=>{
-      const nc={...cat, id:uid(), isUncat:false, cards:(cat.cards||[]).map(cd=>({...cd,id:uid()}))};
-      const uncatIdx=state.categories.findIndex(c=>c.isUncat);
-      if(uncatIdx===-1) state.categories.push(nc);
-      else state.categories.splice(uncatIdx,0,nc);
-    });
-    render(); save(); toast("已合併匯入");
+  function updateHighlightButton() {
+    const btn = document.getElementById('highlight-toggle');
+    const label = document.getElementById('highlight-label');
+    if (highlightOn) {
+      btn.classList.remove('off');
+      label.textContent = 'Highlight：開';
+    } else {
+      btn.classList.add('off');
+      label.textContent = 'Highlight：關';
+    }
   }
-  closeImport();
-});
 
-/* ============================================================
-   10) 登入 / 權限
-   ============================================================ */
-const loginBtn=document.getElementById("loginBtn");
-const logoutBtn=document.getElementById("logoutBtn");
-const whoEl=document.getElementById("who");
-const modeNote=document.getElementById("modeNote");
-
-const previewBtn=document.getElementById("previewBtn");
-function updatePreviewBtn(){
-  previewBtn.style.display = isAdmin ? "inline-flex" : "none";
-  previewBtn.textContent = previewMode ? "✏️ 返回編輯" : "👁 訪客預覽";
-  // 預覽時用實色掣（藍底白字），編輯時用淡色掣；唔可以兩個 class 疊住，
-  // 否則 .ghost 會蓋走底色淨返白字，變成睇唔到。
-  previewBtn.classList.toggle("primary", previewMode);
-  previewBtn.classList.toggle("ghost", !previewMode);
-}
-previewBtn.addEventListener("click", ()=>{
-  if(!isAdmin) return;
-  previewMode = !previewMode;
-  paintAuthUI();   // 同時更新掣同右上「管理員（預覽中）」標示
-  render();
-  toast(previewMode ? "訪客預覽中，撳卡片會開網址" : "已返回編輯模式");
-});
-
-function paintAuthUI(){
-  if(!isAdmin) previewMode=false;
-  updatePreviewBtn();
-  if(currentUser){
-    loginBtn.style.display="none";
-    logoutBtn.style.display="inline-flex";
-    const tag = !isAdmin ? " · 訪客" : (previewMode ? " · 管理員（預覽中）" : " · 管理員");
-    whoEl.innerHTML = (currentUser.photo?`<img src="${currentUser.photo}" alt="">`:"") +
-      `<span class="email">${currentUser.email||""}${tag}</span>`;
-  }else{
-    loginBtn.style.display="inline-flex";
-    logoutBtn.style.display="none";
-    whoEl.innerHTML="";
+  function applyHighlightState() {
+    const iframe = document.getElementById('content-frame');
+    try {
+      const win = iframe.contentWindow;
+      if (!win) return;
+      // 透過 postMessage 通知 iframe 內部切換 class（避開 local file:// 嘅 CORS 限制）
+      // 章節 HTML 內已由 inject_highlight_listener.py 插入對應嘅 message listener
+      win.postMessage({
+        type: 'toggle-highlight',
+        hide: !highlightOn
+      }, '*');
+    } catch (e) {
+      console.warn('無法發送 postMessage 到 iframe：', e.message);
+    }
   }
-}
 
-if(LOCAL_MODE){
-  modeNote.classList.add("on");
-  loginBtn.textContent="示範登入（本機管理員）";
-  loginBtn.addEventListener("click", async ()=>{
-    currentUser={email:"demo@local", photo:""}; isAdmin=true;
-    paintAuthUI(); render();
-    if(isSubBoard){
-      await loadRegistry();
-      if(!registry.pages.find(p=>p.id===boardId)){ regUpsert(boardId, state.title||boardId); saveRegistry(); }
+  // ===== 手機側欄開關 =====
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // ===== 鍵盤快捷鍵：H 切換 Highlight =====
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'h' || e.key === 'H') {
+      // 避免喺輸入框觸發
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      toggleHighlight();
     }
   });
-  logoutBtn.addEventListener("click", ()=>{
-    currentUser=null; isAdmin=false; paintAuthUI(); render();
-  });
-}else{
-  const {authMod, auth}=fb;
-  const provider = ()=> new authMod.GoogleAuthProvider();
-  loginBtn.addEventListener("click", async ()=>{
-    try{
-      await authMod.signInWithPopup(auth, provider());
-    }catch(e){
-      console.warn("login error:", e.code, e.message);
-      if(e.code==="auth/popup-blocked" || e.code==="auth/popup-closed-by-user" ||
-         e.code==="auth/cancelled-popup-request" || e.code==="auth/internal-error" ||
-         e.code==="auth/operation-not-supported-in-this-environment"){
-        try{ await authMod.signInWithRedirect(auth, provider()); return; }catch(e2){ console.warn(e2); }
-      }
-      toast("登入失敗：" + (e.code||e.message||""));
-    }
-  });
-  logoutBtn.addEventListener("click", ()=> authMod.signOut(auth));
-  authMod.getRedirectResult(auth).catch(e=> console.warn("redirect result:", e.code));
-  authMod.onAuthStateChanged(auth, async user=>{
-    if(user){
-      currentUser={email:user.email, photo:user.photoURL};
-      isAdmin=ADMIN_EMAILS.map(x=>x.toLowerCase()).includes((user.email||"").toLowerCase());
-      if(!isAdmin){
-        // 診斷：已登入但唔喺管理員名單 → 會被當訪客
-        console.warn("已登入：" + user.email + "，但唔喺 ADMIN_EMAILS 名單：", ADMIN_EMAILS);
-        toast("已登入 " + (user.email||"") + "，但唔喺管理員名單");
-      }
-    }else{
-      currentUser=null; isAdmin=false;
-    }
-    paintAuthUI(); render();
-    if(isAdmin && isSubBoard){
-      await loadRegistry();
-      if(!registry.pages.find(p=>p.id===boardId)){ regUpsert(boardId, state.title||boardId); saveRegistry(); }
-    }
-  });
-}
 
-/* ---------- 子頁面「返回」掣 ---------- */
-const backBtn=document.getElementById("backBtn");
-if(isSubBoard){
-  backBtn.style.display="inline-flex";
-  backBtn.addEventListener("click", ()=>{
-    if(history.length>1) history.back();
-    else location.href="index.html";
-  });
-}
-
-/* ============================================================
-   11) 啟動
-   ============================================================ */
-await loadData();
-await loadRegistry();
-paintAuthUI();
-render();
-startRealtime();   // 開啟實時同步
-
+  // ===== 初始化 =====
+  restoreReadStates();
 </script>
+
 </body>
 </html>
