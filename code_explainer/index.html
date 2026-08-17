@@ -645,6 +645,180 @@ mark{background:var(--ochre-soft);color:inherit;padding:0 2px}
 </head>
 <body>
 
+<script type="text/plain" id="exportJs">
+document.querySelectorAll('.h').forEach(function(h){
+  h.onclick = function(){
+    var e = document.getElementById('ex' + h.dataset.t);
+    e.classList.toggle('on'); h.classList.toggle('open');
+  };
+});
+document.querySelectorAll('.cbtn').forEach(function(b){
+  if(!b.dataset.c) return;
+  b.onclick = function(){
+    var c = document.getElementById('cw' + b.dataset.c);
+    c.classList.toggle('on');
+    b.textContent = c.classList.contains('on') ? '收埋原始碼' : '睇原始碼';
+  };
+});
+document.getElementById('f').addEventListener('input', function(e){
+  var q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('.b').forEach(function(b){
+    b.style.display = (!q || b.dataset.hay.indexOf(q) > -1) ? '' : 'none';
+  });
+});
+
+/* ---- 智能搜尋 + 問老師：呢個檔案自己有一套，唔使返去原本個 app ---- */
+var CK = 'ce-export-cfg-v1';
+function $q(id){ return document.getElementById(id); }
+
+if($q('rawjson') && D.report){
+  $q('rawjson').textContent = JSON.stringify(D.report, null, 2);
+  $q('copyJson').onclick = function(){
+    navigator.clipboard.writeText(JSON.stringify(D.report, null, 2));
+    $q('copyJson').textContent = '\u2713 已複製';
+  };
+}
+
+function gcfg(){
+  return { url: $q('cfgUrl').value.trim(), model: $q('cfgModel').value.trim(),
+           key: $q('cfgKey').value.trim(), noThink: $q('cfgThink').checked };
+}
+function scfg(){ try{ localStorage.setItem(CK, JSON.stringify(gcfg())); }catch(e){} }
+(function(){
+  var c = {};
+  try{ c = JSON.parse(localStorage.getItem(CK) || '{}'); }catch(e){}
+  $q('cfgUrl').value   = c.url   || 'https://api.z.ai/api/coding/paas/v4';
+  $q('cfgModel').value = c.model || 'glm-5.3';
+  $q('cfgKey').value   = c.key   || '';
+  $q('cfgThink').checked = c.noThink !== false;
+  ['cfgUrl','cfgModel','cfgKey','cfgThink'].forEach(function(id){
+    $q(id).addEventListener('change', scfg);
+  });
+})();
+
+function endpoint(u){
+  u = (u || '').trim().replace(/\s+/g, '').replace(/\/+$/, '');
+  return /\/chat\/completions$/i.test(u) ? u : u + '/chat/completions';
+}
+function pickText(data){
+  var m = data && data.choices && data.choices[0] && data.choices[0].message;
+  if(!m) return '';
+  var t = m.content;
+  if(Array.isArray(t)) t = t.map(function(x){ return typeof x === 'string' ? x : (x.text || ''); }).join('');
+  if((!t || !String(t).trim()) && m.reasoning_content) t = m.reasoning_content;
+  if(typeof t !== 'string') return '';
+  return t.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+}
+async function callAI(messages){
+  var c = gcfg();
+  if(!c.key || !c.url || !c.model) throw new Error('未填 API 設定（撳上面嗰行展開嚟填）');
+  var body = { model: c.model, messages: messages, stream: false };
+  if(c.noThink) body.thinking = { type: 'disabled' };
+  var res = await fetch(endpoint(c.url), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + c.key },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    var raw = await res.text();
+    throw new Error('HTTP ' + res.status + ' ' + raw.slice(0, 160));
+  }
+  var t = pickText(await res.json());
+  if(!t) throw new Error('個 API 回覆咗但攞唔到內容');
+  return t;
+}
+function md(t){
+  var e = String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  e = e.replace(/`([^`\n]+)`/g, '<code>$1</code>')
+       .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  var out = [], list = null;
+  e.split('\n').forEach(function(line){
+    var x = line.trim();
+    if(!x) return;
+    if(/^[-*\u2022]\s+/.test(x)){
+      list = list || [];
+      list.push('<li>' + x.replace(/^[-*\u2022]\s+/, '') + '</li>');
+    } else {
+      if(list){ out.push('<ul>' + list.join('') + '</ul>'); list = null; }
+      out.push('<p>' + x + '</p>');
+    }
+  });
+  if(list) out.push('<ul>' + list.join('') + '</ul>');
+  return out.join('');
+}
+function jump(i){
+  var el = document.querySelectorAll('.b')[i];
+  if(!el) return;
+  el.style.display = '';
+  var ex = el.querySelector('.ex'); if(ex) ex.classList.add('on');
+  var h = el.querySelector('.h'); if(h) h.classList.add('open');
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+$q('btnFind').onclick = async function(){
+  var q = $q('qx').value.trim();
+  if(!q) return;
+  $q('hitx').innerHTML = '';
+  $q('notex').textContent = '搵緊…';
+  var idx = D.blocks.map(function(b){
+    return '#' + b.i + ' [第' + b.s + '-' + b.e + '行] ' + b.t + ' :: ' + b.d;
+  }).join('\n');
+  try{
+    var out = await callAI([{ role: 'user', content:
+      '以下係一份程式碼講解嘅目錄，每行一格。\n\n' + idx +
+      '\n\n用戶想搵：「' + q + '」\n\n揀出最多 5 格最相關嘅。每格一行，格式：編號 | 一句講點解相關（20字以內）。' +
+      '完全冇相關就淨係答 NONE。唔好寫其他嘢。' }]);
+    if(/^\s*NONE\s*$/i.test(out)){ $q('notex').textContent = '冇搵到相關嘅格。'; return; }
+    var rows = out.split('\n')
+      .map(function(l){ return l.match(/^\s*#?(\d+)\s*[|\uff5c]\s*(.+)$/); })
+      .filter(Boolean)
+      .map(function(m){ return { i: +m[1], why: m[2].trim() }; })
+      .filter(function(r){ return D.blocks[r.i]; });
+    if(!rows.length){ $q('notex').textContent = '模型答咗但認唔到格式，試下換個問法。'; return; }
+    $q('notex').textContent = rows.length + ' 個結果';
+    $q('hitx').innerHTML = rows.map(function(r){
+      var b = D.blocks[r.i];
+      return '<div class="hitx" data-i="' + r.i + '"><span class="w">L' + b.s + '\u2013' + b.e +
+             '</span><strong>' + b.t + '</strong><span class="y">' + r.why + '</span></div>';
+    }).join('');
+    $q('hitx').querySelectorAll('.hitx').forEach(function(h){
+      h.onclick = function(){ jump(+h.dataset.i); };
+    });
+  }catch(err){ $q('notex').textContent = '搜尋失敗：' + err.message; }
+};
+
+var qa = [];
+function drawThread(pending){
+  $q('threadx').innerHTML = qa.map(function(t){
+    return '<div class="tn ' + (t.role === 'user' ? 'q' : 'a') + '"><div class="wh">' +
+      (t.role === 'user' ? '你' : '老師') + '</div><div class="bb">' +
+      (t.role === 'user' ? String(t.content).replace(/</g, '&lt;') : md(t.content)) +
+      '</div></div>';
+  }).join('') +
+  (pending ? '<div class="tn a"><div class="wh">老師</div><div class="bb">' + pending + '</div></div>' : '');
+}
+$q('btnAsk').onclick = async function(){
+  var q = $q('qx').value.trim();
+  if(!q) return;
+  qa.push({ role: 'user', content: q });
+  $q('qx').value = '';
+  drawThread('諗緊…');
+  var ctx = '你係一位好有耐性嘅程式編寫老師，學生完全未寫過程式。\n檔案：' + D.file +
+    '\n\n呢份講解嘅目錄：\n' + D.blocks.map(function(b){
+      return '#' + b.i + ' [第' + b.s + '-' + b.e + '行] ' + b.t + ' :: ' + b.d;
+    }).join('\n') +
+    '\n\n答問題要求：用日常語言；每個術語即場一句人話解釋，可以用比喻；' +
+    '需要就舉個短例子；唔好超過 400 字；用廣東話；直接答，唔好開場白。';
+  try{
+    var ans = await callAI([{ role: 'user', content: ctx }].concat(qa));
+    qa.push({ role: 'assistant', content: ans });
+  }catch(err){
+    qa.push({ role: 'assistant', content: '（出錯：' + err.message + '）' });
+  }
+  drawThread();
+};
+$q('qx').addEventListener('keydown', function(e){ if(e.key === 'Enter') $q('btnFind').click(); });
+</script>
 <div class="drop-veil" id="dropVeil"><div>掉低個檔案就得</div></div>
 <div class="warnbar" id="warnbar"></div>
 
@@ -2435,9 +2609,102 @@ $('clearSearch').onclick = clearSearch;
 /* ============================================================
    11. 匯出：一個獨立、唔使網絡就開得到嘅 HTML
    ============================================================ */
+/* 匯出用嘅報告：同畫面嗰個一樣嘅數字，但要獨立砌一次，
+   因為畫面嗰個係 DOM，唔搬得過去。 */
+function buildReportForExport(){
+  if(!segStats.length) return {html:'', json:null};
+
+  const rows = segStats.map((s, i) => {
+    const u = s.usage || {};
+    const real = typeof u.prompt_tokens === 'number';
+    return {
+      label: s.label || ('第 ' + (i + 1) + ' 段'),
+      range: 'L' + s.seg.start + '–' + s.seg.end,
+      secs: +s.secs.toFixed(1),
+      thinkChars: s.think,
+      outChars: s.out,
+      blocks: s.blocks,
+      inTokens:  real ? u.prompt_tokens : estTokens(s.prompt || ''),
+      outTokens: real ? (u.completion_tokens || 0) : Math.round((s.out + s.think) / 1.5),
+      reasoningTokens: u.completion_tokens_details?.reasoning_tokens || null,
+      tokensAreReal: real
+    };
+  });
+
+  const sum = k => rows.reduce((a, r) => a + (r[k] || 0), 0);
+  const fmtSec = v => v >= 60 ? (Math.floor(v/60) + 'm ' + Math.round(v%60) + 's') : (v.toFixed(1) + 's');
+  const n = v => (v || 0).toLocaleString();
+  const allReal = rows.every(r => r.tokensAreReal);
+  const gaps = findGaps();
+  const missing = gaps.reduce((a, g) => a + (g.end - g.start + 1), 0);
+  const pct = sourceLines.length
+    ? Math.round((sourceLines.length - missing) / sourceLines.length * 100) : 0;
+
+  const json = {
+    file: currentName,
+    exportedAt: new Date().toISOString(),
+    totalLines: sourceLines.length,
+    blocks: allBlocks.length,
+    coveragePercent: pct,
+    uncoveredRanges: gaps.map(g => [g.start, g.end]),
+    totals: {
+      seconds: +sum('secs').toFixed(1),
+      thinkChars: sum('thinkChars'),
+      outChars: sum('outChars'),
+      inTokens: sum('inTokens'),
+      outTokens: sum('outTokens'),
+      tokensAreReal: allReal
+    },
+    passes: rows
+  };
+
+  const html = `<details class="rep"><summary>分析報告 · 用咗 ${fmtSec(sum('secs'))} · 約 ${n(sum('inTokens') + sum('outTokens'))} token</summary>
+<div class="repin">
+<div class="sc"><table>
+<thead><tr><th>階段</th><th>行範圍</th><th>用時</th><th>思考字數</th><th>解釋字數</th><th>格數</th><th>輸入 token</th><th>輸出 token</th></tr></thead>
+<tbody>${rows.map(r =>
+  `<tr><td>${escapeHtml(r.label)}</td><td>${r.range}</td><td>${fmtSec(r.secs)}</td>` +
+  `<td>${n(r.thinkChars)}</td><td>${n(r.outChars)}</td><td>${r.blocks}</td>` +
+  `<td>${n(r.inTokens)}</td><td>${n(r.outTokens)}` +
+  (r.reasoningTokens ? `<span class="oc"> (思考 ${n(r.reasoningTokens)})</span>` : '') +
+  `</td></tr>`).join('')}</tbody>
+<tfoot><tr><td>總計</td><td>${sourceLines.length} 行</td><td>${fmtSec(sum('secs'))}</td>
+<td>${n(sum('thinkChars'))}</td><td>${n(sum('outChars'))}</td><td>${sum('blocks')}</td>
+<td>${n(sum('inTokens'))}</td><td>${n(sum('outTokens'))}</td></tr></tfoot>
+</table></div>
+<p class="note">${allReal ? 'Token 數字由 API 直接回報，係實數。'
+  : '⚠️ 呢個 API 冇回 usage，token 數字係按字數估算，只可以當參考。'}
+覆蓋率 ${pct}%${gaps.length ? '（有 ' + missing + ' 行冇格講到）' : '，每一行都有格講到'}。
+「思考字數」係模型 reasoning 嘅長度，唔會出現喺解釋入面，但一樣計錢。</p>
+<details class="raw"><summary>原始數據（JSON，方便日後夾埋幾次分析嚟比較）</summary>
+<pre id="rawjson"></pre><button class="cbtn" id="copyJson">複製 JSON</button></details>
+</div></details>`;
+
+  return {html, json};
+}
+
 function buildExportHtml(){
   const when = new Date().toLocaleString('zh-HK');
   const summary = $('summaryText').textContent || '';
+  const report = buildReportForExport();
+  /* 用 interpolation 而唔係寫死喺 template 入面：
+     寫死嘅話 `\s`、`\n` 呢啲反斜線會被 template literal 食咗，
+     出嚟嘅 regex 全部變殘廢。呢個係頭先匯出檔案壞咗嘅原因。 */
+
+  /* 畀匯出檔案自己做智能搜尋用。所有 < 都轉成 \u003c，
+     否則被分析嘅程式碼一旦含有結束標籤，就會提早劈死個 script。
+     注意：呢度絕對唔會夾帶 API key——key 由開檔案嘅人自己填。 */
+  const payload = JSON.stringify({
+    file: currentName,
+    blocks: allBlocks.map((b, i) => ({
+      i, s: b.start, e: b.end, t: b.title,
+      d: b.body.replace(/\s+/g, ' ').slice(0, 220)
+    })),
+    report: report.json
+  }).replace(/</g, '\\u003c');
+
+  const exportJs = 'var D = ' + payload + ';\n' +
+                   document.getElementById('exportJs').textContent;
 
   const blocks = allBlocks.map((b, i) => {
     const code = sourceLines.slice(b.start - 1, b.end).join('\n');
@@ -2516,35 +2783,79 @@ padding:2px 6px;border-radius:2px;flex:none}
 .lt p{margin:0 0 8px}.lt ul{margin:0 0 8px;padding-left:20px}
 .lt code{font-family:var(--mono);font-size:12.5px;background:var(--pine-soft);
 padding:1px 5px;border-radius:2px;color:var(--ink)}
+.ai{border:1px solid var(--rule);background:#FDFDFB;border-radius:4px;
+padding:14px 16px;margin-bottom:16px}
+.ai h3{margin:0 0 8px;font-size:14px}
+.ai .row{display:flex;gap:8px;margin-bottom:8px}
+.ai input,.ai textarea{flex:1;padding:8px 10px;border:1px solid var(--rule);
+border-radius:4px;font-size:13px;background:#fff;font-family:inherit}
+.ai textarea{min-height:54px;resize:vertical}
+.ai button{background:none;border:1px solid var(--rule);border-radius:3px;
+padding:6px 11px;font-size:12px;cursor:pointer;color:var(--soft);white-space:nowrap}
+.ai button:hover{border-color:var(--pine);color:var(--pine)}
+.ai details{margin-bottom:10px}
+.ai summary{cursor:pointer;font-size:12px;color:var(--faint)}
+.hitx{border:1px solid var(--pine);border-left:3px solid var(--pine);background:var(--pine-soft);
+border-radius:3px;padding:8px 11px;margin-bottom:7px;cursor:pointer;font-size:13.5px}
+.hitx .w{font-family:var(--mono);font-size:11px;color:var(--ochre);margin-right:7px}
+.hitx .y{display:block;color:var(--soft);font-size:12.5px;margin-top:2px}
+.note2{font-size:12px;color:var(--faint);margin:6px 0 0}
+.tn{margin-bottom:12px}
+.tn .wh{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+color:var(--faint);margin-bottom:3px}
+.tn.q .bb{background:var(--pine-soft);border-left:3px solid var(--pine);padding:9px 12px;
+border-radius:2px;font-size:13.5px}
+.tn.a .bb{color:var(--soft);font-size:14px}
+.tn.a .bb p{margin:0 0 8px}.tn.a .bb ul{margin:0 0 8px;padding-left:20px}
+.rep{border:1px solid var(--rule);background:var(--panel);border-radius:4px;margin-top:30px}
+.rep>summary{cursor:pointer;padding:12px 16px;font-family:var(--mono);font-size:11.5px;
+color:var(--faint)}
+.repin{padding:0 16px 14px}
+.rep .sc{overflow-x:auto}
+.rep table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:11px}
+.rep th{text-align:right;padding:5px 8px;color:var(--faint);font-weight:500;
+border-bottom:1px solid var(--rule);white-space:nowrap}
+.rep th:first-child,.rep td:first-child{text-align:left}
+.rep td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+.rep tfoot td{font-weight:600;color:var(--pine);border-top:2px solid var(--rule)}
+.rep .oc{color:var(--ochre)}
+.rep .note{font-size:11.5px;color:var(--faint);line-height:1.5;margin:10px 0 0}
+.raw pre{background:var(--cbg);color:var(--cfg);padding:10px;border-radius:3px;
+overflow:auto;max-height:240px;font-size:11px}
 </style></head><body><div class="wrap">
 <h1>${escapeHtml(currentName)}</h1>
 <p class="meta">${allBlocks.length} 個區塊 · 共 ${sourceLines.length} 行 · 匯出於 ${escapeHtml(when)}</p>
 ${lens ? '<div class="lens"><p class="k">先睇林，再睇樹</p>' + lens + '</div>' : ''}
 ${summary ? '<div class="sum"><h2>整體概覽</h2><p>' + escapeHtml(summary) + '</p></div>' : ''}
 <input id="f" type="search" placeholder="篩選標題同解釋…（Ctrl+F 亦一樣搵得到）">
-${blocks}
+
+<div class="ai">
+  <h3>智能搜尋 · 問老師</h3>
+  <details><summary>先設定 API（只存喺你部機，唔會夾喺呢個檔案入面）</summary>
+    <div class="row" style="margin-top:8px">
+      <input id="cfgUrl" placeholder="Base URL" spellcheck="false">
+      <input id="cfgModel" placeholder="Model" spellcheck="false" style="max-width:150px">
+    </div>
+    <div class="row">
+      <input id="cfgKey" type="password" placeholder="API key" spellcheck="false">
+      <label style="font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap">
+        <input type="checkbox" id="cfgThink" style="flex:none"> 關 thinking</label>
+    </div>
+  </details>
+  <div class="row">
+    <input id="qx" placeholder="搵邊格講緊…？或者直接問：呢個點解要咁寫？">
+    <button id="btnFind">搵</button>
+    <button id="btnAsk">問</button>
+  </div>
+  <div id="hitx"></div>
+  <div id="threadx"></div>
+  <p class="note2" id="notex">「搵」會揀返最相關嘅格；「問」會當你完全未寫過程式噉解釋。</p>
 </div>
-<${'scr' + 'ipt'}>
-document.querySelectorAll('.h').forEach(function(h){
-  h.onclick=function(){
-    var e=document.getElementById('ex'+h.dataset.t);
-    e.classList.toggle('on'); h.classList.toggle('open');
-  };
-});
-document.querySelectorAll('.cbtn').forEach(function(b){
-  b.onclick=function(){
-    var c=document.getElementById('cw'+b.dataset.c);
-    c.classList.toggle('on');
-    b.textContent=c.classList.contains('on')?'收埋原始碼':'睇原始碼';
-  };
-});
-document.getElementById('f').addEventListener('input',function(e){
-  var q=e.target.value.trim().toLowerCase();
-  document.querySelectorAll('.b').forEach(function(b){
-    b.style.display=(!q||b.dataset.hay.indexOf(q)>-1)?'':'none';
-  });
-});
-<\/script></body></html>`;
+
+${blocks}
+${report.html}
+</div>
+<${'scr' + 'ipt'}>${exportJs}<\/script></body></html>`;
 }
 
 $('exportBtn').onclick = e => {
