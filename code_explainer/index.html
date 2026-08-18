@@ -548,6 +548,32 @@ mark{background:var(--ochre-soft);color:inherit;padding:0 2px}
 }
 .lens .pending{color:var(--ink-faint);font-style:italic;font-size:13.5px}
 
+.codesearch{
+  display:none;
+  border:1px solid var(--rule);border-radius:var(--radius);
+  background:var(--panel);padding:10px 14px;margin-bottom:14px;
+}
+.codesearch summary{cursor:pointer;font-size:12.5px;color:var(--ink-faint)}
+.codesearch textarea{
+  width:100%;min-height:80px;margin-top:10px;resize:vertical;
+  font-family:var(--font-mono);font-size:12.5px;white-space:pre;
+  background:var(--panel-2);border:1px solid var(--rule);
+  border-radius:var(--radius);padding:9px 11px;
+}
+.codesearch .row{display:flex;gap:8px;margin-top:8px}
+.cl.hit{background:var(--ochre);color:#fff;border-radius:2px}
+.gl.hit{color:var(--ochre);font-weight:700}
+
+.sync{
+  display:none;
+  border:1px solid var(--ochre);border-left:3px solid var(--ochre);
+  background:var(--panel);border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:18px;font-size:13.5px;
+}
+.sync h3{margin:0 0 8px;font-family:var(--font-display);font-size:15px}
+.sync ul{margin:8px 0;padding-left:20px;font-size:13px;color:var(--ink-soft)}
+.sync .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
 .report{
   display:none;
   border:1px solid var(--rule);
@@ -818,6 +844,66 @@ $q('btnAsk').onclick = async function(){
   drawThread();
 };
 $q('qx').addEventListener('keydown', function(e){ if(e.key === 'Enter') $q('btnFind').click(); });
+
+/* ---- 普通搜尋：喺已經印咗落檔案嘅原始碼度搵，唔使 API ---- */
+function nrm(x){ return x.trim().replace(/\s+/g, ' '); }
+var SRC = [];
+document.querySelectorAll('.b').forEach(function(b, bi){
+  b.querySelectorAll('.cl').forEach(function(sp){
+    SRC.push({ ln: +sp.dataset.ln, txt: nrm(sp.textContent), bi: bi, el: sp });
+  });
+});
+SRC.sort(function(a, b){ return a.ln - b.ln; });
+
+function clearHits(){
+  document.querySelectorAll('.cl.hit, .gl.hit').forEach(function(e){ e.classList.remove('hit'); });
+}
+$q('cClear').onclick = function(){ clearHits(); $q('cHits').innerHTML = ''; };
+$q('cFind').onclick = function(){
+  clearHits();
+  var want = $q('cq').value.split('\n').map(nrm).filter(Boolean);
+  if(!want.length){ $q('cHits').innerHTML = ''; return; }
+  var hits = [];
+  if(want.length === 1){
+    var needle = want[0].toLowerCase();
+    SRC.forEach(function(r){
+      if(r.txt.toLowerCase().indexOf(needle) > -1) hits.push({ s: r.ln, e: r.ln, bi: r.bi });
+    });
+  }else{
+    for(var i = 0; i < SRC.length; i++){
+      var k = i, w = 0;
+      while(k < SRC.length && w < want.length){
+        if(!SRC[k].txt){ k++; continue; }
+        if(SRC[k].txt !== want[w]) break;
+        k++; w++;
+      }
+      if(w === want.length) hits.push({ s: SRC[i].ln, e: SRC[k-1].ln, bi: SRC[i].bi });
+    }
+  }
+  if(!hits.length){ $q('cHits').innerHTML = '<p class="note2">搵唔到。</p>'; return; }
+  $q('cHits').innerHTML = '<p class="note2">搵到 ' + hits.length + ' 處</p>' + hits.map(function(h, n){
+    var t = document.querySelectorAll('.b')[h.bi].querySelector('.ti').textContent;
+    return '<div class="hitx" data-n="' + n + '"><span class="w">L' + h.s +
+      (h.e > h.s ? '\u2013' + h.e : '') + '</span>' + t + '</div>';
+  }).join('');
+  $q('cHits').querySelectorAll('.hitx').forEach(function(el){
+    el.onclick = function(){ mark(hits[+el.dataset.n]); };
+  });
+  mark(hits[0]);
+};
+function mark(h){
+  clearHits();
+  var b = document.querySelectorAll('.b')[h.bi];
+  b.style.display = '';
+  var cw = b.querySelector('.cw'); if(cw) cw.classList.add('on');
+  var ex = b.querySelector('.ex'); if(ex) ex.classList.add('on');
+  var hd = b.querySelector('.h'); if(hd) hd.classList.add('open');
+  for(var n = h.s; n <= h.e; n++){
+    b.querySelectorAll('[data-ln="' + n + '"]').forEach(function(x){ x.classList.add('hit'); });
+  }
+  b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 </script>
 <div class="drop-veil" id="dropVeil"><div>掉低個檔案就得</div></div>
 <div class="warnbar" id="warnbar"></div>
@@ -931,6 +1017,10 @@ $q('qx').addEventListener('keydown', function(e){ if(e.key === 'Enter') $q('btnF
       <span>.py .js .html .css .java .go .rs .sql…</span>
     </div>
     <input type="file" id="file" hidden>
+    <input type="file" id="projFile" accept=".json,.ceproj" hidden>
+    <button class="ghost" id="loadProjBtn" type="button" style="width:100%;margin-top:8px">
+      ⤒ 匯入舊分析檔（只重跑改咗嘅部分）
+    </button>
 
     <div class="filechip" id="fileChip">
       <span id="fileName"></span>
@@ -958,6 +1048,8 @@ $q('qx').addEventListener('keydown', function(e){ if(e.key === 'Enter') $q('btnF
       <div id="probeRows"></div>
       <p class="probe-note" id="probeNote"></p>
     </div>
+
+    <div class="sync" id="sync"></div>
 
     <div class="report" id="report">
       <h3>分析報告</h3>
@@ -987,17 +1079,29 @@ $q('qx').addEventListener('keydown', function(e){ if(e.key === 'Enter') $q('btnF
 
         <div class="searchbar" id="searchbar">
           <input id="q" type="search" spellcheck="false"
-                 placeholder="打字即刻篩選，或者問一句：邊格處理緊 API 出錯？">
+                 placeholder="打字即刻篩選解釋，或者問一句：邊格處理緊 API 出錯？">
           <button class="mini" id="aiSearchBtn" type="button">🔎 智能搜尋</button>
           <button class="mini" id="clearSearch" type="button">清除</button>
         </div>
         <div id="hits"></div>
+
+        <details class="codesearch" id="codesearch">
+          <summary>貼段 code 落嚟搵（普通搜尋，唔經 AI）</summary>
+          <textarea id="codeQ" spellcheck="false"
+                    placeholder="貼一行或者一整段程式碼…&#10;比對會忽略縮排同行尾空白"></textarea>
+          <div class="row">
+            <button class="mini" id="codeFindBtn" type="button">搵</button>
+            <button class="mini" id="codeClearBtn" type="button">清除標記</button>
+          </div>
+          <div id="codeHits"></div>
+        </details>
 
         <div class="toolbar" id="toolbar">
           <button class="mini" id="expandAll" type="button">展開全部解釋</button>
           <button class="mini" id="collapseAll" type="button">收埋全部</button>
           <button class="mini" id="copyAll" type="button">複製全部解釋</button>
           <button class="mini" id="exportBtn" type="button">⤓ 匯出成 HTML</button>
+          <button class="mini" id="saveProjBtn" type="button">⤓ 儲存分析檔</button>
         </div>
 
         <div id="blocks"></div>
@@ -1323,7 +1427,47 @@ function highlight(code, ext){
   return out;
 }
 
-/* 解釋文字：只支援最基本嘅 **粗體**、`code`、- 列點 */
+/* 逐行上色。要逐行係因為搜尋要標得中個別行；
+   跨行嘅區塊註解就靠一個 state 帶落去，唔會甩色。 */
+function highlightLines(code, ext){
+  const PAIRS = [['/*', '*/'], ['<' + '!--', '-->']];
+  const out = [];
+  let open = null;
+
+  for(const line of code.split('\n')){
+    if(open){
+      const at = line.indexOf(open[1]);
+      if(at === -1){ out.push('<span class="tok-com">' + escapeHtml(line) + '</span>'); continue; }
+      out.push('<span class="tok-com">' + escapeHtml(line.slice(0, at + open[1].length)) + '</span>' +
+               highlight(line.slice(at + open[1].length), ext));
+      open = null;
+      continue;
+    }
+    let started = null, at = -1;
+    for(const p of PAIRS){
+      const o = line.lastIndexOf(p[0]);
+      if(o !== -1 && line.indexOf(p[1], o + p[0].length) === -1){ started = p; at = o; break; }
+    }
+    if(started){
+      out.push(highlight(line.slice(0, at), ext) +
+               '<span class="tok-com">' + escapeHtml(line.slice(at)) + '</span>');
+      open = started;
+    }else{
+      out.push(highlight(line, ext));
+    }
+  }
+  return out;
+}
+
+/* 一格嘅程式碼窗：行號同內容都逐行包住，方便搵到之後標色 */
+function codePaneHtml(startLine, endLine, code, ext){
+  const gutter = Array.from({length: endLine - startLine + 1},
+    (_, k) => '<span class="gl" data-ln="' + (startLine + k) + '">' + (startLine + k) + '</span>').join('\n');
+  const body = highlightLines(code, ext)
+    .map((h, k) => '<span class="cl" data-ln="' + (startLine + k) + '">' + h + '</span>').join('\n');
+  return '<div class="gutter">' + gutter + '</div><pre>' + body + '</pre>';
+}
+
 function renderBody(text){
   const esc = escapeHtml(text)
     .replace(/`([^`\n]+)`/g, '<code>$1</code>')
@@ -1757,6 +1901,9 @@ function resetView(){
   $('summary').style.display = 'none';
   $('toolbar').style.display = 'none';
   $('searchbar').style.display = 'none';
+  $('codesearch').style.display = 'none';
+  $('codeHits').innerHTML = '';
+  $('sync').style.display = 'none';
   $('hits').innerHTML = '';
   $('q').value = '';
   $('empty').style.display = 'none';
@@ -1794,8 +1941,6 @@ function showFormatFailure(raw){
 
 function renderBlock(b, index){
   const code = sourceLines.slice(b.start - 1, b.end).join('\n');
-  const gutter = Array.from({length: b.end - b.start + 1},
-                            (_, i) => b.start + i).join('\n');
 
   const el = document.createElement('article');
   el.className = 'block';
@@ -1816,10 +1961,7 @@ function renderBlock(b, index){
       <button class="mini" data-role="askbtn" type="button">問呢格</button>
     </div>
     <div class="reveal" data-role="code"><div>
-      <div class="codewrap">
-        <div class="gutter">${gutter}</div>
-        <pre>${highlight(code, ext)}</pre>
-      </div>
+      <div class="codewrap">${codePaneHtml(b.start, b.end, code, ext)}</div>
     </div></div>`;
 
   el.querySelector('.title').textContent = b.title;
@@ -1903,8 +2045,18 @@ function renderCoverage(){
 
 async function fillGaps(){
   const cfg = currentConfig();
-  const gaps = findGaps();
-  if(!gaps.length) return;
+  const raw = findGaps();
+  if(!raw.length) return;
+
+  /* 一個漏空可以好大（例如匯入舊分析之後成半個檔案要重跑），
+     所以照樣要切段，唔可以一次過掟出去。 */
+  const gaps = [];
+  for(const g of raw){
+    const slice = sourceLines.slice(g.start - 1, g.end);
+    splitSegments(slice, 10000).forEach(sub => {
+      gaps.push({start: g.start + sub.start - 1, end: g.start + sub.end - 1});
+    });
+  }
 
   $('runBtn').disabled = true;
   $('stopBtn').style.display = 'block';
@@ -2227,6 +2379,7 @@ async function run(){
           renderCoverage();
           $('toolbar').style.display = 'flex';
           $('searchbar').style.display = 'flex';
+          $('codesearch').style.display = 'block';
           $('ask').style.display = 'block';
         }
       };
@@ -2285,6 +2438,7 @@ async function run(){
         (segTotal > 1 ? ' · ' + segTotal + ' 段' : '');
       $('toolbar').style.display = 'flex';
       $('searchbar').style.display = 'flex';
+      $('codesearch').style.display = 'block';
       $('ask').style.display = 'block';
       renderCoverage();
     }
@@ -2606,6 +2760,92 @@ $('q').addEventListener('keydown', e => { if(e.key === 'Enter') aiSearch(); });
 $('aiSearchBtn').onclick = aiSearch;
 $('clearSearch').onclick = clearSearch;
 
+/* ── 普通搜尋：直接喺原始碼度搵，唔經 AI ──
+   比對前將每行兩頭嘅空白剷走，咁你由編輯器複製出嚟嘅縮排唔使一模一樣。 */
+function normLine(s){ return s.trim().replace(/\s+/g, ' '); }
+
+function findCode(snippet){
+  const want = snippet.split('\n').map(normLine).filter(Boolean);
+  if(!want.length) return [];
+  const hay = sourceLines.map(normLine);
+  const hits = [];
+
+  if(want.length === 1){
+    const needle = want[0].toLowerCase();
+    for(let i = 0; i < hay.length; i++){
+      if(hay[i].toLowerCase().includes(needle)) hits.push({start: i + 1, end: i + 1});
+    }
+    return hits;
+  }
+
+  /* 多行：跳過原文入面嘅空行，順住逐行對 */
+  for(let i = 0; i < hay.length; i++){
+    let k = i, w = 0;
+    while(k < hay.length && w < want.length){
+      if(!hay[k]){ k++; continue; }
+      if(hay[k] !== want[w]) break;
+      k++; w++;
+    }
+    if(w === want.length) hits.push({start: i + 1, end: k});
+  }
+  return hits;
+}
+
+function clearCodeHits(){
+  document.querySelectorAll('.cl.hit, .gl.hit').forEach(el => el.classList.remove('hit'));
+}
+
+function runCodeSearch(){
+  const snippet = $('codeQ').value;
+  clearCodeHits();
+  if(!snippet.trim()){ $('codeHits').innerHTML = ''; return; }
+
+  const hits = findCode(snippet);
+  if(!hits.length){
+    $('codeHits').innerHTML = '<p class="hits-note">喺原始碼度搵唔到。' +
+      '留意：比對會忽略縮排同行首行尾空白，但字要一樣。</p>';
+    return;
+  }
+
+  const rows = hits.map(h => {
+    const owners = allBlocks
+      .map((b, i) => ({b, i}))
+      .filter(({b}) => b.start <= h.end && b.end >= h.start);
+    return {...h, owners};
+  });
+
+  $('codeHits').innerHTML = '<p class="hits-note">喺原始碼搵到 ' + hits.length + ' 處</p>' +
+    rows.map((r, n) => {
+      const label = r.owners.length
+        ? r.owners.map(o => '第 ' + (o.i + 1) + ' 格「' + escapeHtml(o.b.title) + '」').join('、')
+        : '<span style="color:var(--ochre)">冇任何一格覆蓋到呢幾行</span>';
+      return '<div class="hit" data-n="' + n + '">' +
+        '<span class="where">L' + r.start + (r.end > r.start ? '–' + r.end : '') + '</span>' +
+        label + '</div>';
+    }).join('');
+
+  $('codeHits').querySelectorAll('.hit').forEach(el => {
+    el.onclick = () => showCodeHit(rows[+el.dataset.n]);
+  });
+  if(rows.length) showCodeHit(rows[0]);
+}
+
+function showCodeHit(hit){
+  clearCodeHits();
+  const target = hit.owners[0];
+  if(!target) return;
+  const el = $('blk-' + target.i);
+  el.style.display = '';
+  el.querySelector('[data-role="code"]').classList.add('open');
+  const btn = el.querySelector('[data-role="codebtn"]');
+  if(btn) btn.textContent = '收埋原始碼';
+
+  for(let n = hit.start; n <= hit.end; n++){
+    el.querySelectorAll('[data-ln="' + n + '"]').forEach(x => x.classList.add('hit'));
+  }
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
 /* ============================================================
    11. 匯出：一個獨立、唔使網絡就開得到嘅 HTML
    ============================================================ */
@@ -2708,13 +2948,11 @@ function buildExportHtml(){
 
   const blocks = allBlocks.map((b, i) => {
     const code = sourceLines.slice(b.start - 1, b.end).join('\n');
-    const gutter = Array.from({length: b.end - b.start + 1},
-                              (_, k) => b.start + k).join('\n');
     return `<article class="b" data-hay="${escapeHtml((b.title + ' ' + b.body).toLowerCase())}">
   <button class="h" data-t="${i}"><span class="ln">L${b.start}–${b.end}</span><span class="ti">${escapeHtml(b.title)}</span><span class="ch">▶</span></button>
   <div class="ex" id="ex${i}">${renderBody(b.body)}</div>
   <button class="cbtn" data-c="${i}">睇原始碼</button>
-  <div class="cw" id="cw${i}"><div class="g">${gutter}</div><pre>${highlight(code, ext)}</pre></div>
+  <div class="cw" id="cw${i}">${codePaneHtml(b.start, b.end, code, ext)}</div>
 </article>`;
   }).join('\n');
 
@@ -2766,9 +3004,11 @@ padding:4px 9px;font-family:var(--mono);font-size:11px;color:var(--faint);cursor
 .cw{background:var(--cbg);color:var(--cfg);font-family:var(--mono);font-size:12.5px;
 line-height:1.6;border-top:1px solid var(--rule)}
 .cw.on{display:flex}.ex.on{display:block}
-.g{flex:none;padding:12px 10px 12px 16px;text-align:right;white-space:pre;
+.gutter{flex:none;padding:12px 10px 12px 16px;text-align:right;white-space:pre;
 color:#5E736C;border-right:1px solid #24322E;user-select:none}
 .cw pre{margin:0;padding:12px 16px;overflow-x:auto;flex:1;white-space:pre}
+.cl.hit{background:#8A6A12;color:#fff;border-radius:2px}
+.gl.hit{color:#D9AE55;font-weight:700}
 .tok-com{color:#6F8A80;font-style:italic}.tok-str{color:#C9A96B}
 .tok-num{color:#8FB8D9}.tok-key{color:#7FC9A9}
 .lens{border:1px solid var(--rule);background:#FDFDFB;border-radius:4px;
@@ -2849,6 +3089,16 @@ ${summary ? '<div class="sum"><h2>整體概覽</h2><p>' + escapeHtml(summary) + 
   </div>
   <div id="hitx"></div>
   <div id="threadx"></div>
+</div>
+
+<div class="ai">
+  <h3>普通搜尋：貼段 code 落嚟搵</h3>
+  <textarea id="cq" spellcheck="false" placeholder="貼一行或者一整段程式碼…（忽略縮排同行尾空白）"
+            style="width:100%;min-height:70px;font-family:var(--mono);font-size:12.5px;white-space:pre"></textarea>
+  <div class="row" style="margin-top:8px">
+    <button id="cFind">搵</button><button id="cClear">清除標記</button>
+  </div>
+  <div id="cHits"></div>
   <p class="note2" id="notex">「搵」會揀返最相關嘅格；「問」會當你完全未寫過程式噉解釋。</p>
 </div>
 
@@ -3010,6 +3260,202 @@ ${body}
   setTimeout(() => URL.revokeObjectURL(url), 5000);
   flash(e.target, '✓ 已下載');
 };
+
+/* ============================================================
+   13. 分析檔：儲存 / 匯入 / 對比改動 / 只重跑改咗嗰幾格
+   ============================================================ */
+const PROJ_VERSION = 1;
+
+function buildProject(){
+  return {
+    version: PROJ_VERSION,
+    file: currentName,
+    savedAt: new Date().toISOString(),
+    lang: currentConfig().lang,
+    level: currentConfig().level,
+    /* 一定要連原始碼一齊存，否則下次無得對比改咗邊度 */
+    source: sourceLines.join('\n'),
+    summary: $('summaryText').textContent || '',
+    lens: lensData,
+    blocks: allBlocks.map(b => ({start:b.start, end:b.end, title:b.title, body:b.body})),
+    report: buildReportForExport().json
+  };
+}
+
+$('saveProjBtn').onclick = e => {
+  if(!allBlocks.length) return;
+  const blob = new Blob([JSON.stringify(buildProject(), null, 1)],
+                        {type:'application/json;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = currentName.replace(/\.[^.]+$/, '') + '.ceproj.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  flash(e.target, '✓ 已儲存');
+};
+
+/* 行對行比對。用「向前望」嘅方式搵返同步點：
+   對唔上就喺兩邊各望前 60 行搵返一行一樣嘅，搵到就跳過去。
+   小修小補嘅情況下又快又準，唔使搬成套 LCS 出嚟。 */
+function diffLines(oldL, newL){
+  const norm = s => s.replace(/\s+$/, '');
+  const map = new Map();              // 舊行號 → 新行號
+  const LOOK = 60;
+  let i = 0, j = 0;
+
+  while(i < oldL.length && j < newL.length){
+    if(norm(oldL[i]) === norm(newL[j])){ map.set(i + 1, j + 1); i++; j++; continue; }
+    let jump = null;
+    for(let d = 1; d <= LOOK && !jump; d++){
+      if(j + d < newL.length && norm(oldL[i]) === norm(newL[j + d])) jump = [0, d];
+      else if(i + d < oldL.length && norm(oldL[i + d]) === norm(newL[j])) jump = [d, 0];
+    }
+    if(jump){ i += jump[0]; j += jump[1]; }
+    else { i++; j++; }               // 當呢行係改咗
+  }
+  return map;
+}
+
+/* 舊格搬去新行號。有任何一行對唔返、或者中間被插入咗嘢，就當佢過期 */
+function remapBlocks(oldBlocks, map, newLineCount){
+  const fresh = [], stale = [];
+  for(const b of oldBlocks){
+    let s = null, e = null, broken = false;
+    for(let n = b.start; n <= b.end; n++){
+      const m = map.get(n);
+      if(m === undefined){ broken = true; break; }
+      if(s === null) s = m;
+      e = m;
+    }
+    if(broken || s === null || (e - s) !== (b.end - b.start)){
+      stale.push({...b, newStart: s, newEnd: e});
+    }else{
+      fresh.push({...b, start: s, end: Math.min(e, newLineCount)});
+    }
+  }
+  return {fresh, stale};
+}
+
+function applyProject(proj, mode){
+  resetView();
+  lensData = proj.lens || {};
+  if(proj.summary){
+    $('summaryText').textContent = proj.summary;
+    $('summary').style.display = 'block';
+  }
+  renderLens();
+  allBlocks = proj.blocks.map(b => ({...b}));
+  rerenderAll();
+  $('toolbar').style.display = 'flex';
+  $('searchbar').style.display = 'flex';
+  $('codesearch').style.display = 'block';
+  $('ask').style.display = 'block';
+  renderCoverage();
+  $('status').textContent = mode + ' · ' + allBlocks.length + ' 個區塊';
+}
+
+let pendingStale = [];
+
+$('loadProjBtn').onclick = () => $('projFile').click();
+$('projFile').onchange = e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let proj;
+    try{ proj = JSON.parse(r.result); }
+    catch(err){ showError('讀唔到呢個分析檔', '唔係有效嘅 JSON。'); return; }
+    if(!proj.blocks || !proj.source){
+      showError('呢個檔案唔啱用', '入面冇 blocks 或者 source，可能唔係分析檔。');
+      return;
+    }
+    loadProject(proj);
+  };
+  r.readAsText(f, 'UTF-8');
+  e.target.value = '';
+};
+
+function loadProject(proj){
+  const current = $('source').value;
+
+  /* 未載入新版本 → 純粹翻返舊嘢出嚟睇 */
+  if(!current.trim()){
+    $('source').value = proj.source;
+    currentName = proj.file || 'restored.txt';
+    sourceLines = proj.source.split('\n');
+    ext = (currentName.split('.').pop() || 'txt').toLowerCase();
+    $('fileName').textContent = currentName;
+    $('fileMeta').textContent = sourceLines.length + ' 行 · 由分析檔還原';
+    $('fileChip').style.display = 'flex';
+    applyProject(proj, '已還原舊分析');
+    $('sync').style.display = 'none';
+    return;
+  }
+
+  /* 有新版本 → 對比 */
+  const oldLines = proj.source.split('\n');
+  const newLines = current.split('\n');
+  sourceLines = newLines;
+  currentName = currentName || proj.file;
+  ext = (currentName.split('.').pop() || 'txt').toLowerCase();
+
+  if(proj.source === current){
+    applyProject(proj, '程式碼冇改過，直接還原');
+    $('sync').innerHTML = '<h3>✓ 一模一樣</h3>' +
+      '<p style="margin:0">同分析檔入面嘅程式碼完全相同，唔使重跑。</p>';
+    $('sync').style.display = 'block';
+    return;
+  }
+
+  const map = diffLines(oldLines, newLines);
+  const {fresh, stale} = remapBlocks(proj.blocks, map, newLines.length);
+
+  lensData = proj.lens || {};
+  resetView();
+  lensData = proj.lens || {};
+  if(proj.summary){
+    $('summaryText').textContent = proj.summary;
+    $('summary').style.display = 'block';
+  }
+  renderLens();
+  allBlocks = fresh.map(b => ({...b}));
+  rerenderAll();
+  $('toolbar').style.display = 'flex';
+  $('searchbar').style.display = 'flex';
+  $('codesearch').style.display = 'block';
+  $('ask').style.display = 'block';
+
+  /* 舊格搬唔過去嘅範圍 + 完全新增嘅行，兩樣都要重跑 */
+  const gaps = findGaps();
+  pendingStale = gaps;
+
+  const changedLines = newLines.length - map.size;
+  $('sync').innerHTML =
+    '<h3>對比完成</h3>' +
+    '<p style="margin:0">舊分析有 ' + proj.blocks.length + ' 格，其中 <b>' + fresh.length +
+    ' 格可以照用</b>（行號已經自動搬位），<b>' + stale.length + ' 格過咗期</b>。' +
+    '新版本大約有 ' + Math.max(0, changedLines) + ' 行對唔返舊版。</p>' +
+    (gaps.length
+      ? '<ul>' + gaps.slice(0, 10).map(g => '<li>L' + g.start + '–' + g.end + '（' + g.meat + ' 行有內容）</li>').join('') +
+        (gaps.length > 10 ? '<li>…仲有 ' + (gaps.length - 10) + ' 段</li>' : '') + '</ul>' +
+        '<div class="row"><button class="mini" id="syncRunBtn" type="button">只重新分析呢 ' +
+        gaps.length + ' 段</button>' +
+        '<button class="mini" id="syncFullBtn" type="button">算數，成份重跑</button></div>'
+      : '<p style="margin:8px 0 0">冇範圍需要補跑。</p>');
+  $('sync').style.display = 'block';
+
+  const runBtnEl = $('syncRunBtn');
+  if(runBtnEl) runBtnEl.onclick = () => { $('sync').style.display = 'none'; fillGaps(); };
+  const fullBtnEl = $('syncFullBtn');
+  if(fullBtnEl) fullBtnEl.onclick = () => { $('sync').style.display = 'none'; run(); };
+
+  renderCoverage();
+  $('status').textContent = '已匯入舊分析 · 保留 ' + fresh.length + ' 格 · 待補 ' + gaps.length + ' 段';
+}
+
+$('codeFindBtn').onclick = runCodeSearch;
+$('codeClearBtn').onclick = () => { clearCodeHits(); $('codeHits').innerHTML = ''; };
 
 checkStorage();
 loadConfig();
