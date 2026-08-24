@@ -64,7 +64,10 @@ canvas{display:block;width:100%;touch-action:none}
 
 <header class="app"><div class="wrap">
 <h1>🎧 Audio <span>Cutter</span> 音訊精準剪裁</h1>
+<div class="row" style="gap:8px">
 <div id="fileInfo">未載入音訊</div>
+<button id="changeFileBtn" style="display:none;min-height:36px;padding:5px 10px;font-size:13px">🔄 換檔</button>
+</div>
 </div></header>
 
 <div class="wrap">
@@ -107,11 +110,16 @@ canvas{display:block;width:100%;touch-action:none}
 </div>
 
 <div class="card" id="markCard" style="display:none">
-<h2>切點 Marking</h2>
+<h2>落刀 Cutting</h2>
 <div class="row">
-<button id="addMarkBtn" class="primary">🚩 喺 cursor 加 Marker</button>
-<button id="segsFromMarksBtn">⚙ 由 Markers 生成段落</button>
-<button id="clearMarksBtn" class="warnbtn">清除 Marker</button>
+<input type="text" id="cutsInput" class="grow" placeholder="落刀時間（逗號分隔）：0:30.5, 12:45, 1:23:45.500" inputmode="decimal">
+<button id="cutsApplyBtn" class="primary">🔪 落刀</button>
+</div>
+<div class="note">N 刀切成 N+1 個檔案：開頭→第一刀、刀與刀之間⋯⋯最後一刀→結尾。時間格式：<code>1:23:45.5</code>、<code>12:30.25</code>、<code>95.2</code>秒、<code>123456ms</code></div>
+<div class="row" style="margin-top:10px">
+<button id="addMarkBtn" class="primary">🚩 喺 cursor 加刀口</button>
+<button id="segsFromMarksBtn">⚙ 由現有刀口生成段落</button>
+<button id="clearMarksBtn" class="warnbtn">清除刀口</button>
 </div>
 <div class="row" style="margin-top:8px">
 <button id="setA">設 A 點</button><button id="setB">設 B 點</button>
@@ -120,6 +128,21 @@ canvas{display:block;width:100%;touch-action:none}
 </div>
 <div class="note" id="regionInfo" style="margin-top:8px">A/B 區間：未設定</div>
 <div id="markList" class="note"></div>
+</div>
+
+<div class="card" id="fxCard" style="display:none">
+<h2>音效處理</h2>
+<div class="row">
+<span class="note" style="margin:0">🔊 音量</span>
+<input type="range" id="volSlider" min="25" max="300" step="5" value="100" style="flex:1;accent-color:#4fc3f7;min-height:36px">
+<b id="volVal" style="min-width:52px;text-align:right;font-family:ui-monospace,monospace">100%</b>
+</div>
+<div class="row" style="margin-top:8px">
+<label class="chk"><input type="checkbox" id="dnChk">🧹 智能降噪（去底噪／沙沙聲）</label>
+<select id="dnLevel"><option value="0">輕度</option><option value="1" selected>中度</option><option value="2">強力</option></select>
+<button id="fxPreviewBtn">🎧 預覽效果</button>
+</div>
+<div class="note">降噪＝90Hz 高通濾波＋自適應噪音門限，匯出時逐段套用。預覽會即場處理 cursor 之後 20 秒（設咗 A/B 就用 A–B 區間）。</div>
 </div>
 
 <div class="card" id="exportCard" style="display:none">
@@ -153,6 +176,7 @@ let playing=false,srcNode=null,gainNode=null,actx=null,startCtxT=0,offAtStart=0,
 let markers=[];
 let region={a:null,b:null},loopAB=false;
 let segments=[];
+let volPct=100,dnOn=false,dnLv=1;
 
 /* ================= DOM 快取 ================= */
 const $=id=>document.getElementById(id);
@@ -182,6 +206,25 @@ dropzone.addEventListener('click',e=>{if(e.target===dropzone)fileInput.click();}
 dropzone.addEventListener('drop',e=>{const f=e.dataTransfer.files&&e.dataTransfer.files[0];if(f)loadFile(f);});
 fileInput.addEventListener('change',()=>{if(fileInput.files[0])loadFile(fileInput.files[0]);});
 
+/* 換檔：離開目前音訊，重新上載 */
+$('changeFileBtn').addEventListener('click',()=>{
+ if(audioBuf&&!confirm('換檔會清走目前音訊、刀口同全部段落設定，確定？'))return;
+ stopNode();playing=false;cancelAnimationFrame(rafId);
+ audioBuf=null;peaksMin=null;peaksMax=null;
+ markers=[];segments=[];region={a:null,b:null};loopAB=false;cursorSec=0;
+ volPct=100;dnOn=false;
+ try{if(actx)actx.close();}catch(e){}
+ actx=null;gainNode=null;
+ fileInput.value='';
+ $('changeFileBtn').style.display='none';
+ $('volSlider').value=100;$('volVal').textContent='100%';$('volSlider').dispatchEvent(new Event('input'));
+ $('dnChk').checked=false;$('cutsInput').value='';
+ ['waveCard','markCard','fxCard','exportCard'].forEach(id=>$(id).style.display='none');
+ dropzone.style.display='block';
+ $('fileInfo').textContent='未載入音訊';
+ toast('已離開目前音訊，請上載另一條聲帶');
+});
+
 async function loadFile(f){
  busy(true,'解碼音訊中…');
  try{
@@ -197,7 +240,8 @@ async function loadFile(f){
   $('fileInfo').textContent=f.name+' · '+fmtShort(buf.duration)+' · '+buf.sampleRate+' Hz · '+buf.numberOfChannels+' ch'+(fileSize>1048576?' · '+(fileSize/1048576).toFixed(1)+' MB':'');
   $('tTot').textContent=fmtShort(buf.duration);
   dropzone.style.display='none';
-  ['waveCard','markCard','exportCard'].forEach(id=>$(id).style.display='block');
+  ['waveCard','markCard','fxCard','exportCard'].forEach(id=>$(id).style.display='block');
+  $('changeFileBtn').style.display='inline-block';
   renderMarks();renderSegs();updateRegionInfo();
   resizeAll();
   if(buf.duration>7200)toast('⚠️ 音檔超過 2 小時，操作可能較慢',true);
@@ -483,12 +527,41 @@ $('addMarkBtn').onclick=()=>{
 };
 $('clearMarksBtn').onclick=()=>{markers=[];renderMarks();drawMain();drawOv();};
 $('segsFromMarksBtn').onclick=()=>{
- if(markers.length<2)return toast('至少要有 2 個 Marker 先可以生成段落');
- segments=markers.slice(0,-1).map((t,i)=>({start:t,end:markers[i+1]}));
- renderSegs();toast('⚙ 已由 '+markers.length+' 個 Marker 生成 '+segments.length+' 段');
+ if(!markers.length)return toast('至少要有 1 個刀口先可以生成段落');
+ genSegsFromPoints(markers);
+ toast('⚙ 已由 '+markers.length+' 刀生成 '+segments.length+' 個檔案');
+};
+/* 落刀核心：N 個刀點 → N+1 個段落（自動包 0 同結尾） */
+function genSegsFromPoints(pts){
+ if(!audioBuf||!pts.length)return;
+ const D=audioBuf.duration;
+ const ps=[...new Set(pts.map(t=>Math.max(0.001,Math.min(D-0.001,t))))].sort((a,b)=>a-b);
+ const full=[0,...ps,D];
+ segments=[];
+ for(let i=0;i<full.length-1;i++){
+  if(full[i+1]-full[i]>0.001)segments.push({start:full[i],end:full[i+1]});
+ }
+ renderSegs();drawMain();drawOv();
+}
+$('cutsApplyBtn').onclick=()=>{
+ if(!audioBuf)return toast('請先載入音訊檔');
+ const raw=$('cutsInput').value.trim();
+ if(!raw)return toast('請輸入落刀時間，逗號分隔');
+ const toks=raw.split(/[,，、;；]+/).map(t=>t.trim()).filter(Boolean);
+ const pts=[],bad=[];
+ for(const tk of toks){
+  const v=parseTime(tk);
+  if(v==null||v<0||v>=audioBuf.duration)bad.push(tk);else pts.push(v);
+ }
+ if(bad.length)return toast('❌ 呢啲時間格式有問題或超出音檔範圍：'+bad.join('、'),true);
+ if(!pts.length)return toast('冇有效嘅落刀點');
+ markers=pts.sort((a,b)=>a-b);
+ genSegsFromPoints(markers);
+ renderMarks();
+ toast('🔪 已落 '+markers.length+' 刀，切成 '+segments.length+' 個檔案');
 };
 function renderMarks(){
- $('markList').innerHTML=markers.length?('Markers（'+markers.length+'）：'+markers.map((t,i)=>'#'+(i+1)+' '+fmtShort(t)).join(' · ')):'（未有任何 Marker）';
+ $('markList').innerHTML=markers.length?('刀口（'+markers.length+' 刀 → '+ (markers.length+1) +' 個檔案）：'+markers.map((t,i)=>'#'+(i+1)+' '+fmtShort(t)).join(' · ')):'（未有任何刀口）';
 }
 $('setA').onclick=()=>{if(!audioBuf)return;region.a=playing?curPos():cursorSec;updateRegionInfo();drawMain();};
 $('setB').onclick=()=>{if(!audioBuf)return;region.b=playing?curPos():cursorSec;updateRegionInfo();drawMain();};
@@ -536,6 +609,38 @@ function renderSegs(){
  });
 }
 $('clearSegs').onclick=()=>{if(segments.length&&confirm('確定清空全部段落？')){segments=[];renderSegs();}};
+/* ================= 音效處理：音量 / 降噪 / 預覽 ================= */
+$('volSlider').addEventListener('input',function(){
+ volPct=parseInt(this.value,10);
+ $('volVal').textContent=volPct+'%';
+ if(gainNode)gainNode.gain.value=volPct/100;
+});
+$('dnChk').addEventListener('change',function(){dnOn=this.checked;});
+$('dnLevel').addEventListener('change',function(){dnLv=parseInt(this.value,10);});
+$('fxPreviewBtn').onclick=()=>{
+ if(!audioBuf)return toast('請先載入音訊檔');
+ let st=cursorSec,en=Math.min(audioBuf.duration,st+20);
+ if(region.a!=null&&region.b!=null){st=Math.min(region.a,region.b);en=Math.max(region.a,region.b);}
+ busy(true,'處理預覽音訊…');
+ setTimeout(()=>{
+  try{
+   const chans=buildProcessed(st,en,false); /* 音量靠 gainNode 即時套用 */
+   stopNode();ensureAC();
+   const buf=actx.createBuffer(chans.length,chans[0].length,audioBuf.sampleRate);
+   for(let c=0;c<chans.length;c++)buf.copyToChannel(chans[c],c);
+   srcNode=actx.createBufferSource();srcNode.buffer=buf;srcNode.connect(gainNode);
+   offAtStart=st;startCtxT=actx.currentTime;manualStop=false;loopAB=false;$('loopBtn').textContent='🔁 A–B 循環預覽';updateRegionInfo();
+   srcNode.onended=()=>{if(manualStop)return;playing=false;$('playBtn').textContent='▶';};
+   playing=true;$('playBtn').textContent='⏸';
+   srcNode.start(0,0);
+   tick();
+   toast('🎧 預覽中（'+fmtShort(st)+' 起）：'+(dnOn?'降噪 lv'+dnLv+'＋':'')+'音量 '+volPct+'%');
+  }catch(err){
+   console.error(err);alert('預覽出錯：'+err.message);
+  }finally{busy(false);}
+ },30);
+};
+
 /* ================= 匯出：MP3 / WAV ================= */
 let lamePromise=null;
 function loadLame(){
@@ -556,19 +661,82 @@ function loadLame(){
  })();
  return lamePromise;
 }
-function sliceI16(start,end){
+function getFloatSlice(start,end){
  const sr=audioBuf.sampleRate;
  const s=Math.max(0,Math.floor(start*sr)),e=Math.min(audioBuf.length,Math.ceil(end*sr)),len=Math.max(1,e-s);
  const nch=Math.min(audioBuf.numberOfChannels,2),out=[];
- for(let c=0;c<nch;c++){
-  const d=audioBuf.getChannelData(c),a=new Int16Array(len);
-  for(let i=0;i<len;i++){let v=d[s+i];if(v>1)v=1;else if(v<-1)v=-1;a[i]=v<0?v*32768:v*32767;}
+ for(let c=0;c<nch;c++)out.push(audioBuf.getChannelData(c).slice(s,e));
+ return out;
+}
+/* 高通 biquad 濾波：去低頻隆隆聲／風聲 */
+function hpFilter(data,sr,fc){
+ const w0=2*Math.PI*fc/sr,cosw=Math.cos(w0),alpha=Math.sin(w0)/(2*Math.SQRT1_2);
+ let b0=(1+cosw)/2,b1=-(1+cosw),b2=(1+cosw)/2,a0=1+alpha,a1=-2*cosw,a2=1-alpha;
+ b0/=a0;b1/=a0;b2/=a0;a1/=a0;a2/=a0;
+ let x1=0,x2=0,y1=0,y2=0;
+ for(let i=0;i<data.length;i++){
+  const x=data[i],y=b0*x+b1*x1+b2*x2-a1*y1-a2*y2;
+  x2=x1;x1=x;y2=y1;y1=y;data[i]=y;
+ }
+}
+/* 自適應噪音門限：以最靜 10% 區塊估計噪音底，低過門限平滑壓落 */
+function gateDenoise(chans,sr,lv){
+ const BLK=Math.max(64,Math.floor(sr*0.02));
+ const n=chans[0].length,nb=Math.ceil(n/BLK);
+ const rms=new Float32Array(nb);
+ for(let b=0;b<nb;b++){
+  const s=b*BLK,e=Math.min(n,s+BLK);let sum=0,cnt=0;
+  for(let i=s;i<e;i++){const v=chans[0][i];sum+=v*v;cnt++;}
+  rms[b]=Math.sqrt(sum/Math.max(1,cnt));
+ }
+ const sorted=Float32Array.from(rms).sort();
+ const floor=Math.max(1e-4,sorted[Math.floor(nb*0.1)]||0);
+ const thr=floor*[4,7,12][lv];
+ /* 時間常數以區塊（~20ms）為單位：attack 10ms、release 180ms */
+ const atk=Math.exp(-BLK/(sr*0.01));
+ const rel=Math.exp(-BLK/(sr*0.18));
+ const minG=lv===2?0.02:0.08;
+ let g=1;
+ const env=new Float32Array(nb);
+ for(let b=0;b<nb;b++){
+  const tgt=rms[b]>=thr?1:minG;
+  g=tgt+(g-tgt)*(tgt<g?atk:rel);
+  env[b]=g;
+ }
+ for(let c=0;c<chans.length;c++){
+  const d=chans[c];
+  for(let b=0;b<nb;b++){
+   const gg=env[b];if(gg>=0.999)continue;
+   const s=b*BLK,e=Math.min(n,s+BLK);
+   for(let i=s;i<e;i++)d[i]*=gg;
+  }
+ }
+}
+/* 完整處理鏈：（降噪 →）音量。withVol=true 用喺匯出；預覽靠 gainNode 即時控制 */
+function buildProcessed(st,en,withVol){
+ const chans=getFloatSlice(st,en);
+ if(dnOn&&chans.length){
+  const sr=audioBuf.sampleRate;
+  for(const d of chans)hpFilter(d,sr,90);
+  gateDenoise(chans,sr,dnLv);
+ }
+ if(withVol&&volPct!==100){
+  const k=volPct/100;
+  for(const d of chans)for(let i=0;i<d.length;i++)d[i]*=k;
+ }
+ return chans;
+}
+function toI16(chans){
+ const out=[];
+ for(const d of chans){
+  const a=new Int16Array(d.length);
+  for(let i=0;i<d.length;i++){let v=d[i];if(v>1)v=1;else if(v<-1)v=-1;a[i]=v<0?v*32768:v*32767;}
   out.push(a);
  }
  return out;
 }
-function encodeWav(start,end){
- const chans=sliceI16(start,end),n=chans[0].length,c=chans.length,sr=audioBuf.sampleRate;
+function encodeWav(chans,sr){
+ const n=chans[0].length,c=chans.length;
  const bytes=44+n*c*2,buf=new ArrayBuffer(bytes),dv=new DataView(buf);
  const ws=(o,str)=>{for(let i=0;i<str.length;i++)dv.setUint8(o+i,str.charCodeAt(i));};
  ws(0,'RIFF');dv.setUint32(4,bytes-8,true);ws(8,'WAVE');ws(12,'fmt ');
@@ -579,8 +747,8 @@ function encodeWav(start,end){
  for(let i=0;i<n;i++)for(let ch=0;ch<c;ch++,off+=2)dv.setInt16(off,chans[ch][i],true);
  return new Blob([buf],{type:'audio/wav'});
 }
-function encodeMp3(start,end,kbps,L){
- const chans=sliceI16(start,end),n=chans[0].length,sr=audioBuf.sampleRate;
+function encodeMp3(chans,sr,kbps,L){
+ const n=chans[0].length;
  const enc=new L.Mp3Encoder(chans.length,sr,kbps),parts=[],BLK=1152;
  for(let i=0;i<n;i+=BLK){
   const l=chans[0].subarray(i,i+BLK);
@@ -616,7 +784,8 @@ $('exportBtn').onclick=async()=>{
    if(en-st<=0.001)continue;
    busy(true,'匯出中… 第 '+(i+1)+' / '+segments.length+' 段');
    await sleep(30);
-   const blob=wantMp3?encodeMp3(st,en,kbps,L):encodeWav(st,en);
+   const i16=toI16(buildProcessed(st,en,true));
+   const blob=wantMp3?encodeMp3(i16,audioBuf.sampleRate,kbps,L):encodeWav(i16,audioBuf.sampleRate);
    busy(false);
    download(blob,baseName+'_seg'+pad(i+1,2)+'_'+fmtStamp(st)+'-'+fmtStamp(en)+'.'+(wantMp3?'mp3':'wav'));
    done++;
