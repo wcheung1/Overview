@@ -165,7 +165,9 @@ function fmtShort(sec){return fmt(sec).replace(/^0:/,'');}
 function fmtStamp(sec){sec=Math.max(0,sec||0);const base=Math.floor(sec);const ms=Math.round((sec-base)*1000),s=Math.floor(base%60),m=Math.floor(base%3600/60),h=Math.floor(base/3600);return (h?h+'h':'')+m+'m'+pad(s,2)+'s'+pad(ms,3);}
 function parseTime(str){if(!str)return null;str=String(str).trim().replace(',','.');if(!str)return null;let m;
  if(m=str.match(/^(\d+(?:\.\d+)?)\s*ms$/i))return parseFloat(m[1])/1000;
- if(m=str.match(/^(?:(\d+):)?(?:(\d{1,2}):)?(\d{1,2}(?:\.\d+)?)$/)){const h=m[1]?parseInt(m[1],10):0,mi=m[2]?parseInt(m[2],10):0;return h*3600+mi*60+parseFloat(m[3]);}
+ if(m=str.match(/^(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)$/))return parseInt(m[1],10)*3600+parseInt(m[2],10)*60+parseFloat(m[3]);
+ if(m=str.match(/^(\d+):(\d{1,2}(?:\.\d+)?)$/))return parseInt(m[1],10)*60+parseFloat(m[2]);
+ if(m=str.match(/^(\d+(?:\.\d+)?)$/))return parseFloat(m[1]);
  return null;}
 let toastTimer=0;
 function toast(msg,long){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),long?5200:2600);}
