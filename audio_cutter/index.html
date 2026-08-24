@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Audio Cutter — 音訊精準剪裁工具</title>
+<style>
+:root{--bg:#101216;--panel:#191d23;--panel2:#20252d;--line:#2b323c;--txt:#e9ecf1;--dim:#98a2ae;--acc:#4fc3f7;--acc2:#ffb74d;--ok:#7bc97f;--warn:#ef7b7b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:15px;line-height:1.45;overscroll-behavior:none}
+.wrap{max-width:1000px;margin:0 auto;padding:10px 12px 60px}
+header.app{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+header.app .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:8px;padding-bottom:8px}
+h1{font-size:17px;margin:0;font-weight:700}
+h1 span{color:var(--acc)}
+#fileInfo{font-size:12px;color:var(--dim);text-align:right;max-width:58%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:10px}
+.card h2{font-size:13px;margin:0 0 8px;color:var(--acc);letter-spacing:.05em;text-transform:uppercase}
+button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 13px;font-size:14px;min-height:42px;cursor:pointer;touch-action:manipulation}
+button:active{background:#2a3140}
+button.primary{background:#0e3a52;border-color:#15628c;color:#dff3ff}
+button.warnbtn{border-color:#5c2b2b;color:var(--warn)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+input[type=text],select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 10px;font-size:14px;min-height:42px}
+input[type=text]{font-family:ui-monospace,Consolas,monospace}
+label.chk{display:flex;gap:6px;align-items:center;color:var(--dim);font-size:13px}
+#dropzone{border:2px dashed #3a4450;border-radius:12px;text-align:center;padding:34px 16px;color:var(--dim);margin-top:10px;transition:.15s;cursor:pointer}
+#dropzone.hot{border-color:var(--acc);color:var(--acc);background:#12222c}
+#dropzone b{color:var(--txt);font-size:16px;display:block;margin-bottom:6px}
+.cvbox{position:relative;background:#0b0d11;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+canvas{display:block;width:100%;touch-action:none}
+#overview{height:56px;cursor:pointer}
+#maincv{height:240px;cursor:crosshair}
+.hintbar{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--dim);margin-top:4px;flex-wrap:wrap}
+#timedisp{font-family:ui-monospace,Consolas,monospace;font-size:18px;text-align:center;margin:8px 0 2px}
+#timedisp .cur{color:var(--acc2);font-size:26px}
+#timedisp .tot{color:var(--dim);font-size:14px}
+.transport{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.transport button{min-width:56px}
+.transport button.big{min-width:96px;min-height:52px;font-size:18px}
+.segitem{display:flex;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.segitem:last-child{border-bottom:none}
+.segitem .idx{color:var(--acc2);font-family:ui-monospace,monospace;width:28px}
+.segitem input{width:112px;padding:7px 8px;min-height:38px;font-size:13px}
+.segitem .dur{color:var(--dim);font-size:12px;min-width:62px;text-align:right}
+.segitem button{min-height:38px;padding:6px 10px}
+#prog{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:8px}
+#progbar{height:100%;width:0;background:var(--acc);transition:width .2s}
+#busy{position:fixed;inset:0;background:rgba(8,10,13,.85);display:none;align-items:center;justify-content:center;z-index:99;flex-direction:column;gap:12px}
+#busy.show{display:flex}
+.spin{width:38px;height:38px;border:4px solid #334;border-top-color:var(--acc);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.note{font-size:12px;color:var(--dim);margin-top:6px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#26303c;color:var(--txt);border:1px solid var(--line);padding:10px 18px;border-radius:10px;z-index:100;opacity:0;transition:.25s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1}
+@media(min-width:760px){#maincv{height:300px}.transport{gap:10px}}
+</style>
+</head>
+<body>
+<div id="busy"><div class="spin"></div><div id="busyMsg">處理中…</div></div>
+<div class="toast" id="toast"></div>
+
+<header class="app"><div class="wrap">
+<h1>🎧 Audio <span>Cutter</span> 音訊精準剪裁</h1>
+<div id="fileInfo">未載入音訊</div>
+</div></header>
+
+<div class="wrap">
+
+<div id="dropzone">
+<b>將音訊檔拖到呢度（或撳一下揀檔）</b>
+支援 MP3 · M4A/AAC · WAV · OGG/OPUS（WhatsApp 語音）
+<input type="file" id="fileInput" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.amr" hidden>
+<button class="primary" id="pickBtn" style="margin-top:10px">📂 揀選音訊檔</button>
+</div>
+
+<div class="card" id="waveCard" style="display:none">
+<h2>Waveform 時間線</h2>
+<div class="cvbox"><canvas id="overview"></canvas></div>
+<div class="cvbox" style="margin-top:8px"><canvas id="maincv"></canvas></div>
+<div class="hintbar"><span id="viewRange"></span><span>拖曳＝平移 · 撳一下＝定位 · 雙指／滾輪＝縮放</span></div>
+
+<div id="timedisp"><span class="cur" id="tCur">0:00:00.000</span> <span class="tot">/ <span id="tTot">0:00:00</span></span></div>
+
+<div class="transport">
+<button id="back5" title="後退 5 秒">⏪5s</button>
+<button id="back1" title="後退 1 秒">⏪1s</button>
+<button id="playBtn" class="big primary" title="播放 / 暫停（空白鍵）">▶</button>
+<button id="fwd1" title="前進 1 秒">1s⏩</button>
+<button id="fwd5" title="前進 5 秒">5s⏩</button>
+</div>
+
+<div class="row" style="margin-top:8px">
+<button id="zoomOut">🔍−</button>
+<button id="zoomIn">🔍+</button>
+<button id="zoomFit">⤢ 全覽</button>
+<label class="chk"><input type="checkbox" id="followChk" checked>播放時自動跟線</label>
+</div>
+
+<div class="row" style="margin-top:8px">
+<input type="text" id="timeJump" placeholder="h:mm:ss.mmm / mm:ss / 秒 / 毫秒ms" class="grow" inputmode="decimal">
+<button id="jumpBtn" class="primary">📍 跳轉</button>
+</div>
+<div class="note">例：<code>1:23:45.5</code>（1小時23分45.5秒）、<code>12:30.25</code>、<code>95.2</code>（95.2秒）、<code>123456ms</code>（毫秒）</div>
+</div>
+
+<div class="card" id="markCard" style="display:none">
+<h2>切點 Marking</h2>
+<div class="row">
+<button id="addMarkBtn" class="primary">🚩 喺 cursor 加 Marker</button>
+<button id="segsFromMarksBtn">⚙ 由 Markers 生成段落</button>
+<button id="clearMarksBtn" class="warnbtn">清除 Marker</button>
+</div>
+<div class="row" style="margin-top:8px">
+<button id="setA">設 A 點</button><button id="setB">設 B 點</button>
+<button id="loopBtn">🔁 A–B 循環預覽</button>
+<button id="segFromAB" class="primary">➕ A–B 加入段落</button>
+</div>
+<div class="note" id="regionInfo" style="margin-top:8px">A/B 區間：未設定</div>
+<div id="markList" class="note"></div>
+</div>
+
+<div class="card" id="exportCard" style="display:none">
+<h2>段落清單與匯出</h2>
+<div class="row">
+<button id="clearSegs" class="warnbtn">清空段落</button>
+<span class="note" id="segCount" style="margin:0">尚未有段落</span>
+</div>
+<div id="segList" style="margin-top:8px"></div>
+<div class="row" style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+<span class="note" style="margin:0">格式：</span>
+<label class="chk"><input type="radio" name="fmt" value="mp3" checked>MP3</label>
+<select id="kbps"><option value="128">128 kbps</option><option value="192" selected>192 kbps</option><option value="320">320 kbps</option></select>
+<label class="chk"><input type="radio" name="fmt" value="wav">WAV（離線可用）</label>
+</div>
+<button id="exportBtn" class="primary" style="width:100%;margin-top:10px;min-height:50px;font-size:16px">⬇️ 一次過匯出全部段落</button>
+<div id="prog"><div id="progbar"></div></div>
+<div class="note" id="expStatus"></div>
+<div class="note">MP3 編碼器首次使用需連網載入；離線請改用 WAV 格式。</div>
+</div>
+
+</div>
+<script>
+'use strict';
+/* ================= 全域狀態 ================= */
+let audioBuf=null,baseName='audio',fileSize=0;
+let peaksMin=null,peaksMax=null;const BLOCK=256;
+let view={start:0,end:0};
+let cursorSec=0;
+let playing=false,srcNode=null,gainNode=null,actx=null,startCtxT=0,offAtStart=0,manualStop=false;
+let markers=[];
+let region={a:null,b:null},loopAB=false;
+let segments=[];
+
+/* ================= DOM 快取 ================= */
+const $=id=>document.getElementById(id);
+const dropzone=$('dropzone'),fileInput=$('fileInput'),mainCv=$('maincv'),ovCv=$('overview');
+
+/* ================= 小工具 ================= */
+function pad(n,w){n=String(n);while(n.length<w)n='0'+n;return n;}
+function fmt(sec){sec=Math.max(0,sec||0);const base=Math.floor(sec);let ms=Math.round((sec-base)*1000),s=Math.floor(base%60),m=Math.floor(base%3600/60),h=Math.floor(base/3600);if(ms===1000){ms=0;s+=1;if(s===60){s=0;m+=1;}}return h+':'+pad(m,2)+':'+pad(s,2)+'.'+pad(ms,3);}
+function fmtShort(sec){return fmt(sec).replace(/^0:/,'');}
+function fmtStamp(sec){sec=Math.max(0,sec||0);const base=Math.floor(sec);const ms=Math.round((sec-base)*1000),s=Math.floor(base%60),m=Math.floor(base%3600/60),h=Math.floor(base/3600);return (h?h+'h':'')+m+'m'+pad(s,2)+'s'+pad(ms,3);}
+function parseTime(str){if(!str)return null;str=String(str).trim().replace(',','.');if(!str)return null;let m;
+ if(m=str.match(/^(\d+(?:\.\d+)?)\s*ms$/i))return parseFloat(m[1])/1000;
+ if(m=str.match(/^(?:(\d+):)?(?:(\d{1,2}):)?(\d{1,2}(?:\.\d+)?)$/)){const h=m[1]?parseInt(m[1],10):0,mi=m[2]?parseInt(m[2],10):0;return h*3600+mi*60+parseFloat(m[3]);}
+ return null;}
+let toastTimer=0;
+function toast(msg,long){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),long?5200:2600);}
+function busy(on,msg){$('busy').classList.toggle('show',!!on);if(msg)$('busyMsg').textContent=msg;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+/* ================= 檔案載入與解碼 ================= */
+$('pickBtn').addEventListener('click',()=>fileInput.click());
+dropzone.addEventListener('click',e=>{if(e.target===dropzone)fileInput.click();});
+['dragover','dragenter'].forEach(ev=>dropzone.addEventListener(ev,e=>{e.preventDefault();dropzone.classList.add('hot');}));
+['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev,e=>{e.preventDefault();dropzone.classList.remove('hot');}));
+dropzone.addEventListener('drop',e=>{const f=e.dataTransfer.files&&e.dataTransfer.files[0];if(f)loadFile(f);});
+fileInput.addEventListener('change',()=>{if(fileInput.files[0])loadFile(fileInput.files[0]);});
+
+async function loadFile(f){
+ busy(true,'解碼音訊中…');
+ try{
+  stopNode();playing=false;$('playBtn').textContent='▶';
+  baseName=f.name.replace(/\.[^.]+$/,'')||'audio';fileSize=f.size;
+  const ab=await f.arrayBuffer();
+  ensureAC();
+  const buf=await actx.decodeAudioData(ab);
+  audioBuf=buf;cursorSec=0;markers=[];region={a:null,b:null};loopAB=false;segments=[];$('loopBtn').textContent='🔁 A–B 循環預覽';
+  busy(true,'建立波形索引…');await sleep(30);
+  buildPeaks(buf);
+  view={start:0,end:buf.duration};
+  $('fileInfo').textContent=f.name+' · '+fmtShort(buf.duration)+' · '+buf.sampleRate+' Hz · '+buf.numberOfChannels+' ch'+(fileSize>1048576?' · '+(fileSize/1048576).toFixed(1)+' MB':'');
+  $('tTot').textContent=fmtShort(buf.duration);
+  dropzone.style.display='none';
+  ['waveCard','markCard','exportCard'].forEach(id=>$(id).style.display='block');
+  renderMarks();renderSegs();updateRegionInfo();
+  resizeAll();
+  if(buf.duration>7200)toast('⚠️ 音檔超過 2 小時，操作可能較慢',true);
+  toast('✅ 已載入：'+f.name);
+ }catch(err){
+  console.error(err);
+  alert('解碼失敗：'+(err&&err.message?err.message:err)+'\n可能係唔支援嘅格式，請試下轉做 MP3 / M4A 再入。');
+ }finally{busy(false);}
+}
+function ensureAC(){
+ if(!actx){const AC=window.AudioContext||window.webkitAudioContext;actx=new AC();gainNode=actx.createGain();gainNode.connect(actx.destination);}
+ if(actx.state==='suspended')actx.resume();
+ return actx;
+}
+function buildPeaks(buf){
+ const n=Math.max(1,Math.ceil(buf.length/BLOCK));
+ peaksMin=new Float32Array(n);peaksMax=new Float32Array(n);
+ const nch=Math.min(buf.numberOfChannels,2),datas=[];
+ for(let c=0;c<nch;c++)datas.push(buf.getChannelData(c));
+ for(let i=0;i<n;i++){
+  const s=i*BLOCK,e=Math.min(s+BLOCK,buf.length);let mn=Infinity,mx=-Infinity;
+  for(let d=0;d<datas.length;d++){const arr=datas[d];for(let j=s;j<e;j++){const v=arr[j];if(v<mn)mn=v;if(v>mx)mx=v;}}
+  if(!isFinite(mn)){mn=0;mx=0;}
+  peaksMin[i]=mn;peaksMax[i]=mx;
+ }
+}
+<!--SENT-->
+</body>
+</html>
