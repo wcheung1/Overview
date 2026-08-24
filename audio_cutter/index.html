@@ -222,6 +222,414 @@ function buildPeaks(buf){
   peaksMin[i]=mn;peaksMax[i]=mx;
  }
 }
-<!--SENT-->
+/* ================= Canvas 尺寸 ================= */
+function fitCanvas(cv){
+ const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ const w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));
+ if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}
+ return dpr;
+}
+function resizeAll(){fitCanvas(mainCv);fitCanvas(ovCv);drawMain();drawOv();}
+window.addEventListener('resize',()=>{if(audioBuf)resizeAll();});
+
+/* ================= 主畫布繪圖 ================= */
+function niceStep(target){
+ const steps=[0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,15,30,60,120,300,600,900,1800,3600];
+ for(const s of steps)if(target/s<=9)return s;
+ return 3600;
+}
+function fmtTick(sec,step){
+ if(step>=1)return Math.floor(sec/3600)+':'+pad(Math.floor(sec%3600/60),2)+':'+pad(Math.round(sec%60),2);
+ if(step>=0.1)return fmtShort(Math.round(sec*10)/10);
+ return fmtShort(Math.round(sec*100)/100);
+}
+function vLine(ctx,x,color,H,dpr){ctx.strokeStyle=color;ctx.lineWidth=Math.max(1,dpr);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+function drawMain(){
+ const dpr=fitCanvas(mainCv),ctx=mainCv.getContext('2d'),W=mainCv.width,H=mainCv.height;
+ ctx.clearRect(0,0,W,H);
+ if(!audioBuf)return;
+ const s0=view.start,s1=view.end,dur=Math.max(1e-6,s1-s0),mid=H*0.55,amp=H*0.42;
+ const xOf=t=>(t-s0)/dur*W,tOf=x=>s0+x/W*dur;
+ /* 時間刻度 */
+ const step=niceStep(dur/(W/dpr));
+ ctx.font=((11*dpr)|0)+'px monospace';ctx.textAlign='left';
+ for(let t=Math.ceil(s0/step)*step;t<=s1;t+=step){
+  const x=xOf(t);
+  ctx.strokeStyle='#232a33';ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+  ctx.fillStyle='#67717d';ctx.fillText(fmtTick(t,step),x+3*dpr,H-4*dpr);
+ }
+ /* 波形 */
+ const sr=audioBuf.sampleRate,nB=peaksMin.length,data=audioBuf.getChannelData(0);
+ const spp=dur/W*sr;
+ ctx.fillStyle='#4fc3f7';
+ if(spp>=BLOCK){
+  for(let x=0;x<W;x++){
+   let b0=Math.floor(tOf(x)*sr/BLOCK),b1=Math.ceil(tOf(x+1)*sr/BLOCK);
+   b0=Math.max(0,b0);b1=Math.min(nB,Math.max(b1,b0+1));
+   let mn=Infinity,mx=-Infinity;
+   for(let b=b0;b<b1;b++){if(peaksMin[b]<mn)mn=peaksMin[b];if(peaksMax[b]>mx)mx=peaksMax[b];}
+   const y1=mid-mx*amp,y2=mid-mn*amp;
+   ctx.fillRect(x,y1,1,Math.max(1,y2-y1));
+  }
+ }else{
+  ctx.beginPath();
+  const iA=Math.max(0,Math.floor(s0*sr)),iB=Math.min(audioBuf.length,Math.ceil(s1*sr));
+  for(let i=iA;i<iB;i++){const y=mid-data[i]*amp,x=xOf(i/sr);if(i===iA)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+  ctx.strokeStyle='#4fc3f7';ctx.lineWidth=Math.max(1,dpr);ctx.stroke();
+ }
+ /* A/B 區間 */
+ if(region.a!=null&&region.b!=null){
+  const xa=xOf(Math.min(region.a,region.b)),xb=xOf(Math.max(region.a,region.b));
+  ctx.fillStyle='rgba(255,183,77,.13)';ctx.fillRect(xa,0,Math.max(1,xb-xa),H);
+ }
+ if(region.a!=null)vLine(ctx,xOf(region.a),'#ffb74d',H,dpr);
+ if(region.b!=null)vLine(ctx,xOf(region.b),'#ffb74d',H,dpr);
+ /* Markers */
+ ctx.textAlign='center';
+ markers.forEach((t,i)=>{
+  const x=xOf(t);if(x<-20||x>W+20)return;
+  vLine(ctx,x,'#ef7b7b',H,dpr);
+  ctx.fillStyle='#ef7b7b';ctx.fillRect(x-8*dpr,0,16*dpr,14*dpr);
+  ctx.fillStyle='#101216';ctx.font='bold '+((9*dpr)|0)+'px sans-serif';
+  ctx.fillText(String(i+1),x,11*dpr);
+ });
+ /* Cursor */
+ const cx=xOf(cursorSec);
+ vLine(ctx,cx,'#ffffff',H,dpr);
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(cx-6*dpr,0);ctx.lineTo(cx+6*dpr,0);ctx.lineTo(cx,10*dpr);ctx.fill();
+ $('viewRange').textContent=fmtShort(s0)+' — '+fmtShort(s1)+(dur<1?' ('+Math.round(dur*1000)+' ms)':dur<600?' ('+dur.toFixed(1)+' s)':'');
+}
+/* ================= Overview 繪圖 ================= */
+function drawOv(){
+ const dpr=fitCanvas(ovCv),ctx=ovCv.getContext('2d'),W=ovCv.width,H=ovCv.height;
+ ctx.clearRect(0,0,W,H);
+ if(!audioBuf)return;
+ const D=audioBuf.duration,mid=H*0.55,amp=H*0.4,nB=peaksMin.length;
+ ctx.fillStyle='#3d8fb5';
+ for(let x=0;x<W;x++){
+  const b0=Math.floor(x/W*nB),b1=Math.max(b0+1,Math.floor((x+1)/W*nB));
+  let mn=Infinity,mx=-Infinity;
+  for(let b=b0;b<b1;b++){if(peaksMin[b]<mn)mn=peaksMin[b];if(peaksMax[b]>mx)mx=peaksMax[b];}
+  const y1=mid-mx*amp,y2=mid-mn*amp;
+  ctx.fillRect(x,y1,1,Math.max(1,y2-y1));
+ }
+ ctx.fillStyle='rgba(255,255,255,.08)';
+ ctx.fillRect(view.start/D*W,0,(view.end-view.start)/D*W,H);
+ ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(1,dpr);
+ ctx.strokeRect(view.start/D*W,0,(view.end-view.start)/D*W,H);
+ vLine(ctx,cursorSec/D*W,'#ffb74d',H,dpr);
+ ctx.strokeStyle='#ef7b7b';
+ markers.forEach(t=>{const x=t/D*W;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();});
+}
+/* ================= 播放引擎 ================= */
+function stopNode(){if(srcNode){try{srcNode.onended=null;srcNode.stop();}catch(e){}srcNode=null;}}
+function curPos(){return playing?offAtStart+(actx.currentTime-startCtxT):cursorSec;}
+function play(from){
+ if(!audioBuf)return;
+ stopNode();ensureAC();
+ from=Math.max(0,Math.min(from,audioBuf.duration));
+ srcNode=actx.createBufferSource();srcNode.buffer=audioBuf;srcNode.connect(gainNode);
+ offAtStart=from;startCtxT=actx.currentTime;manualStop=false;
+ srcNode.onended=()=>{
+  if(manualStop)return;
+  if(loopAB&&region.a!=null&&region.b!=null){play(Math.min(region.a,region.b));return;}
+  playing=false;cursorSec=audioBuf.duration;$('playBtn').textContent='▶';updTime();drawMain();drawOv();
+ };
+ srcNode.start(0,from);
+ playing=true;$('playBtn').textContent='⏸';
+ tick();
+}
+function pause(){
+ if(!playing)return;
+ manualStop=true;stopNode();
+ cursorSec=curPos();playing=false;
+ $('playBtn').textContent='▶';updTime();drawMain();drawOv();
+}
+function togglePlay(){
+ if(!audioBuf)return;
+ if(playing)pause();
+ else play(cursorSec>=audioBuf.duration-0.01?0:cursorSec);
+}
+function tick(){
+ if(!playing)return;
+ cursorSec=curPos();
+ if($('followChk').checked){
+  const dur=view.end-view.start;
+  if(cursorSec>view.end-dur*0.04||cursorSec<view.start){
+   view.start=Math.max(0,cursorSec-dur*0.1);view.end=view.start+dur;clampView();
+  }
+ }
+ updTime();drawMain();drawOv();
+ rafId=requestAnimationFrame(tick);
+}
+let rafId=0;
+function setCursor(t){if(!audioBuf)return;cursorSec=Math.max(0,Math.min(t,audioBuf.duration));updTime();drawMain();drawOv();}
+function updTime(){$('tCur').textContent=fmt(cursorSec);}
+function nudge(dt){const t=(playing?curPos():cursorSec)+dt;if(playing)play(t);else setCursor(t);}
+
+/* ================= 主畫布手勢 ================= */
+const ptrs=new Map();let panRef=null,pinchRef=null,moved=false;
+function clampView(){
+ const D=audioBuf.duration;
+ let dur=view.end-view.start;
+ dur=Math.min(D,Math.max(0.02,dur));
+ view.start=Math.max(0,Math.min(view.start,D-dur));
+ view.end=view.start+dur;
+}
+function zoomAround(focusT,factor){
+ const dur=view.end-view.start;
+ let nd=dur*factor;
+ nd=Math.min(audioBuf.duration,Math.max(0.02,nd));
+ const ratio=(focusT-view.start)/dur;
+ view.start=focusT-ratio*nd;view.end=view.start+nd;
+ clampView();drawMain();drawOv();
+}
+mainCv.addEventListener('pointerdown',e=>{
+ if(!audioBuf)return;
+ mainCv.setPointerCapture(e.pointerId);
+ ptrs.set(e.pointerId,{x:e.offsetX});moved=false;
+ if(ptrs.size===1){panRef={x:e.offsetX,s:view.start,e:view.end};}
+ else if(ptrs.size===2){
+  const xs=[...ptrs.values()].map(p=>p.x);
+  pinchRef={dist:Math.abs(xs[0]-xs[1])||1,dur:view.end-view.start,center:(view.start+view.end)/2};
+  panRef=null;
+ }
+});
+mainCv.addEventListener('pointermove',e=>{
+ if(!ptrs.has(e.pointerId))return;
+ const rec=ptrs.get(e.pointerId),prevX=rec.x;rec.x=e.offsetX;
+ if(pinchRef&&ptrs.size===2){
+  const xs=[...ptrs.values()].map(p=>p.x),dist=Math.abs(xs[0]-xs[1])||1;
+  const nd=Math.min(audioBuf.duration,Math.max(0.02,pinchRef.dur*pinchRef.dist/dist));
+  view.start=pinchRef.center-nd/2;view.end=pinchRef.center+nd/2;
+  clampView();moved=true;drawMain();drawOv();return;
+ }
+ if(ptrs.size===1&&panRef){
+  const tot=e.offsetX-panRef.x;
+  if(Math.abs(tot)>6)moved=true;
+  if(moved){
+   const dtPerPx=(panRef.e-panRef.s)/mainCv.clientWidth;
+   view.start=panRef.s-tot*dtPerPx;view.end=panRef.e-tot*dtPerPx;
+   clampView();drawMain();drawOv();
+  }
+ }
+});
+function endPtr(e){
+ if(!ptrs.has(e.pointerId))return;
+ ptrs.delete(e.pointerId);
+ if(ptrs.size===0){
+  if(pinchRef){pinchRef=null;panRef=null;return;}
+  if(panRef&&!moved&&audioBuf){
+   const r=mainCv.getBoundingClientRect();
+   const t=view.start+(e.clientX-r.left)/r.width*(view.end-view.start);
+   setCursor(t);
+  }
+  panRef=null;
+ }
+}
+mainCv.addEventListener('pointerup',endPtr);
+mainCv.addEventListener('pointercancel',endPtr);
+mainCv.addEventListener('wheel',e=>{
+ if(!audioBuf)return;e.preventDefault();
+ const r=mainCv.getBoundingClientRect();
+ const focusT=view.start+(e.clientX-r.left)/r.width*(view.end-view.start);
+ zoomAround(focusT,e.deltaY<0?0.75:1.33);
+},{passive:false});
+
+/* Overview：撳／拖嚟移動可見範圍 */
+let ovDrag=false;
+ovCv.addEventListener('pointerdown',e=>{if(!audioBuf)return;ovDrag=true;ovCv.setPointerCapture(e.pointerId);seekOv(e);});
+ovCv.addEventListener('pointermove',e=>{if(ovDrag&&ovCv.hasPointerCapture&&ovCv.hasPointerCapture(e.pointerId))seekOv(e);});
+ovCv.addEventListener('pointerup',()=>{ovDrag=false;});
+ovCv.addEventListener('pointercancel',()=>{ovDrag=false;});
+function seekOv(e){
+ const r=ovCv.getBoundingClientRect();
+ const t=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*audioBuf.duration;
+ const half=(view.end-view.start)/2;
+ view.start=t-half;view.end=t+half;
+ clampView();drawMain();drawOv();
+}
+
+/* ================= Transport 掣與時間跳轉 ================= */
+$('playBtn').addEventListener('click',togglePlay);
+$('back5').onclick=()=>nudge(-5);
+$('back1').onclick=()=>nudge(-1);
+$('fwd1').onclick=()=>nudge(1);
+$('fwd5').onclick=()=>nudge(5);
+$('zoomIn').onclick=()=>zoomAround(playing?curPos():((view.start+view.end)/2),0.55);
+$('zoomOut').onclick=()=>zoomAround((view.start+view.end)/2,1.8);
+$('zoomFit').onclick=()=>{if(!audioBuf)return;view={start:0,end:audioBuf.duration};drawMain();drawOv();};
+function doJump(){
+ if(!audioBuf)return toast('請先載入音訊檔');
+ const v=parseTime($('timeJump').value);
+ if(v==null)return toast('❌ 時間格式唔啱，例：1:23:45.5');
+ setCursor(v);
+ if(playing)play(cursorSec);
+}
+$('jumpBtn').onclick=doJump;
+$('timeJump').addEventListener('keydown',e=>{if(e.key==='Enter')doJump();});
+document.addEventListener('keydown',e=>{
+ if(e.code==='Space'&&audioBuf&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();togglePlay();}
+});
+/* ================= Marker 與 A/B 區間 ================= */
+$('addMarkBtn').onclick=()=>{
+ if(!audioBuf)return toast('請先載入音訊檔');
+ const t=playing?curPos():cursorSec;
+ markers.push(t);markers.sort((a,b)=>a-b);
+ renderMarks();drawMain();drawOv();
+ toast('🚩 Marker #'+markers.length+' @ '+fmtShort(t));
+};
+$('clearMarksBtn').onclick=()=>{markers=[];renderMarks();drawMain();drawOv();};
+$('segsFromMarksBtn').onclick=()=>{
+ if(markers.length<2)return toast('至少要有 2 個 Marker 先可以生成段落');
+ segments=markers.slice(0,-1).map((t,i)=>({start:t,end:markers[i+1]}));
+ renderSegs();toast('⚙ 已由 '+markers.length+' 個 Marker 生成 '+segments.length+' 段');
+};
+function renderMarks(){
+ $('markList').innerHTML=markers.length?('Markers（'+markers.length+'）：'+markers.map((t,i)=>'#'+(i+1)+' '+fmtShort(t)).join(' · ')):'（未有任何 Marker）';
+}
+$('setA').onclick=()=>{if(!audioBuf)return;region.a=playing?curPos():cursorSec;updateRegionInfo();drawMain();};
+$('setB').onclick=()=>{if(!audioBuf)return;region.b=playing?curPos():cursorSec;updateRegionInfo();drawMain();};
+$('loopBtn').onclick=function(){
+ if(!audioBuf)return;
+ if(region.a==null||region.b==null)return toast('先設 A 同 B 點');
+ loopAB=!loopAB;
+ this.textContent=loopAB?'⏹ 停止循環':'🔁 A–B 循環預覽';
+ if(loopAB)play(Math.min(region.a,region.b));else pause();
+ updateRegionInfo();
+};
+$('segFromAB').onclick=()=>{
+ if(region.a==null||region.b==null)return toast('先設 A 同 B 點');
+ segments.push({start:Math.min(region.a,region.b),end:Math.max(region.a,region.b)});
+ segments.sort((a,b)=>a.start-b.start);
+ renderSegs();toast('➕ 已加入段落 #'+segments.length);
+};
+function updateRegionInfo(){
+ $('regionInfo').textContent='A/B 區間：'+(region.a!=null?'A='+fmtShort(region.a):'A 未設')+' · '+(region.b!=null?'B='+fmtShort(region.b):'B 未設')+(loopAB?'（循環中）':'');
+}
+
+/* ================= 段落清單 ================= */
+function renderSegs(){
+ const el=$('segList');el.innerHTML='';
+ $('segCount').textContent=segments.length?('共 '+segments.length+' 段，總長 '+fmtShort(segments.reduce((a,s)=>a+(s.end-s.start),0))):'尚未有段落';
+ segments.forEach((sg,i)=>{
+  const row=document.createElement('div');row.className='segitem';
+  const idx=document.createElement('span');idx.className='idx';idx.textContent=pad(i+1,2);
+  const si=document.createElement('input'),ei=document.createElement('input');
+  si.value=fmt(sg.start);ei.value=fmt(sg.end);
+  const apply=()=>{
+   const a=parseTime(si.value),b=parseTime(ei.value);
+   if(a==null||b==null)return toast('❌ 時間格式唔啱');
+   if(b<=a)return toast('❌ 結束時間要大過開始');
+   sg.start=a;sg.end=b;renderSegs();drawMain();
+  };
+  si.onchange=apply;ei.onchange=apply;
+  const durEl=document.createElement('span');durEl.className='dur';durEl.textContent=Math.max(0,sg.end-sg.start).toFixed(2)+'s';
+  const pb=document.createElement('button');pb.textContent='▶';pb.title='預覽呢段';
+  pb.onclick=()=>{region={a:sg.start,b:sg.end};updateRegionInfo();play(sg.start);};
+  const db=document.createElement('button');db.textContent='✕';db.className='warnbtn';db.title='刪除';
+  db.onclick=()=>{segments.splice(i,1);renderSegs();};
+  row.append(idx,si,ei,durEl,pb,db);
+  el.appendChild(row);
+ });
+}
+$('clearSegs').onclick=()=>{if(segments.length&&confirm('確定清空全部段落？')){segments=[];renderSegs();}};
+/* ================= 匯出：MP3 / WAV ================= */
+let lamePromise=null;
+function loadLame(){
+ if(window.lame)return Promise.resolve(window.lame);
+ if(lamePromise)return lamePromise;
+ const urls=[
+  'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js',
+  'https://unpkg.com/lamejs@1.2.1/lame.min.js'
+ ];
+ lamePromise=(async()=>{
+  for(const u of urls){
+   try{
+    await new Promise((ok,no)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s);});
+    if(window.lame)return window.lame;
+   }catch(err){/* 試下一個 CDN */}
+  }
+  return null;
+ })();
+ return lamePromise;
+}
+function sliceI16(start,end){
+ const sr=audioBuf.sampleRate;
+ const s=Math.max(0,Math.floor(start*sr)),e=Math.min(audioBuf.length,Math.ceil(end*sr)),len=Math.max(1,e-s);
+ const nch=Math.min(audioBuf.numberOfChannels,2),out=[];
+ for(let c=0;c<nch;c++){
+  const d=audioBuf.getChannelData(c),a=new Int16Array(len);
+  for(let i=0;i<len;i++){let v=d[s+i];if(v>1)v=1;else if(v<-1)v=-1;a[i]=v<0?v*32768:v*32767;}
+  out.push(a);
+ }
+ return out;
+}
+function encodeWav(start,end){
+ const chans=sliceI16(start,end),n=chans[0].length,c=chans.length,sr=audioBuf.sampleRate;
+ const bytes=44+n*c*2,buf=new ArrayBuffer(bytes),dv=new DataView(buf);
+ const ws=(o,str)=>{for(let i=0;i<str.length;i++)dv.setUint8(o+i,str.charCodeAt(i));};
+ ws(0,'RIFF');dv.setUint32(4,bytes-8,true);ws(8,'WAVE');ws(12,'fmt ');
+ dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,c,true);
+ dv.setUint32(24,sr,true);dv.setUint32(28,sr*c*2,true);dv.setUint16(32,c*2,true);dv.setUint16(34,16,true);
+ ws(36,'data');dv.setUint32(40,n*c*2,true);
+ let off=44;
+ for(let i=0;i<n;i++)for(let ch=0;ch<c;ch++,off+=2)dv.setInt16(off,chans[ch][i],true);
+ return new Blob([buf],{type:'audio/wav'});
+}
+function encodeMp3(start,end,kbps,L){
+ const chans=sliceI16(start,end),n=chans[0].length,sr=audioBuf.sampleRate;
+ const enc=new L.Mp3Encoder(chans.length,sr,kbps),parts=[],BLK=1152;
+ for(let i=0;i<n;i+=BLK){
+  const l=chans[0].subarray(i,i+BLK);
+  const r=chans.length>1?chans[1].subarray(i,i+BLK):null;
+  const d=enc.encodeBuffer(l,r);
+  if(d.length)parts.push(new Uint8Array(d));
+ }
+ const fin=enc.flush();
+ if(fin.length)parts.push(new Uint8Array(fin));
+ return new Blob(parts,{type:'audio/mpeg'});
+}
+function download(blob,name){
+ const u=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=u;a.download=name;document.body.appendChild(a);a.click();
+ setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},800);
+}
+$('exportBtn').onclick=async()=>{
+ if(!audioBuf||!segments.length)return toast('冇段落可以匯出，請先加段落');
+ stopNode();playing=false;$('playBtn').textContent='▶';
+ const wantMp3=document.querySelector('input[name=fmt]:checked').value==='mp3';
+ const kbps=parseInt($('kbps').value,10);
+ let L=null;
+ if(wantMp3){
+  busy(true,'載入 MP3 編碼器…');
+  L=await loadLame();busy(false);
+  if(!L){toast('❌ 載入 MP3 編碼器失敗（可能離線），請改用 WAV 格式',true);return;}
+ }
+ $('exportBtn').disabled=true;
+ let done=0;
+ try{
+  for(let i=0;i<segments.length;i++){
+   const st=Math.min(segments[i].start,segments[i].end),en=Math.max(segments[i].start,segments[i].end);
+   if(en-st<=0.001)continue;
+   busy(true,'匯出中… 第 '+(i+1)+' / '+segments.length+' 段');
+   await sleep(30);
+   const blob=wantMp3?encodeMp3(st,en,kbps,L):encodeWav(st,en);
+   busy(false);
+   download(blob,baseName+'_seg'+pad(i+1,2)+'_'+fmtStamp(st)+'-'+fmtStamp(en)+'.'+(wantMp3?'mp3':'wav'));
+   done++;
+   $('progbar').style.width=Math.min(100,Math.round(done/Math.max(1,segments.length)*100))+'%';
+   await sleep(450);
+  }
+  $('expStatus').textContent='✅ 完成！已觸發下載 '+done+' 個檔案。';
+  toast('🎉 已匯出 '+done+' 個檔案',true);
+ }catch(err){
+  console.error(err);alert('匯出出錯：'+err.message);
+ }finally{$('exportBtn').disabled=false;busy(false);}
+};
+
+/* ================= 啟動 ================= */
+resizeAll();
+</script>
 </body>
 </html>
