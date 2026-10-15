@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小紅書連結簡化工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        /* Custom Red for Xiaohongshu theme */
+        .bg-xhs { background-color: #ff2442; }
+        .text-xhs { color: #ff2442; }
+        .border-xhs { border-color: #ff2442; }
+        .hover-bg-xhs-dark:hover { background-color: #e61e38; }
+        .ring-xhs:focus { box-shadow: 0 0 0 3px rgba(255, 36, 66, 0.3); }
+        
+        /* Fade in animation for results */
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
+
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <!-- Header -->
+        <div class="bg-xhs p-6 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-white flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                小紅書連結簡化工具
+            </h1>
+            <p class="text-white/80 mt-2 text-sm">一鍵移除多餘追蹤代碼，生成乾淨簡潔嘅 Share Link</p>
+        </div>
+
+        <div class="p-6 md:p-8">
+            <!-- Input Section -->
+            <div class="mb-6">
+                <label for="urlInput" class="block text-sm font-medium text-gray-700 mb-2">請貼上原始小紅書連結：</label>
+                <textarea 
+                    id="urlInput" 
+                    rows="4" 
+                    class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none ring-xhs transition resize-none"
+                    placeholder="例如: https://www.xiaohongshu.com/discovery/item/6a477f..."></textarea>
+                
+                <div class="flex flex-wrap gap-3 mt-4">
+                    <button id="pasteBtn" class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        貼上 (Paste)
+                    </button>
+                    <button id="convertBtn" class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-xhs text-white font-medium rounded-xl hover-bg-xhs-dark transition shadow-lg shadow-red-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        轉換 (Convert)
+                    </button>
+                </div>
+                
+                <!-- Error Message Container -->
+                <div id="errorMsg" class="hidden mt-4 p-3 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div id="outputSection" class="hidden border-t border-gray-100 pt-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">轉換結果：</h2>
+                
+                <div class="space-y-4">
+                    <!-- Version 1: Base URL -->
+                    <div class="fade-in bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <div class="flex justify-between items-start gap-4 mb-2">
+                            <div>
+                                <h3 class="font-medium text-gray-800">版本 1：基礎版</h3>
+                                <p class="text-xs text-gray-500 mt-1">最原始嘅短連結，適合大部分情況。</p>
+                            </div>
+                            <button class="copy-btn shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-xhs transition" data-target="urlBase">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>複製</span>
+                            </button>
+                        </div>
+                        <input type="text" id="urlBase" readonly class="w-full bg-white border border-gray-200 text-sm text-gray-700 rounded-lg p-2.5 outline-none font-mono">
+                    </div>
+
+                    <!-- Version 2: Explore URL -->
+                    <div class="fade-in bg-gray-50 border border-gray-200 rounded-xl p-4" style="animation-delay: 0.1s;">
+                        <div class="flex justify-between items-start gap-4 mb-2">
+                            <div>
+                                <h3 class="font-medium text-gray-800">版本 2：Explore 短版 <span class="ml-2 inline-block bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">推薦</span></h3>
+                                <p class="text-xs text-gray-500 mt-1">小紅書常用嘅現代網頁格式，更短更簡潔。</p>
+                            </div>
+                            <button class="copy-btn shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-xhs transition" data-target="urlExplore">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>複製</span>
+                            </button>
+                        </div>
+                        <input type="text" id="urlExplore" readonly class="w-full bg-white border border-gray-200 text-sm text-gray-700 rounded-lg p-2.5 outline-none font-mono">
+                    </div>
+
+                    <!-- Version 3: Secure URL -->
+                    <div id="secureUrlContainer" class="fade-in bg-red-50/50 border border-red-100 rounded-xl p-4" style="animation-delay: 0.2s;">
+                        <div class="flex justify-between items-start gap-4 mb-2">
+                            <div>
+                                <h3 class="font-medium text-gray-800 flex items-center gap-1">
+                                    版本 3：安全縮短版 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-600"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </h3>
+                                <p class="text-xs text-gray-500 mt-1">保留咗安全碼 (xsec_token)，防止俾系統攔截開唔到。</p>
+                            </div>
+                            <button class="copy-btn shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-xhs transition" data-target="urlSecure">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>複製</span>
+                            </button>
+                        </div>
+                        <input type="text" id="urlSecure" readonly class="w-full bg-white border border-gray-200 text-sm text-gray-700 rounded-lg p-2.5 outline-none font-mono break-all">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // UI Elements
+        const urlInput = document.getElementById('urlInput');
+        const pasteBtn = document.getElementById('pasteBtn');
+        const convertBtn = document.getElementById('convertBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const outputSection = document.getElementById('outputSection');
+        
+        const urlBaseInput = document.getElementById('urlBase');
+        const urlExploreInput = document.getElementById('urlExplore');
+        const urlSecureInput = document.getElementById('urlSecure');
+        const secureUrlContainer = document.getElementById('secureUrlContainer');
+        const copyBtns = document.querySelectorAll('.copy-btn');
+
+        // Show Error utility
+        function showError(msg) {
+            errorMsg.querySelector('span').textContent = msg;
+            errorMsg.classList.remove('hidden');
+            outputSection.classList.add('hidden');
+        }
+
+        function hideError() {
+            errorMsg.classList.add('hidden');
+        }
+
+        // Paste functionality
+        pasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                urlInput.value = text;
+                hideError();
+                // Optionally trigger convert automatically after paste
+                // processUrl(); 
+            } catch (err) {
+                // Fallback or permission denied
+                showError("無法讀取剪貼簿，請長按輸入框手動貼上。");
+            }
+        });
+
+        // Convert functionality
+        convertBtn.addEventListener('click', processUrl);
+
+        function processUrl() {
+            hideError();
+            const rawInput = urlInput.value.trim();
+
+            if (!rawInput) {
+                showError("請輸入連結！");
+                return;
+            }
+
+            // Extract URL from input if there's surrounding text
+            const urlMatch = rawInput.match(/https?:\/\/[^\s]+/);
+            if (!urlMatch) {
+                showError("搵唔到有效嘅網址，請確認輸入是否正確。");
+                return;
+            }
+
+            const urlString = urlMatch[0];
+
+            try {
+                const url = new URL(urlString);
+
+                // Check if it's Xiaohongshu
+                if (!url.hostname.includes('xiaohongshu.com')) {
+                    showError("呢個似乎唔係小紅書嘅連結 (xiaohongshu.com)。");
+                    return;
+                }
+
+                // Extract Item ID
+                let itemId = null;
+                const pathMatches = url.pathname.match(/\/(?:discovery\/item|explore)\/([a-zA-Z0-9]+)/);
+                
+                if (pathMatches && pathMatches[1]) {
+                    itemId = pathMatches[1];
+                } else {
+                    showError("搵唔到帖子 ID，連結格式可能唔支援。");
+                    return;
+                }
+
+                // Extract Token
+                const xsecToken = url.searchParams.get('xsec_token');
+
+                // Generate URLs
+                const domain = "https://www.xiaohongshu.com";
+                const baseResult = `${domain}/discovery/item/${itemId}`;
+                const exploreResult = `${domain}/explore/${itemId}`;
+
+                // Populate UI
+                urlBaseInput.value = baseResult;
+                urlExploreInput.value = exploreResult;
+
+                if (xsecToken) {
+                    urlSecureInput.value = `${exploreResult}?xsec_token=${encodeURIComponent(xsecToken)}`;
+                    secureUrlContainer.style.display = 'block';
+                } else {
+                    urlSecureInput.value = "";
+                    secureUrlContainer.style.display = 'none'; // Hide if no token
+                }
+
+                // Show Results
+                outputSection.classList.remove('hidden');
+
+                // Scroll to results slightly for mobile UX
+                setTimeout(() => {
+                    outputSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+
+            } catch (e) {
+                showError("網址解析失敗，請確認連結格式是否正確。");
+            }
+        }
+
+        // Copy functionality using a reliable robust method (compatible with iframe environments)
+        function copyToClipboard(text) {
+            // Try standard clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for iFrame or older browsers
+                return new Promise((resolve, reject) => {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    // Prevent scrolling to bottom
+                    textArea.style.position = "fixed";
+                    textArea.style.top = "0";
+                    textArea.style.left = "0";
+                    textArea.style.opacity = "0";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        const successful = document.execCommand('copy');
+                        if (successful) {
+                            resolve();
+                        } else {
+                            reject(new Error('Copy failed'));
+                        }
+                    } catch (err) {
+                        reject(err);
+                    }
+                    document.body.removeChild(textArea);
+                });
+            }
+        }
+
+        copyBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const textToCopy = document.getElementById(targetId).value;
+                const originalHTML = this.innerHTML;
+                
+                if(!textToCopy) return;
+
+                copyToClipboard(textToCopy).then(() => {
+                    // Success UI feedback
+                    this.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span class="text-green-600 font-bold">已複製</span>
+                    `;
+                    this.classList.add('bg-green-50', 'border-green-200');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.classList.remove('bg-green-50', 'border-green-200');
+                    }, 2000);
+                }).catch(err => {
+                    // Use standard prompt fallback if clipboard logic fails completely
+                    window.prompt("複製失敗，請手動複製以下連結：", textToCopy);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
