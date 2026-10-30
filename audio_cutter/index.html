@@ -45,6 +45,7 @@ canvas{display:block;width:100%;touch-action:none}
 .segitem .idx{color:var(--acc2);font-family:ui-monospace,monospace;width:28px}
 .segitem input{width:112px;padding:7px 8px;min-height:38px;font-size:13px}
 .segitem .dur{color:var(--dim);font-size:12px;min-width:62px;text-align:right}
+.segitem .sz{color:var(--ok);font-size:12px;min-width:70px;text-align:right;font-family:ui-monospace,monospace}
 .segitem button{min-height:38px;padding:6px 10px}
 #prog{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:8px}
 #progbar{height:100%;width:0;background:var(--acc);transition:width .2s}
@@ -97,6 +98,22 @@ canvas{display:block;width:100%;touch-action:none}
 支援 MP3 · M4A/AAC · WAV · OGG/OPUS（WhatsApp 語音）
 <input type="file" id="fileInput" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.amr" hidden>
 <button class="primary" id="pickBtn" style="margin-top:10px">📂 揀選音訊檔</button>
+</div>
+
+<div class="card" id="splitCard" style="display:none">
+<h2>📏 平均切開</h2>
+<div class="row">
+<select id="splitMode">
+<option value="count" selected>切成 N 份（每份大小一樣）</option>
+<option value="size">每份唔超過 X MB</option>
+<option value="time">每份固定長度</option>
+</select>
+<input type="text" id="splitVal" value="2" style="width:86px" inputmode="decimal">
+<span id="splitUnit" class="note" style="margin:0">份</span>
+<button id="splitBtn" class="primary">✂️ 平均切開</button>
+</div>
+<div class="note" id="splitPreview"></div>
+<div class="note">切點會自動生成刀口同段落，之後喺下面「段落清單與匯出」一次過匯出。每份大小會跟住你揀嘅輸出質素計（預設保留原檔質素）。</div>
 </div>
 
 <div class="card" id="waveCard" style="display:none">
@@ -172,16 +189,35 @@ canvas{display:block;width:100%;touch-action:none}
 <span class="note" id="segCount" style="margin:0">尚未有段落</span>
 </div>
 <div id="segList" style="margin-top:8px"></div>
-<div class="row" style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+<div style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+<div class="note" style="margin:0 0 6px">輸出質素：</div>
+<label class="chk" style="margin-bottom:6px"><input type="radio" name="qmode" value="orig" checked><span id="qOrigLabel">🎯 保留原檔質素（直接切，唔重新編碼）</span></label>
+<label class="chk"><input type="radio" name="qmode" value="custom">🎛 自訂質素（重新編碼）</label>
+<div class="note" id="origInfo"></div>
+<label class="chk" id="id3Wrap" style="display:none;margin-top:6px"><input type="checkbox" id="id3Chk">每個檔案都保留 ID3 標籤（歌名／封面等，每個檔會大 <span id="id3Size"></span>）</label>
+</div>
+<div id="customBox" style="display:none;margin-top:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px">
+<div class="row">
 <span class="note" style="margin:0">格式：</span>
 <label class="chk"><input type="radio" name="fmt" value="mp3" checked>MP3</label>
-<select id="kbps"><option value="128">128 kbps</option><option value="192" selected>192 kbps</option><option value="320">320 kbps</option></select>
-<label class="chk"><input type="radio" name="fmt" value="wav">WAV（離線可用）</label>
+<label class="chk"><input type="radio" name="fmt" value="wav">WAV</label>
 </div>
+<div class="row" style="margin-top:8px">
+<span class="note" style="margin:0;min-width:52px">位元率</span><select id="kbps" class="grow"></select>
+</div>
+<div class="row" style="margin-top:8px">
+<span class="note" style="margin:0;min-width:52px">聲道</span><select id="chSel" class="grow"></select>
+</div>
+<div class="row" style="margin-top:8px">
+<span class="note" style="margin:0;min-width:52px">取樣率</span><select id="srSel" class="grow"></select>
+</div>
+<div class="note">預設全部「跟原檔」。調高位元率／取樣率唔會令音質變好，只會令檔案變大；調低就可以再細啲。</div>
+</div>
+<div class="note" id="qWarn" style="color:var(--acc2)"></div>
 <button id="exportBtn" class="primary" style="width:100%;margin-top:10px;min-height:50px;font-size:16px">⬇️ 一次過匯出全部段落</button>
 <div id="prog"><div id="progbar"></div></div>
 <div class="note" id="expStatus"></div>
-<div class="note">MP3 編碼器已內置喺本檔案，離線都用得（WAV 係後備格式）。</div>
+<div class="note">MP3 編碼器已內置喺本檔案，離線都用得。</div>
 </div>
 
 </div>
@@ -525,7 +561,7 @@ new U(9,511,w.t24HB,w.t24l),new U(11,2047,w.t24HB,w.t24l),new U(13,8191,w.t24HB,
 ia.IXMAX_VAL=8206;var sa={};sa.SFBMAX=3*c.SBMAX_s;c.ENCDELAY=576;c.POSTDELAY=1152;c.MDCTDELAY=48;c.FFTOFFSET=224+c.MDCTDELAY;c.DECDELAY=528;c.SBLIMIT=32;c.CBANDS=64;c.SBPSY_l=21;c.SBPSY_s=12;c.SBMAX_l=22;c.SBMAX_s=13;c.PSFB21=6;c.PSFB12=6;c.BLKSIZE=1024;c.HBLKSIZE=c.BLKSIZE/2+1;c.BLKSIZE_s=256;c.HBLKSIZE_s=c.BLKSIZE_s/2+1;c.NORM_TYPE=0;c.START_TYPE=1;c.SHORT_TYPE=2;c.STOP_TYPE=3;c.MPG_MD_LR_LR=0;c.MPG_MD_LR_I=1;c.MPG_MD_MS_LR=2;c.MPG_MD_MS_I=3;c.fircoef=[-.1039435,-.1892065,-.0432472*5,-.155915,3.898045E-17,
 .0467745*5,.50455,.756825,.187098*5];da.MFSIZE=3456+c.ENCDELAY-c.MDCTDELAY;da.MAX_HEADER_BUF=256;da.MAX_BITS_PER_CHANNEL=4095;da.MAX_BITS_PER_GRANULE=7680;da.BPC=320;Fa.RIFF=cc("RIFF");Fa.WAVE=cc("WAVE");Fa.fmt_=cc("fmt ");Fa.data=cc("data");Fa.readHeader=function(c){var k=new Fa,n=c.getUint32(0,!1);if(Fa.RIFF==n&&(c.getUint32(4,!0),Fa.WAVE==c.getUint32(8,!1)&&Fa.fmt_==c.getUint32(12,!1))){var u=c.getUint32(16,!0),w=20;switch(u){case 16:case 18:k.channels=c.getUint16(w+2,!0);k.sampleRate=c.getUint32(w+
 4,!0);break;default:throw"extended fmt chunk not implemented";}w+=u;u=Fa.data;for(var B=0;u!=n;){n=c.getUint32(w,!1);B=c.getUint32(w+4,!0);if(u==n)break;w+=B+8}k.dataLen=B;k.dataOffset=w+8;return k}};sa.SFBMAX=3*c.SBMAX_s;lamejs.Mp3Encoder=function(c,k,n){3!=arguments.length&&(console.error("WARN: Mp3Encoder(channels, samplerate, kbps) not specified"),c=1,k=44100,n=128);var u=new W,w=new Kc,B=new Y,G=new qa,f=new wc,b=new ia,v=new Ec,a=new zb,m=new mc,z=new Nc,e=new xc,l=new qb,d=new Lc,g=new Mc;
-u.setModules(B,G,f,b,v,a,m,z,g);G.setModules(B,g,m,a);z.setModules(G,m);f.setModules(u);v.setModules(G,e,b,l);b.setModules(l,e,u.enc.psy);e.setModules(G);l.setModules(b);a.setModules(u,G,m);w.setModules(d,g);d.setModules(m,z,f);var q=u.lame_init();q.num_channels=c;q.in_samplerate=k;q.brate=n;q.mode=la.STEREO;q.quality=3;q.bWriteVbrTag=!1;q.disable_reservoir=!0;q.write_id3tag_automatic=!1;u.lame_init_params(q);var D=1152,p=0|1.25*D+7200,r=new Int8Array(p);this.encodeBuffer=function(a,b){1==c&&(b=a);
+u.setModules(B,G,f,b,v,a,m,z,g);G.setModules(B,g,m,a);z.setModules(G,m);f.setModules(u);v.setModules(G,e,b,l);b.setModules(l,e,u.enc.psy);e.setModules(G);l.setModules(b);a.setModules(u,G,m);w.setModules(d,g);d.setModules(m,z,f);var q=u.lame_init();q.num_channels=c;q.in_samplerate=k;q.out_samplerate=k;q.brate=n;q.mode=la.STEREO;q.quality=3;q.bWriteVbrTag=!1;q.disable_reservoir=!0;q.write_id3tag_automatic=!1;u.lame_init_params(q);var D=1152,p=0|1.25*D+7200,r=new Int8Array(p);this.encodeBuffer=function(a,b){1==c&&(b=a);
 a.length>D&&(D=a.length,p=0|1.25*D+7200,r=new Int8Array(p));a=u.lame_encode_buffer(q,a,b,a.length,r,0,p);return new Int8Array(r.subarray(0,a))};this.flush=function(){var a=u.lame_encode_flush(q,r,0,p);return new Int8Array(r.subarray(0,a))}};lamejs.WavHeader=Fa}lamejs();if(!window.lame)window.lame=lamejs;
 </script>
 <script>
@@ -540,6 +576,8 @@ let markers=[];
 let region={a:null,b:null},loopAB=false;
 let segments=[];
 let volPct=100,dnOn=false,dnLv=1;
+/* 原檔資料：用嚟「無損直切」同「跟原檔」預設 */
+let srcInfo=null,srcFile=null;
 /* 模式與合拼狀態 */
 let appMode='cut';
 let mergeItems=[];      /* 合拼清單：{name, buf(AudioBuffer)} */
@@ -577,7 +615,7 @@ fileInput.addEventListener('change',()=>{if(fileInput.files[0])loadFile(fileInpu
 $('changeFileBtn').addEventListener('click',()=>{
  if(audioBuf&&!confirm('換檔會清走目前音訊、刀口同全部段落設定，確定？'))return;
  stopNode();playing=false;cancelAnimationFrame(rafId);
- audioBuf=null;peaksMin=null;peaksMax=null;
+ audioBuf=null;peaksMin=null;peaksMax=null;srcInfo=null;srcFile=null;
  markers=[];segments=[];region={a:null,b:null};loopAB=false;cursorSec=0;
  volPct=100;dnOn=false;
  try{if(actx)actx.close();}catch(e){}
@@ -586,7 +624,7 @@ $('changeFileBtn').addEventListener('click',()=>{
  $('changeFileBtn').style.display='none';
  $('volSlider').value=100;$('volVal').textContent='100%';$('volSlider').dispatchEvent(new Event('input'));
  $('dnChk').checked=false;$('cutsInput').value='';
- ['waveCard','markCard','fxCard','exportCard'].forEach(id=>$(id).style.display='none');
+ ['splitCard','waveCard','markCard','fxCard','exportCard'].forEach(id=>$(id).style.display='none');
  dropzone.style.display='block';
  $('fileInfo').textContent='未載入音訊';
  toast('已離開目前音訊，請上載另一條聲帶');
@@ -598,18 +636,23 @@ async function loadFile(f){
   stopNode();playing=false;$('playBtn').textContent='▶';
   baseName=f.name.replace(/\.[^.]+$/,'')||'audio';fileSize=f.size;
   const ab=await f.arrayBuffer();
+  /* 要喺解碼之前分析（decodeAudioData 會「搬走」個 ArrayBuffer） */
+  let info=null;
+  try{info=analyzeSource(new Uint8Array(ab),f.name);}catch(e){console.warn('分析原檔失敗',e);}
   ensureAC();
   const buf=await actx.decodeAudioData(ab);
+  srcInfo=finalizeInfo(info,buf,f);srcFile=f;
+  resetOutControls();
   audioBuf=buf;cursorSec=0;markers=[];region={a:null,b:null};loopAB=false;segments=[];$('loopBtn').textContent='🔁 A–B 循環預覽';
   busy(true,'建立波形索引…');await sleep(30);
   buildPeaks(buf);
   view={start:0,end:buf.duration};
-  $('fileInfo').textContent=f.name+' · '+fmtShort(buf.duration)+' · '+buf.sampleRate+' Hz · '+buf.numberOfChannels+' ch'+(fileSize>1048576?' · '+(fileSize/1048576).toFixed(1)+' MB':'');
+  $('fileInfo').textContent=f.name+' · '+fmtShort(buf.duration)+' · '+srcDesc(srcInfo)+' · '+fmtBytes(fileSize);
   $('tTot').textContent=fmtShort(buf.duration);
   dropzone.style.display='none';
-  ['waveCard','markCard','fxCard','exportCard'].forEach(id=>$(id).style.display='block');
+  ['splitCard','waveCard','markCard','fxCard','exportCard'].forEach(id=>$(id).style.display='block');
   $('changeFileBtn').style.display='inline-block';
-  renderMarks();renderSegs();updateRegionInfo();
+  renderMarks();refreshOut();updateRegionInfo();
   resizeAll();
   if(buf.duration>7200)toast('⚠️ 音檔超過 2 小時，操作可能較慢',true);
   toast('✅ 已載入：'+f.name);
@@ -635,6 +678,162 @@ function buildPeaks(buf){
   peaksMin[i]=mn;peaksMax[i]=mx;
  }
 }
+/* ================= 原檔分析（MP3 幀 / WAV 標頭 / 其他格式基本資料） ================= */
+const MP3_BR={
+ v1:{1:[0,32,64,96,128,160,192,224,256,288,320,352,384,416,448],2:[0,32,48,56,64,80,96,112,128,160,192,224,256,320,384],3:[0,32,40,48,56,64,80,96,112,128,160,192,224,256,320]},
+ v2:{1:[0,32,48,56,64,80,96,112,128,144,160,176,192,224,256],2:[0,8,16,24,32,40,48,56,64,80,96,112,128,144,160],3:[0,8,16,24,32,40,48,56,64,80,96,112,128,144,160]}
+};
+const MP3_SR={3:[44100,48000,32000],2:[22050,24000,16000],0:[11025,12000,8000]};
+/* 解析 4 byte MP3 幀標頭；唔啱就回傳 null */
+function mp3Hdr(u8,p){
+ if(p+4>u8.length||u8[p]!==0xFF)return null;
+ const b1=u8[p+1],b2=u8[p+2],b3=u8[p+3];
+ if((b1&0xE0)!==0xE0)return null;
+ const ver=(b1>>3)&3,lay=4-((b1>>1)&3);
+ if(ver===1||lay===4)return null;
+ const bi=(b2>>4)&15,si=(b2>>2)&3;
+ if(bi===0||bi===15||si===3)return null;
+ const br=MP3_BR[ver===3?'v1':'v2'][lay][bi]*1000,sr=MP3_SR[ver][si],pad=(b2>>1)&1;
+ let len,spf;
+ if(lay===1){len=(Math.floor(12*br/sr)+pad)*4;spf=384;}
+ else if(lay===2){len=Math.floor(144*br/sr)+pad;spf=1152;}
+ else{len=Math.floor((ver===3?144:72)*br/sr)+pad;spf=ver===3?1152:576;}
+ return {ver,lay,bi,si,br,sr,len,spf,ch:((b3>>6)&3)===3?1:2,crc:!(b1&1)};
+}
+function mp3SideLen(ver,ch){return ver===3?(ch===1?17:32):(ch===1?9:17);}
+/* VBR 分段要寫返一個新嘅 Xing 標頭幀（等播放器知道每段真正長度） */
+function xingLayout(I){
+ const v1=I.ver===3,side=mp3SideLen(I.ver,I.ch),need=4+side+120,tbl=MP3_BR[v1?'v1':'v2'][3];
+ for(let bi=1;bi<15;bi++){const size=Math.floor((v1?144:72)*tbl[bi]*1000/I.sr);if(size>=need)return {bi,size,side};}
+ return {bi:14,size:Math.floor((v1?144:72)*tbl[14]*1000/I.sr),side};
+}
+function parseMp3(u8){
+ let p=0,id3=null;
+ while(p+10<=u8.length&&u8[p]===0x49&&u8[p+1]===0x44&&u8[p+2]===0x33){ /* ID3v2（可能多個） */
+  const sz=((u8[p+6]&127)<<21)|((u8[p+7]&127)<<14)|((u8[p+8]&127)<<7)|(u8[p+9]&127);
+  const tot=10+sz+((u8[p+5]&0x10)?10:0);
+  if(!id3)id3=[p,p+tot];else id3[1]=p+tot;
+  p+=tot;
+ }
+ let end=u8.length;
+ if(end-128>=p&&u8[end-128]===0x54&&u8[end-127]===0x41&&u8[end-126]===0x47)end-=128; /* ID3v1 */
+ if(end-32>=p&&String.fromCharCode.apply(null,u8.subarray(end-32,end-24))==='APETAGEX'){ /* APEv2 */
+  const asz=(u8[end-20]|(u8[end-19]<<8)|(u8[end-18]<<16)|(u8[end-17]<<24))>>>0;
+  end=Math.max(p,end-asz-((u8[end-9]&0x80)?32:0));
+ }
+ const same=(a,b)=>a&&b&&a.ver===b.ver&&a.lay===b.lay&&a.si===b.si;
+ /* 搵第一個可靠嘅幀（連續 3 幀一致） */
+ let first=-1;
+ for(let q=p;q<end-4&&q<p+(1<<22);q++){
+  if(u8[q]!==0xFF)continue;
+  const h=mp3Hdr(u8,q);if(!h)continue;
+  const q2=q+h.len;if(q2===end){first=q;break;}
+  const h2=mp3Hdr(u8,q2);if(!same(h,h2))continue;
+  const q3=q2+h2.len;if(q3>=end||same(h,mp3Hdr(u8,q3))){first=q;break;}
+ }
+ if(first<0)return null;
+ const H0=mp3Hdr(u8,first);
+ const off=[],len=[];let q=first,junk=0;
+ while(q+4<=end){
+  const h=mp3Hdr(u8,q);
+  if(same(h,H0)&&q+h.len<=end){off.push(q);len.push(h.len);q+=h.len;continue;}
+  let r=q+1; /* 重新同步 */
+  while(r+4<=end){
+   if(u8[r]===0xFF){const h2=mp3Hdr(u8,r);if(same(h2,H0)){const r2=r+h2.len;if(r2>=end||same(mp3Hdr(u8,r2),H0))break;}}
+   r++;
+  }
+  junk+=r-q;q=r;
+ }
+ /* 第一幀如果係 Xing / Info / VBRI 標頭（唔係聲音），要剔走 */
+ let hadTag=false;
+ if(off.length){
+  const o=first+4+(H0.crc?2:0)+(H0.lay===3?mp3SideLen(H0.ver,H0.ch):0);
+  const t=String.fromCharCode(u8[o],u8[o+1],u8[o+2],u8[o+3]),t2=String.fromCharCode(u8[first+36],u8[first+37],u8[first+38],u8[first+39]);
+  if((H0.lay===3&&(t==='Xing'||t==='Info'))||t2==='VBRI'){off.shift();len.shift();hadTag=true;}
+ }
+ const nF=off.length;if(nF<2)return null;
+ const bis=new Set();for(let i=0;i<nF;i++)bis.add(mp3Hdr(u8,off[i]).bi);
+ const a0=off[0],F=mp3Hdr(u8,a0),audioBytes=off[nF-1]+len[nF-1]-a0,dur=nF*H0.spf/H0.sr;
+ const I={kind:'mp3',lossless:true,fmtName:'MP3',off:Float64Array.from(off),len:Uint32Array.from(len),nF,spf:H0.spf,sr:H0.sr,ch:H0.ch,ver:H0.ver,lay:H0.lay,
+  hdr:[u8[a0],u8[a0+1],u8[a0+2],u8[a0+3]],vbr:bis.size>1,cbrKbps:bis.size>1?null:F.br/1000,avgKbps:audioBytes*8/dur/1000,audioBytes,dur,junk,hadTag,
+  id3:id3?u8.slice(id3[0],Math.min(id3[1],u8.length)):null};
+ I.xing=(I.vbr&&I.lay===3)?xingLayout(I):null;
+ return I;
+}
+function parseWav(u8){
+ const s4=o=>String.fromCharCode(u8[o],u8[o+1],u8[o+2],u8[o+3]);
+ if(u8.length<44||s4(0)!=='RIFF'||s4(8)!=='WAVE')return null;
+ const dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength);
+ let p=12,fmt=null,data=null;
+ while(p+8<=u8.length){
+  const id=s4(p);let sz=dv.getUint32(p+4,true);
+  if(id==='fmt '){fmt=u8.slice(p,Math.min(u8.length,p+8+sz));}
+  else if(id==='data'){if(sz===0||p+8+sz>u8.length)sz=u8.length-p-8;data={off:p+8,size:sz};break;}
+  p+=8+sz+(sz&1);
+ }
+ if(!fmt||!data||fmt.length<24)return null;
+ const f=new DataView(fmt.buffer);
+ const ch=f.getUint16(10,true),sr=f.getUint32(12,true),ba=f.getUint16(20,true),bps=f.getUint16(22,true);
+ if(!ba||!sr||!ch)return null;
+ return {kind:'wav',lossless:true,fmtName:'WAV',fmt,fmtPad:(fmt.length-8)&1,dataOff:data.off,nS:Math.floor(data.size/ba),ba,sr,ch,bps,avgKbps:sr*ba*8/1000};
+}
+/* 其他格式（M4A / OGG / OPUS）：淨係讀取樣率同聲道，用嚟做「跟原檔」預設 */
+function sniffOther(u8){
+ const n=u8.length,S=(o,s)=>{for(let k=0;k<s.length;k++)if(u8[o+k]!==s.charCodeAt(k))return false;return true;};
+ const u32le=o=>(u8[o]|(u8[o+1]<<8)|(u8[o+2]<<16)|(u8[o+3]<<24))>>>0;
+ if(S(0,'OggS')){
+  for(let i=0;i<Math.min(n-20,65536);i++){
+   if(u8[i]===0x4F&&S(i,'OpusHead'))return {fmtName:'OPUS',ch:u8[i+9],sr:u32le(i+12)||48000};
+   if(u8[i]===0x01&&S(i+1,'vorbis'))return {fmtName:'OGG',ch:u8[i+11],sr:u32le(i+12)};
+  }
+  return {fmtName:'OGG'};
+ }
+ if(S(4,'ftyp')){
+  for(let i=8;i<n-32;i++){
+   if(u8[i]===0x6D&&u8[i+1]===0x70&&u8[i+2]===0x34&&u8[i+3]===0x61){
+    const ch=(u8[i+20]<<8)|u8[i+21],sr=(u8[i+28]<<8)|u8[i+29];
+    if(ch>=1&&ch<=8&&sr>=8000&&sr<=96000)return {fmtName:'M4A',ch,sr};
+   }
+  }
+  return {fmtName:'M4A'};
+ }
+ if(S(0,'fLaC'))return {fmtName:'FLAC'};
+ if(S(0,'#!AMR'))return {fmtName:'AMR',ch:1,sr:8000};
+ return {};
+}
+function analyzeSource(u8,name){
+ const head=String.fromCharCode(u8[0],u8[1],u8[2],u8[3]);
+ if(head==='RIFF'){const w=parseWav(u8);if(w)return w;}
+ const isOther=head==='OggS'||head==='fLaC'||String.fromCharCode(u8[4],u8[5],u8[6],u8[7])==='ftyp'||head==='#!AM';
+ if(!isOther){const m=parseMp3(u8);if(m)return m;}
+ const o=sniffOther(u8);
+ o.kind='other';o.lossless=false;
+ if(!o.fmtName)o.fmtName=((name.match(/\.([^.]+)$/)||[])[1]||'audio').toUpperCase();
+ return o;
+}
+/* 解碼完先最後確認：MP3 幀長度要對得上解碼長度，否則唔用直切 */
+function finalizeInfo(info,buf,f){
+ const D=buf.duration;
+ if(info&&info.kind==='mp3'&&Math.abs(info.dur-D)>Math.max(1,D*0.05))info=null;
+ if(info&&info.kind==='wav'&&Math.abs(info.nS/info.sr-D)>Math.max(1,D*0.05))info=null;
+ if(!info)info={kind:'other',lossless:false,fmtName:((f.name.match(/\.([^.]+)$/)||[])[1]||'audio').toUpperCase()};
+ if(info.kind==='other'){
+  info.ch=Math.min(2,info.ch||buf.numberOfChannels);
+  if(!(info.sr>=8000&&info.sr<=192000))info.sr=buf.sampleRate;
+  info.avgKbps=f.size*8/Math.max(0.1,D)/1000;
+ }
+ return info;
+}
+function chName(c){return c===1?'單聲道 mono':c===2?'立體聲 stereo':c+' 聲道';}
+function fmtBytes(b){return b>=1048576?(b/1048576).toFixed(2)+' MB':Math.max(1,Math.round(b/1024))+' KB';}
+function srcDesc(I){
+ if(!I)return '';
+ const sr=fmtSR(I.sr),ch=chName(I.ch);
+ if(I.kind==='mp3')return 'MP3 · '+(I.vbr?'VBR 平均 ≈ '+Math.round(I.avgKbps)+' kbps':I.cbrKbps+' kbps')+' · '+sr+' · '+ch;
+ if(I.kind==='wav')return 'WAV · '+I.bps+'-bit · '+sr+' · '+ch;
+ return I.fmtName+' · 平均 ≈ '+Math.round(I.avgKbps)+' kbps · '+sr+' · '+ch;
+}
+
 /* ================= Canvas 尺寸 ================= */
 function fitCanvas(cv){
  const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
@@ -953,7 +1152,9 @@ function updateRegionInfo(){
 /* ================= 段落清單 ================= */
 function renderSegs(){
  const el=$('segList');el.innerHTML='';
- $('segCount').textContent=segments.length?('共 '+segments.length+' 段，總長 '+fmtShort(segments.reduce((a,s)=>a+(s.end-s.start),0))):'尚未有段落';
+ const plan=audioBuf?outPlan():null,approx=plan&&!plan.lossless?'≈':'';
+ const segSz=sg=>plan?estBytes(Math.min(sg.start,sg.end),Math.max(sg.start,sg.end),plan):0;
+ $('segCount').textContent=segments.length?('共 '+segments.length+' 段，總長 '+fmtShort(segments.reduce((a,s)=>a+(s.end-s.start),0))+(plan?' · 合共 '+approx+fmtBytes(segments.reduce((a,s)=>a+segSz(s),0)):'')):'尚未有段落';
  segments.forEach((sg,i)=>{
   const row=document.createElement('div');row.className='segitem';
   const idx=document.createElement('span');idx.className='idx';idx.textContent=pad(i+1,2);
@@ -967,11 +1168,12 @@ function renderSegs(){
   };
   si.onchange=apply;ei.onchange=apply;
   const durEl=document.createElement('span');durEl.className='dur';durEl.textContent=Math.max(0,sg.end-sg.start).toFixed(2)+'s';
+  const szEl=document.createElement('span');szEl.className='sz';szEl.textContent=plan?approx+fmtBytes(segSz(sg)):'';szEl.title=plan&&plan.lossless?'實際檔案大小（無損直切）':'估計檔案大小';
   const pb=document.createElement('button');pb.textContent='▶';pb.title='預覽呢段';
   pb.onclick=()=>{region={a:sg.start,b:sg.end};updateRegionInfo();play(sg.start);};
   const db=document.createElement('button');db.textContent='✕';db.className='warnbtn';db.title='刪除';
   db.onclick=()=>{segments.splice(i,1);renderSegs();};
-  row.append(idx,si,ei,durEl,pb,db);
+  row.append(idx,si,ei,durEl,szEl,pb,db);
   el.appendChild(row);
  });
 }
@@ -982,7 +1184,8 @@ $('volSlider').addEventListener('input',function(){
  $('volVal').textContent=volPct+'%';
  if(gainNode)gainNode.gain.value=volPct/100;
 });
-$('dnChk').addEventListener('change',function(){dnOn=this.checked;});
+$('volSlider').addEventListener('change',()=>{if(audioBuf)refreshOut();});
+$('dnChk').addEventListener('change',function(){dnOn=this.checked;if(audioBuf)refreshOut();});
 $('dnLevel').addEventListener('change',function(){dnLv=parseInt(this.value,10);});
 $('fxPreviewBtn').onclick=()=>{
  if(!audioBuf)return toast('請先載入音訊檔');
@@ -1132,34 +1335,288 @@ function download(blob,name){
  a.href=u;a.download=name;document.body.appendChild(a);a.click();
  setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},800);
 }
+/* ================= 輸出質素：保留原檔（直切）／自訂（重新編碼） ================= */
+const LAME_SR=[48000,44100,32000,24000,22050,16000,12000,11025,8000];
+function lameKbpsList(sr){return sr>=32000?[32,40,48,56,64,80,96,112,128,160,192,224,256,320]:sr>=16000?[8,16,24,32,40,48,56,64,80,96,112,128,144,160]:[8,16,24,32,40,48,56,64];}
+function nearest(list,v){let b=list[0];for(const x of list)if(Math.abs(x-v)<Math.abs(b-v))b=x;return b;}
+function origSR(){return srcInfo?srcInfo.sr:audioBuf.sampleRate;}
+function origCh(){return Math.min(2,srcInfo?srcInfo.ch:audioBuf.numberOfChannels);}
+function origKbps(){
+ if(srcInfo&&srcInfo.kind!=='wav'&&srcInfo.avgKbps)return srcInfo.cbrKbps||srcInfo.avgKbps;
+ return origCh()>1?192:128; /* WAV 原檔冇「位元率」可跟，用建議值 */
+}
+function fxActive(){return volPct!==100||dnOn;}
+function qMode(){const r=document.querySelector('input[name=qmode]:checked');return r?r.value:'orig';}
+/* 自訂設定（useDefaults=true 即全部跟原檔） */
+function customOpts(useDefaults){
+ const fmt=useDefaults?(srcInfo&&srcInfo.kind==='wav'?'wav':'mp3'):document.querySelector('input[name=fmt]:checked').value;
+ const chV=useDefaults?0:+$('chSel').value,srV=useDefaults?0:+$('srSel').value,kV=useDefaults?0:+$('kbps').value;
+ const ch=chV||origCh();
+ let sr=srV||origSR();
+ if(fmt==='mp3'&&LAME_SR.indexOf(sr)<0)sr=nearest(LAME_SR,sr);
+ const kbps=nearest(lameKbpsList(sr),kV||origKbps());
+ return {fmt,ch,sr,kbps};
+}
+/* 決定今次點樣輸出 */
+function outPlan(){
+ const orig=qMode()==='orig';
+ if(orig&&srcInfo&&srcInfo.lossless&&!fxActive())return {lossless:true,fmt:srcInfo.kind};
+ const o=customOpts(orig);o.lossless=false;return o;
+}
+function planDesc(p){
+ if(p.lossless)return '無損直切（同原檔一樣：'+srcDesc(srcInfo)+'）';
+ return p.fmt==='wav'?'WAV · '+fmtSR(p.sr)+' · '+chName(p.ch):'MP3 · '+p.kbps+' kbps · '+fmtSR(p.sr)+' · '+chName(p.ch);
+}
+function useId3(){return !!(srcInfo&&srcInfo.kind==='mp3'&&srcInfo.id3&&$('id3Chk').checked);}
+
+/* ---- MP3 無損直切：按幀邊界切，唔解碼、唔重新編碼 ---- */
+function mp3Range(st,en){
+ const I=srcInfo,D=audioBuf.duration,fps=I.sr/I.spf;
+ let i0=st<=0.0005?0:Math.round(st*fps),i1=en>=D-0.0005?I.nF:Math.round(en*fps);
+ i0=Math.max(0,Math.min(I.nF-1,i0));i1=Math.max(i0+1,Math.min(I.nF,i1));
+ return [i0,i1];
+}
+function mp3PartSize(i0,i1){
+ const I=srcInfo;let b=I.off[i1-1]+I.len[i1-1]-I.off[i0];
+ if(I.xing)b+=I.xing.size;
+ if(useId3())b+=I.id3.length;
+ return b;
+}
+function buildXing(i0,i1){
+ const I=srcInfo,X=I.xing,nF=i1-i0,ab=I.off[i1-1]+I.len[i1-1]-I.off[i0];
+ const f=new Uint8Array(X.size),h=I.hdr;
+ f[0]=0xFF;f[1]=h[1]|1;f[2]=(X.bi<<4)|(h[2]&0x0D);f[3]=h[3];
+ let o=4+X.side;
+ f.set([0x58,0x69,0x6E,0x67],o);o+=4; /* "Xing" */
+ const w32=v=>{f[o++]=(v>>>24)&255;f[o++]=(v>>>16)&255;f[o++]=(v>>>8)&255;f[o++]=v&255;};
+ w32(7);w32(nF);w32(ab+X.size); /* flags: 幀數＋位元組＋TOC */
+ for(let i=0;i<100;i++){const k=i0+Math.floor(i*nF/100);f[o++]=Math.min(255,Math.floor((I.off[k]-I.off[i0])*256/ab));}
+ return f;
+}
+function cutMp3(st,en){
+ const I=srcInfo,r=mp3Range(st,en),i0=r[0],i1=r[1],parts=[];
+ if(useId3())parts.push(I.id3);
+ if(I.xing)parts.push(buildXing(i0,i1));
+ parts.push(srcFile.slice(I.off[i0],I.off[i1-1]+I.len[i1-1]));
+ return new Blob(parts,{type:'audio/mpeg'});
+}
+/* ---- WAV 無損直切：直接複製 PCM 資料 ---- */
+function wavRange(st,en){
+ const I=srcInfo,D=audioBuf.duration;
+ let s=st<=0.0005?0:Math.round(st*I.sr),e=en>=D-0.0005?I.nS:Math.round(en*I.sr);
+ s=Math.max(0,Math.min(I.nS-1,s));e=Math.max(s+1,Math.min(I.nS,e));
+ return [s,e];
+}
+function wavHdrLen(){return 12+srcInfo.fmt.length+srcInfo.fmtPad+8;}
+function wavPartSize(s,e){const d=(e-s)*srcInfo.ba;return wavHdrLen()+d+(d&1);}
+function cutWav(st,en){
+ const I=srcInfo,r=wavRange(st,en),dsz=(r[1]-r[0])*I.ba,padB=dsz&1,hl=wavHdrLen();
+ const h=new Uint8Array(hl),dv=new DataView(h.buffer);
+ h.set([82,73,70,70],0);dv.setUint32(4,hl-8+dsz+padB,true);h.set([87,65,86,69],8);
+ h.set(I.fmt,12);
+ const o=12+I.fmt.length+I.fmtPad;h.set([100,97,116,97],o);dv.setUint32(o+4,dsz,true);
+ const parts=[h,srcFile.slice(I.dataOff+r[0]*I.ba,I.dataOff+r[1]*I.ba)];
+ if(padB)parts.push(new Uint8Array(1));
+ return new Blob(parts,{type:'audio/wav'});
+}
+/* ---- 每段檔案大小（直切＝準確；重新編碼＝估計） ---- */
+function estBytes(st,en,plan){
+ plan=plan||outPlan();
+ if(plan.lossless){
+  if(srcInfo.kind==='mp3'){const r=mp3Range(st,en);return mp3PartSize(r[0],r[1]);}
+  const r=wavRange(st,en);return wavPartSize(r[0],r[1]);
+ }
+ const d=Math.max(0,en-st);
+ if(plan.fmt==='wav')return 44+Math.round(d*plan.sr)*plan.ch*2;
+ return Math.round(d*plan.kbps*125);
+}
+/* ---- 重新編碼：聲道轉換＋重新取樣 ---- */
+async function resampleChans(chans,from,to){
+ const n=chans[0].length,len=Math.max(1,Math.round(n*to/from));
+ try{
+  const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  const oc=new OC(chans.length,len,to);
+  const b=oc.createBuffer(chans.length,n,from);
+  chans.forEach((d,c)=>b.getChannelData(c).set(d));
+  const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start(0);
+  const r=await oc.startRendering();
+  const out=[];for(let c=0;c<chans.length;c++)out.push(r.getChannelData(c));
+  return out;
+ }catch(e){
+  console.warn('OfflineAudioContext 重新取樣失敗，改用線性插值',e);
+  const k=from/to;
+  return chans.map(d=>{const o=new Float32Array(len);for(let i=0;i<len;i++){const x=i*k,j=Math.floor(x),fr=x-j,a=d[Math.min(j,n-1)],b2=d[Math.min(j+1,n-1)];o[i]=a+(b2-a)*fr;}return o;});
+ }
+}
+async function renderCustom(st,en,o){
+ let ch=buildProcessed(st,en,true);
+ if(o.ch===1&&ch.length>1){const a=ch[0],b=ch[1],m=new Float32Array(a.length);for(let i=0;i<a.length;i++)m[i]=(a[i]+b[i])*0.5;ch=[m];}
+ else if(o.ch===2&&ch.length===1)ch=[ch[0],ch[0]];
+ if(o.sr!==audioBuf.sampleRate)ch=await resampleChans(ch,audioBuf.sampleRate,o.sr);
+ return ch;
+}
+
+/* ---- 輸出設定 UI ---- */
+function resetOutControls(){
+ const r=document.querySelector('input[name=qmode][value=orig]');if(r)r.checked=true;
+ const m=document.querySelector('input[name=fmt][value=mp3]');if(m)m.checked=true;
+ ['kbps','chSel','srSel'].forEach(id=>{$(id).innerHTML='';});
+ $('id3Chk').checked=false;
+}
+function rebuildOutOpts(){
+ const fmt=document.querySelector('input[name=fmt]:checked').value;
+ const isWavSrc=srcInfo&&srcInfo.kind==='wav';
+ /* 聲道 */
+ const pCh=$('chSel').value||'0';
+ $('chSel').innerHTML='<option value="0">跟原檔（'+chName(origCh())+'）</option><option value="1">單聲道 mono</option><option value="2">立體聲 stereo'+(origCh()===1?'（原檔係單聲道，冇幫助）':'')+'</option>';
+ $('chSel').value=pCh;
+ /* 取樣率 */
+ const osr=origSR(),pSr=$('srSel').value||'0';
+ const srList=fmt==='mp3'?LAME_SR:[96000,88200].concat(LAME_SR);
+ const osrLbl=fmtSR(osr)+(fmt==='mp3'&&LAME_SR.indexOf(osr)<0?' → MP3 用 '+fmtSR(nearest(LAME_SR,osr)):'');
+ $('srSel').innerHTML='<option value="0">跟原檔（'+osrLbl+'）</option>'+srList.map(s=>'<option value="'+s+'">'+fmtSR(s)+(s>osr?'（高過原檔，冇幫助）':'')+'</option>').join('');
+ $('srSel').value=(pSr==='0'||srList.indexOf(+pSr)>=0)?pSr:'0';
+ /* 位元率（MP3 先有） */
+ const sr0=(+$('srSel').value)||osr,sr=LAME_SR.indexOf(sr0)<0?nearest(LAME_SR,sr0):sr0;
+ const list=lameKbpsList(sr),ok=nearest(list,origKbps()),pK=+$('kbps').value||0;
+ let oLbl;
+ if(isWavSrc)oLbl='建議 '+ok+' kbps';
+ else if(srcInfo&&srcInfo.vbr)oLbl='VBR 平均 ≈ '+Math.round(srcInfo.avgKbps)+' → '+ok+' kbps';
+ else oLbl=(srcInfo&&srcInfo.kind==='mp3'?'':'≈ ')+ok+' kbps';
+ $('kbps').innerHTML='<option value="0">跟原檔（'+oLbl+'）</option>'+list.map(k=>'<option value="'+k+'">'+k+' kbps'+(!isWavSrc&&k>ok?'（高過原檔，冇幫助）':'')+'</option>').join('');
+ $('kbps').value=pK?String(nearest(list,pK)):'0';
+ $('kbps').parentElement.style.display=fmt==='mp3'?'':'none';
+}
+function refreshOut(){
+ if(!audioBuf||!srcInfo)return;
+ const I=srcInfo,mode=qMode();
+ $('qOrigLabel').textContent=I.lossless?'🎯 保留原檔質素（直接切，唔重新編碼）— 預設':'🎯 跟原檔設定（轉做 MP3，位元率／聲道／取樣率跟原檔）— 預設';
+ $('origInfo').textContent='原檔：'+srcDesc(I)+(I.lossless
+  ?'。直接由原檔切開，音質、位元率、取樣率、聲道 100% 同原檔一樣，每份大小同原檔成比例。'
+  :'。呢個格式唔可以直接切，會轉做 MP3；預設跟返原檔嘅位元率、聲道同取樣率。');
+ $('customBox').style.display=mode==='custom'?'block':'none';
+ const showId3=mode==='orig'&&I.kind==='mp3'&&I.id3&&I.id3.length>10&&!fxActive();
+ $('id3Wrap').style.display=showId3?'flex':'none';
+ if(showId3)$('id3Size').textContent=fmtBytes(I.id3.length);
+ rebuildOutOpts();
+ $('qWarn').textContent=(mode==='orig'&&I.lossless&&fxActive())
+  ?'⚠️ 你開咗音量調整或降噪，呢啲效果一定要重新編碼，所以今次會用跟原檔嘅位元率、聲道、取樣率重新編碼（唔再係無損直切）。想無損直切：音量還原 100%、熄咗降噪。'
+  :'';
+ renderSegs();updateSplitPreview();
+}
+document.querySelectorAll('input[name=qmode],input[name=fmt]').forEach(r=>r.addEventListener('change',refreshOut));
+['kbps','chSel','srSel','id3Chk'].forEach(id=>$(id).addEventListener('change',refreshOut));
+
+/* ================= 平均切開（份數／大小上限／固定長度） ================= */
+const SPLIT_UI={count:{unit:'份',val:'2'},size:{unit:'MB',val:''},time:{unit:'分鐘（亦可以 mm:ss）',val:'10'}};
+$('splitMode').addEventListener('change',function(){
+ const u=SPLIT_UI[this.value];
+ $('splitUnit').textContent=u.unit;
+ let v=u.val;
+ if(this.value==='size'&&audioBuf){const t=estBytes(0,audioBuf.duration)/1048576;v=String(Math.max(0.1,Math.ceil(t/2*10)/10));}
+ $('splitVal').value=v;
+ updateSplitPreview();
+});
+$('splitVal').addEventListener('input',updateSplitPreview);
+$('splitVal').addEventListener('keydown',e=>{if(e.key==='Enter')$('splitBtn').click();});
+function evenPoints(N,plan){
+ const D=audioBuf.duration,pts=[];
+ if(plan.lossless&&srcInfo.kind==='mp3'){ /* 按位元組平均（VBR 都一樣大） */
+  const I=srcInfo,base=I.off[0];
+  for(let k=1;k<N;k++){
+   const tgt=base+I.audioBytes*k/N;let lo=0,hi=I.nF-1;
+   while(lo<hi){const m=(lo+hi)>>1;if(I.off[m]<tgt)lo=m+1;else hi=m;}
+   if(lo>0&&Math.abs(I.off[lo-1]-tgt)<=Math.abs(I.off[lo]-tgt))lo--;
+   pts.push(lo*I.spf/I.sr);
+  }
+ }else for(let k=1;k<N;k++)pts.push(D*k/N); /* 固定位元率：時間平均＝大小平均 */
+ return pts;
+}
+function computeSplit(){
+ if(!audioBuf)return {err:'請先載入音訊檔'};
+ const mode=$('splitMode').value,raw=$('splitVal').value.trim(),D=audioBuf.duration,plan=outPlan();
+ if(mode==='time'){
+  const sec=raw.indexOf(':')>=0?parseTime(raw):parseFloat(raw)*60;
+  if(!(sec>=0.5))return {err:'請輸入每份長度（分鐘，或者 mm:ss）'};
+  const pts=[];for(let t=sec;t<D-0.05;t+=sec)pts.push(t);
+  if(pts.length>998)return {err:'會切成超過 999 份，請加長每份長度'};
+  return {pts,plan};
+ }
+ if(mode==='count'){
+  const N=parseInt(raw,10);
+  if(!(N>=2&&N<=999))return {err:'份數要喺 2 至 999 之間'};
+  return {pts:evenPoints(N,plan),plan};
+ }
+ const mb=parseFloat(raw);
+ if(!(mb>0))return {err:'請輸入每份最大 MB 數'};
+ const lim=mb*1048576,total=estBytes(0,D,plan);
+ if(total<=lim)return {pts:[],plan,fits:true};
+ for(let N=Math.max(2,Math.ceil(total/lim));N<=999;N++){
+  const pts=evenPoints(N,plan),full=[0].concat(pts,[D]);let ok=true;
+  for(let i=0;i<N&&ok;i++)if(estBytes(full[i],full[i+1],plan)>lim)ok=false;
+  if(ok)return {pts,plan};
+ }
+ return {err:'要切超過 999 份，請加大 MB 上限'};
+}
+function updateSplitPreview(){
+ const el=$('splitPreview');
+ if(!audioBuf){el.textContent='';return;}
+ const r=computeSplit();
+ if(r.err){el.textContent='⚠️ '+r.err;return;}
+ const D=audioBuf.duration;
+ if(r.fits){el.textContent='成個檔案（'+fmtBytes(estBytes(0,D,r.plan))+'）已經細過上限，唔使切。';return;}
+ const full=[0].concat(r.pts,[D]),sz=[],du=[];
+ for(let i=0;i<full.length-1;i++){sz.push(estBytes(full[i],full[i+1],r.plan));du.push(full[i+1]-full[i]);}
+ const ap=r.plan.lossless?'':'≈ ';
+ const mn=Math.min.apply(null,sz),mx=Math.max.apply(null,sz);
+ const szTxt=fmtBytes(mn)===fmtBytes(mx)?ap+fmtBytes(mx):ap+fmtBytes(mn)+' – '+fmtBytes(mx);
+ const dmn=Math.min.apply(null,du),dmx=Math.max.apply(null,du);
+ const duTxt=Math.abs(dmx-dmn)<1?fmtShort(dmx).replace(/\.\d+$/,''):fmtShort(dmn).replace(/\.\d+$/,'')+' – '+fmtShort(dmx).replace(/\.\d+$/,'');
+ el.textContent='👉 會切成 '+sz.length+' 個檔案 · 每個 '+szTxt+' · 長度 '+duTxt+' · 輸出：'+planDesc(r.plan);
+}
+$('splitBtn').onclick=()=>{
+ const r=computeSplit();
+ if(r.err)return toast('❌ '+r.err,true);
+ if(r.fits)return toast('成個檔案已經細過上限，唔使切',true);
+ markers=r.pts.slice();
+ genSegsFromPoints(markers);renderMarks();
+ toast('✂️ 已平均切成 '+segments.length+' 個檔案，可以喺下面匯出',true);
+ $('exportCard').scrollIntoView({behavior:'smooth',block:'start'});
+};
+
 $('exportBtn').onclick=async()=>{
  if(!audioBuf||!segments.length)return toast('冇段落可以匯出，請先加段落');
  stopNode();playing=false;$('playBtn').textContent='▶';
- const wantMp3=document.querySelector('input[name=fmt]:checked').value==='mp3';
- const kbps=parseInt($('kbps').value,10);
+ const plan=outPlan();
  let L=null;
- if(wantMp3){
+ if(!plan.lossless&&plan.fmt==='mp3'){
   busy(true,'載入 MP3 編碼器…');
   L=await loadLame();busy(false);
   if(!L){toast('❌ 載入 MP3 編碼器失敗（可能離線），請改用 WAV 格式',true);return;}
  }
- $('exportBtn').disabled=true;
- let done=0;
+ $('exportBtn').disabled=true;$('progbar').style.width='0%';
+ let done=0;const sizes=[];
  try{
   for(let i=0;i<segments.length;i++){
    const st=Math.min(segments[i].start,segments[i].end),en=Math.max(segments[i].start,segments[i].end);
    if(en-st<=0.001)continue;
    busy(true,'匯出中… 第 '+(i+1)+' / '+segments.length+' 段');
    await sleep(30);
-   const i16=toI16(buildProcessed(st,en,true));
-   const blob=wantMp3?encodeMp3(i16,audioBuf.sampleRate,kbps,L):encodeWav(i16,audioBuf.sampleRate);
+   let blob;
+   if(plan.lossless)blob=srcInfo.kind==='mp3'?cutMp3(st,en):cutWav(st,en);
+   else{
+    const i16=toI16(await renderCustom(st,en,plan));
+    blob=plan.fmt==='mp3'?encodeMp3(i16,plan.sr,plan.kbps,L):encodeWav(i16,plan.sr);
+   }
    busy(false);
-   download(blob,baseName+'_seg'+pad(i+1,2)+'_'+fmtStamp(st)+'-'+fmtStamp(en)+'.'+(wantMp3?'mp3':'wav'));
-   done++;
+   const ext=plan.lossless?srcInfo.kind:plan.fmt;
+   download(blob,baseName+'_seg'+pad(i+1,2)+'_'+fmtStamp(st)+'-'+fmtStamp(en)+'.'+ext);
+   sizes.push(blob.size);done++;
    $('progbar').style.width=Math.min(100,Math.round(done/Math.max(1,segments.length)*100))+'%';
    await sleep(450);
   }
-  $('expStatus').textContent='✅ 完成！已觸發下載 '+done+' 個檔案。';
+  const mn=Math.min.apply(null,sizes),mx=Math.max.apply(null,sizes);
+  $('expStatus').textContent='✅ 完成！已觸發下載 '+done+' 個檔案 · '+planDesc(plan)+' · 每個 '+(fmtBytes(mn)===fmtBytes(mx)?fmtBytes(mx):fmtBytes(mn)+' – '+fmtBytes(mx))+'。';
   toast('🎉 已匯出 '+done+' 個檔案',true);
  }catch(err){
   console.error(err);alert('匯出出錯：'+err.message);
@@ -1207,7 +1664,7 @@ async function addMergeFiles(files){
  if(okN)toast('✅ 已加入 '+okN+' 個檔案（清單共 '+mergeItems.length+' 個）');
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function fmtSR(sr){return (sr/1000).toFixed(1).replace(/\.0$/,'')+'kHz';}
+function fmtSR(sr){return String(Math.round(sr)/1000)+' kHz';}
 function metaOf(it){
  const b=it.buf;
  return '<b>'+escapeHtml(it.name)+'</b> · '+fmtShort(b.duration)+' · '+fmtSR(b.sampleRate)+' · '+(b.numberOfChannels>1?'stereo':'mono');
